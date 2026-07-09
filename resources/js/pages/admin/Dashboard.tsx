@@ -1172,9 +1172,9 @@ export default function Dashboard({
                                             <span>{review.prodi || '-'}</span>
                                         </td>
                                         <td className="whitespace-nowrap px-3 py-2 text-center">
-                                            <div className="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 rounded-lg px-2 py-0.5">
+                                            <div className="inline-flex items-center justify-center gap-1">
                                                 <Star className="size-3.5 text-amber-500 fill-amber-500" />
-                                                <span className="text-xs font-bold text-amber-700 dark:text-amber-300">{review.rating} Bintang</span>
+                                                <span className="text-xs font-bold text-slate-800 dark:text-slate-100">{review.rating} Bintang</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-2 text-xs text-slate-700 dark:text-slate-300 max-w-md">

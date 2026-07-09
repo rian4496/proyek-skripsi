@@ -16,6 +16,8 @@ import {
     MessageSquare,
     Percent,
     Search,
+    Sparkles,
+    Star,
     ThumbsDown,
     ThumbsUp,
     Trash2,
@@ -47,6 +49,16 @@ interface FeedbackTicket {
     status: string;
     sentiment?: 'positive' | 'neutral' | 'negative' | null;
     sentiment_score?: number | null;
+    created_at: string;
+}
+
+interface SessionReviewItem {
+    id: number;
+    nama_responden: string | null;
+    fakultas: string | null;
+    prodi: string | null;
+    rating: number;
+    komentar: string | null;
     created_at: string;
 }
 
@@ -82,6 +94,12 @@ interface DashboardProps {
     ai_recommendations: TopQuestionItem[];
     recent_logs: ChatLog[];
     tickets?: FeedbackTicket[];
+    session_reviews?: SessionReviewItem[];
+    session_review_stats?: {
+        total_reviews: number;
+        avg_rating: number;
+        star_counts: { [key: number]: number };
+    };
     filters?: {
         date_range: string;
         fakultas: string;
@@ -101,6 +119,8 @@ export default function Dashboard({
     ai_recommendations,
     recent_logs = [],
     tickets = [],
+    session_reviews = [],
+    session_review_stats = { total_reviews: 0, avg_rating: 0, star_counts: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } },
     filters,
     options,
 }: DashboardProps) {
@@ -115,10 +135,13 @@ export default function Dashboard({
     const [selectedProdi, setSelectedProdi] = useState(filters?.prodi || 'all');
     const [deleteTargetId, setDeleteTargetId] = useState<number | 'clear_all' | null>(null);
     const [deleteTicketTargetId, setDeleteTicketTargetId] = useState<number | 'clear_all' | null>(null);
+    const [deleteReviewTargetId, setDeleteReviewTargetId] = useState<number | 'clear_all' | null>(null);
     const [currentTicketPage, setCurrentTicketPage] = useState(1);
-    const ticketsPerPage = 5;
+    const ticketsPerPage = 10;
+    const [currentReviewPage, setCurrentReviewPage] = useState(1);
+    const reviewsPerPage = 10;
 
-    const handleFilterChange = (newDateRange: string, newFakultas: string, newProdi: string) => {
+    const applyFilter = (newDateRange: string, newFakultas: string, newProdi: string) => {
         router.get(
             '/admin/dashboard',
             { date_range: newDateRange, fakultas: newFakultas, prodi: newProdi },
@@ -151,6 +174,14 @@ export default function Dashboard({
 
     const handleClearAllTickets = () => {
         setDeleteTicketTargetId('clear_all');
+    };
+
+    const handleDeleteReview = (id: number) => {
+        setDeleteReviewTargetId(id);
+    };
+
+    const handleClearAllReviews = () => {
+        setDeleteReviewTargetId('clear_all');
     };
 
     const executeDeleteAction = () => {
@@ -187,6 +218,23 @@ export default function Dashboard({
         }
     };
 
+    const executeDeleteReviewAction = () => {
+        if (deleteReviewTargetId === 'clear_all') {
+            router.delete('/admin/session-reviews/clear', {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteReviewTargetId(null);
+                    setCurrentReviewPage(1);
+                },
+            });
+        } else if (typeof deleteReviewTargetId === 'number') {
+            router.delete(`/admin/session-reviews/${deleteReviewTargetId}`, {
+                preserveScroll: true,
+                onSuccess: () => setDeleteReviewTargetId(null),
+            });
+        }
+    };
+
     const filteredLogs = recent_logs.filter((log) => {
         if (logFilter === 'rule' && log.source !== 'rule') return false;
         if (logFilter === 'ollama' && (log.source !== 'ai' || log.ai_engine !== 'ollama')) return false;
@@ -213,6 +261,9 @@ export default function Dashboard({
 
     const totalTicketPages = Math.ceil((tickets?.length || 0) / ticketsPerPage);
     const paginatedTickets = (tickets || []).slice((currentTicketPage - 1) * ticketsPerPage, currentTicketPage * ticketsPerPage);
+
+    const totalReviewPages = Math.ceil((session_reviews?.length || 0) / reviewsPerPage);
+    const paginatedReviews = (session_reviews || []).slice((currentReviewPage - 1) * reviewsPerPage, currentReviewPage * reviewsPerPage);
 
     // Hitung statistik sentimen tiket keluhan secara dinamis
     const sentimentStats = (() => {
@@ -1075,6 +1126,139 @@ export default function Dashboard({
                     )}
                 </div>
 
+                {/* ═══ Evaluasi Kepuasan Sesi Responden (CSAT Bab IV) ═══ */}
+                <div className="mb-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                    <div className="flex flex-col justify-between border-b border-slate-200 p-4 dark:border-slate-700 md:flex-row md:items-center gap-3">
+                        <div>
+                            <h3 className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-white">
+                                <Sparkles className="size-5 text-amber-500" />
+                                🌟 Evaluasi Kepuasan Sesi Responden (CSAT Bab IV)
+                            </h3>
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                                Rekam jejak rating 1-5 bintang dari responden yang mengklik &quot;Akhiri Sesi&quot; (Terpisah dari Tiket Keluhan Masuk).
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl px-3.5 py-1.5 shadow-sm">
+                                <Star className="size-5 text-amber-500 fill-amber-500" />
+                                <div>
+                                    <span className="text-sm font-black text-amber-600 dark:text-amber-400">
+                                        {session_review_stats?.avg_rating || 0} / 5.0
+                                    </span>
+                                    <span className="ml-1.5 text-[11px] text-slate-500 font-semibold">
+                                        ({session_review_stats?.total_reviews || 0} Responden)
+                                    </span>
+                                </div>
+                            </div>
+                            {session_reviews && session_reviews.length > 0 && (
+                                <button
+                                    onClick={handleClearAllReviews}
+                                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                    title="Kosongkan Semua Ulasan Sesi"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span>Kosongkan ({session_reviews.length})</span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                            <thead className="bg-slate-50 dark:bg-slate-800/50">
+                                <tr>
+                                    <th className="px-3 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">ID</th>
+                                    <th className="px-3 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Responden</th>
+                                    <th className="px-3 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Fakultas / Prodi</th>
+                                    <th className="px-3 py-2.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500">Rating Bintang</th>
+                                    <th className="px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500">Saran &amp; Komentar</th>
+                                    <th className="px-3 py-2.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500">Waktu</th>
+                                    <th className="px-3 py-2.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 bg-white dark:divide-slate-700/60 dark:bg-slate-800">
+                                {paginatedReviews.map((review) => (
+                                    <tr key={review.id} className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-700/30">
+                                        <td className="whitespace-nowrap px-3 py-2 text-xs font-mono font-bold text-slate-500">
+                                            #{review.id}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200">
+                                            {review.nama_responden || 'Responden Uji Coba'}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2 text-xs text-slate-600 dark:text-slate-300">
+                                            <span className="font-semibold text-blue-600 dark:text-blue-400">{review.fakultas || '-'}</span>
+                                            <span className="text-slate-400 mx-1">/</span>
+                                            <span>{review.prodi || '-'}</span>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2 text-center">
+                                            <div className="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 rounded-lg px-2 py-0.5">
+                                                <Star className="size-3.5 text-amber-500 fill-amber-500" />
+                                                <span className="text-xs font-bold text-amber-700 dark:text-amber-300">{review.rating} Bintang</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-2 text-xs text-slate-700 dark:text-slate-300 max-w-md">
+                                            {review.komentar ? (
+                                                <span className="italic">&quot;{review.komentar}&quot;</span>
+                                            ) : (
+                                                <span className="text-slate-400 italic">Tidak ada komentar</span>
+                                            )}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2 text-center text-[11px] text-slate-500">
+                                            {new Date(review.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2 text-center">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteReview(review.id)}
+                                                title="Hapus Ulasan Sesi"
+                                                className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-red-50 p-1.5 text-red-600 transition-colors hover:bg-red-100 dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60 shadow-sm"
+                                            >
+                                                <Trash2 className="size-3.5" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {(!session_reviews || session_reviews.length === 0) && (
+                                    <tr>
+                                        <td colSpan={7} className="px-3 py-6 text-center text-xs text-slate-500">
+                                            Belum ada evaluasi kepuasan sesi yang masuk dari responden.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {session_reviews && session_reviews.length > 0 && (
+                        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-4.5 py-3 dark:border-slate-700 dark:bg-slate-800/50 sm:flex-row">
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{(currentReviewPage - 1) * reviewsPerPage + 1}</span> hingga{' '}
+                                <span className="font-bold text-slate-900 dark:text-white">
+                                    {Math.min(currentReviewPage * reviewsPerPage, session_reviews.length)}
+                                </span>{' '}
+                                dari <span className="font-bold text-slate-900 dark:text-white">{session_reviews.length}</span> ulasan
+                            </div>
+
+                            <div className="flex gap-1.5">
+                                <button
+                                    onClick={() => setCurrentReviewPage((prev) => Math.max(prev - 1, 1))}
+                                    disabled={currentReviewPage === 1}
+                                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                                >
+                                    ← Sebelumnya
+                                </button>
+                                <button
+                                    onClick={() => setCurrentReviewPage((prev) => Math.min(prev + 1, totalReviewPages))}
+                                    disabled={currentReviewPage === totalReviewPages || totalReviewPages === 0}
+                                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                                >
+                                    Selanjutnya →
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 <div className="pb-6 pt-3 text-center">
                     <p className="text-[11px] tracking-wider text-slate-400">LAMPIRAN DATA BAB IV — PELAYANAN AKADEMIK UNISKA MAB</p>
                 </div>
@@ -1273,6 +1457,53 @@ export default function Dashboard({
                                 <button
                                     type="button"
                                     onClick={executeDeleteTicketAction}
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span>Ya, Hapus</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ═══ Modal Validasi Hapus Ulasan Sesi ═══ */}
+                {deleteReviewTargetId !== null && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center gap-3.5">
+                                <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                                    <Trash2 className="size-6" />
+                                </div>
+                                <div>
+                                    <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                                        Konfirmasi Hapus Ulasan Sesi
+                                    </h4>
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                        Validasi tindakan penghapusan ulasan/kepuasan sesi pengujian.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-xl">
+                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                                    {deleteReviewTargetId === 'clear_all'
+                                        ? 'Apakah Anda yakin ingin menghapus seluruh rekam jejak evaluasi kepuasan sesi dari responden?'
+                                        : 'Apakah Anda yakin ingin menghapus ulasan sesi responden ini?'}
+                                </p>
+                            </div>
+
+                            <div className="mt-6 flex items-center justify-end gap-2.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setDeleteReviewTargetId(null)}
+                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={executeDeleteReviewAction}
                                     className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                 >
                                     <Trash2 className="size-3.5" />

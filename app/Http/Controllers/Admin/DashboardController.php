@@ -90,6 +90,17 @@ class DashboardController extends Controller
 
         $recentLogs = $applyFilters(ChatLog::latest())->limit(100)->get();
         $tickets = \App\Models\Feedback::where('kategori_masalah', '!=', 'Feedback Sesi')->latest()->get();
+        $sessionReviews = \App\Models\SessionReview::latest()->get();
+
+        $totalReviews = $sessionReviews->count();
+        $avgSessionRating = $totalReviews > 0 ? round($sessionReviews->avg('rating'), 1) : 0;
+        $starCounts = [
+            5 => $sessionReviews->where('rating', 5)->count(),
+            4 => $sessionReviews->where('rating', 4)->count(),
+            3 => $sessionReviews->where('rating', 3)->count(),
+            2 => $sessionReviews->where('rating', 2)->count(),
+            1 => $sessionReviews->where('rating', 1)->count(),
+        ];
 
         // Daftar unik Fakultas dan Prodi untuk opsi filter dropdown
         $fakultasList = ChatLog::whereNotNull('fakultas')
@@ -126,6 +137,12 @@ class DashboardController extends Controller
             'ai_recommendations' => $aiRecommendations,
             'recent_logs' => $recentLogs,
             'tickets' => $tickets,
+            'session_reviews' => $sessionReviews,
+            'session_review_stats' => [
+                'total_reviews' => $totalReviews,
+                'avg_rating' => $avgSessionRating,
+                'star_counts' => $starCounts,
+            ],
             'filters' => [
                 'date_range' => $request->input('date_range', 'all'),
                 'fakultas' => $request->input('fakultas', 'all'),

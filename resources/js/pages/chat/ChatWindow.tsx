@@ -117,9 +117,23 @@ export default function ChatWindow() {
     };
 
     const handleSendFeedbackAndExit = async (isSkipped: boolean = false) => {
+        const participant = JSON.parse(sessionStorage.getItem('participant_info') || 'null');
+
         if (!isSkipped && (exitRating > 0 || exitComment.trim() !== '')) {
-            // Catat ulasan sesi lokal tanpa mencampuradukkan ke dalam tabel Tiket Keluhan Masuk
-            console.log('Feedback Sesi Responden:', { exitRating, exitComment });
+            setExitProcessing(true);
+            try {
+                await axios.post('/session-reviews', {
+                    nama_responden: participant?.nama_mahasiswa || 'Responden Uji Coba',
+                    fakultas: participant?.fakultas || '-',
+                    prodi: participant?.prodi || '-',
+                    rating: exitRating,
+                    komentar: exitComment.trim() || null,
+                });
+            } catch (err) {
+                console.error('Gagal mengirim ulasan sesi:', err);
+            } finally {
+                setExitProcessing(false);
+            }
         }
 
         // Hapus participant_info agar sesi berikutnya bersih

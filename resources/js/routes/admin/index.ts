@@ -1,6 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import chatLogs from './chat-logs'
 import tickets from './tickets'
+import sessionReviews from './session-reviews'
 import chatRules from './chat-rules'
 import uploadDocument from './upload-document'
 /**
@@ -83,7 +84,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     dashboard.form = dashboardForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:144
+ * @see app/Http/Controllers/Admin/DashboardController.php:161
  * @route '/admin/export-csv'
  */
 export const exportCsv = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -98,7 +99,7 @@ exportCsv.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:144
+ * @see app/Http/Controllers/Admin/DashboardController.php:161
  * @route '/admin/export-csv'
  */
 exportCsv.url = (options?: RouteQueryOptions) => {
@@ -107,7 +108,7 @@ exportCsv.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:144
+ * @see app/Http/Controllers/Admin/DashboardController.php:161
  * @route '/admin/export-csv'
  */
 exportCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +117,7 @@ exportCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:144
+ * @see app/Http/Controllers/Admin/DashboardController.php:161
  * @route '/admin/export-csv'
  */
 exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +127,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:144
+ * @see app/Http/Controllers/Admin/DashboardController.php:161
  * @route '/admin/export-csv'
  */
     const exportCsvForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +137,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:144
+ * @see app/Http/Controllers/Admin/DashboardController.php:161
  * @route '/admin/export-csv'
  */
         exportCsvForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -145,7 +146,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:144
+ * @see app/Http/Controllers/Admin/DashboardController.php:161
  * @route '/admin/export-csv'
  */
         exportCsvForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -164,6 +165,7 @@ const admin = {
 exportCsv: Object.assign(exportCsv, exportCsv),
 chatLogs: Object.assign(chatLogs, chatLogs),
 tickets: Object.assign(tickets, tickets),
+sessionReviews: Object.assign(sessionReviews, sessionReviews),
 chatRules: Object.assign(chatRules, chatRules),
 uploadDocument: Object.assign(uploadDocument, uploadDocument),
 }

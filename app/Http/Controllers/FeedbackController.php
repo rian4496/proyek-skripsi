@@ -11,12 +11,12 @@ class FeedbackController extends Controller
     {
         $validated = $request->validate([
             'nama_pelapor' => 'required|string|max:100',
-            'npm' => ['required', 'regex:/^[0-9]{10}$/'],
+            'npm' => 'nullable|string|max:50',
             'kategori_masalah' => 'required|string|max:100',
             'laporan' => 'required|string',
-        ], [
-            'npm.regex' => 'Format NPM tidak valid! Harus berupa 10 digit angka (contoh: 2110010123).',
         ]);
+
+        $validated['npm'] = $validated['npm'] ?? '-';
 
         // Analisis sentimen isi laporan keluhan menggunakan Gemini API
         $sentimentResult = $geminiService->analyzeSentiment($validated['laporan']);

@@ -171,19 +171,12 @@ export default function ChatWindow() {
     const submitTicket = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Client-side validation: NPM harus tepat 10 digit angka
-        const npmPattern = /^[0-9]{10}$/;
-        if (!npmPattern.test(ticketForm.data.npm)) {
-            ticketForm.setError('npm', 'Format NPM tidak valid! Harus berupa 10 digit angka (contoh: 2110010123).');
-            return;
-        }
-
         ticketForm.post('/feedback', {
             preserveScroll: true,
             onSuccess: () => {
                 setIsTicketModalOpen(false);
                 ticketForm.reset();
-                alert('Tiket keluhan berhasil dikirim! Admin akan segera menindaklanjutinya.');
+                alert('Tiket keluhan berhasil dikirim! tiket anda ditampung dan jadi bahan evaluasi');
             },
         });
     };
@@ -435,28 +428,6 @@ export default function ChatWindow() {
                                         value={ticketForm.data.nama_pelapor}
                                         onChange={e => ticketForm.setData('nama_pelapor', e.target.value)}
                                     />
-                                </div>
-                                <div>
-                                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">NPM</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="Contoh: 2110010123"
-                                        className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-slate-700 dark:text-white ${ticketForm.errors.npm
-                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                                            : 'border-slate-300 focus:border-blue-500 dark:border-slate-600'
-                                            }`}
-                                        value={ticketForm.data.npm}
-                                        onChange={e => {
-                                            ticketForm.setData('npm', e.target.value);
-                                            if (ticketForm.errors.npm) {
-                                                ticketForm.clearErrors('npm');
-                                            }
-                                        }}
-                                    />
-                                    {ticketForm.errors.npm && (
-                                        <p className="mt-1 text-xs text-red-500 font-semibold">{ticketForm.errors.npm}</p>
-                                    )}
                                 </div>
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Kategori Masalah</label>

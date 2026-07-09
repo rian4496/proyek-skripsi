@@ -1112,7 +1112,7 @@ export default function Dashboard({
                         <div>
                             <h3 className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-white">
                                 <Sparkles className="size-5 text-amber-500" />
-                                🌟 Evaluasi Kepuasan Sesi Responden (CSAT Bab IV)
+                                Evaluasi Kepuasan Sesi Responden (CSAT)
                             </h3>
                             <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                                 Rekam jejak rating 1-5 bintang dari responden yang mengklik &quot;Akhiri Sesi&quot; (Terpisah dari Tiket Keluhan Masuk).

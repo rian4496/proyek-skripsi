@@ -6,6 +6,7 @@ import {
     Bot,
     Calendar,
     CheckCircle2,
+    ClipboardCheck,
     Clock,
     Database,
     Download,
@@ -1111,7 +1112,7 @@ export default function Dashboard({
                     <div className="flex flex-col justify-between border-b border-slate-200 p-4 dark:border-slate-700 md:flex-row md:items-center gap-3">
                         <div>
                             <h3 className="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-white">
-                                <Sparkles className="size-5 text-amber-500" />
+                                <ClipboardCheck className="size-5 text-amber-500" />
                                 Evaluasi Kepuasan Sesi Responden (CSAT)
                             </h3>
                             <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">

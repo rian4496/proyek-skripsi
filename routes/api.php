@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ChatbotController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +11,3 @@ use Illuminate\Support\Facades\Route;
 | mendapat prefix `/api` dari RouteServiceProvider.
 |
 */
-
-Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])
-    ->name('api.chatbot.send');

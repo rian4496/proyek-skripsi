@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
  * 1. **Rule-Based Matching** menggunakan algoritma Hybrid Scoring
  *    (Damerau-Levenshtein Distance + Ratcliff/Obershelp)
  *    dengan threshold kemiripan ≥ 80%.
- * 2. **AI Fallback** via GeminiService ATAU OllamaService (n8n)
+ * 2. **AI Fallback** via GeminiService ATAU OllamaService (FastAPI RAG)
  *    ketika tidak ada rule yang cocok, ditentukan oleh variabel
  *    `AI_ENGINE` di `.env` (Strategy Pattern via konfigurasi).
  *
@@ -37,7 +37,7 @@ use Illuminate\Support\Str;
  * - **Dependency Injection**: GeminiService dan OllamaService di-inject
  *   melalui constructor, mendukung prinsip DIP (Dependency Inversion Principle).
  * - **Open-Closed Principle (OCP)**: pergantian engine AI antara Gemini
- *   dan Ollama/n8n cukup dilakukan via konfigurasi `.env` (`AI_ENGINE`),
+ *   dan Ollama/FastAPI cukup dilakukan via konfigurasi `.env` (`AI_ENGINE`),
  *   tanpa mengubah kode ChatbotService maupun Controller.
  */
 class ChatbotService
@@ -130,12 +130,12 @@ class ChatbotService
             return $result;
         }
 
-        // --- Tahap 2: AI Fallback (Gemini Cloud ATAU Ollama/n8n Lokal) ---
+        // --- Tahap 2: AI Fallback (Gemini Cloud ATAU Ollama/FastAPI RAG Lokal) ---
         $activeEngine = $this->getActiveEngine();
 
         if ($activeEngine === 'ollama') {
-            // === Engine Lokal: n8n → Ollama Qwen 2.5 ===
-            // Session ID berdasarkan identitas peserta agar n8n menjaga konteks per-mahasiswa
+            // === Engine Lokal: FastAPI RAG Backend → Ollama Qwen 2.5 ===
+            // Session ID berdasarkan identitas peserta agar konteks percakapan terjaga per-mahasiswa
             $sessionId = !empty($participantData['nama_mahasiswa'])
                 ? md5($participantData['nama_mahasiswa'] . ($participantData['prodi'] ?? ''))
                 : 'anon-' . session()->getId();

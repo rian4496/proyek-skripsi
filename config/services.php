@@ -51,12 +51,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | AI Engine Switch & n8n/Ollama (Local Development)
+    | AI Engine Switch & FastAPI RAG Backend (Local Development)
     |--------------------------------------------------------------------------
     |
     | Konfigurasi untuk memilih engine AI fallback secara dinamis.
     | - 'gemini': menggunakan Google Gemini Cloud API (produksi)
-    | - 'ollama': menggunakan n8n Workflow → Ollama Qwen 2.5 lokal (development)
+    | - 'ollama': menggunakan FastAPI RAG Backend → Ollama Qwen 2.5 lokal (development)
     |
     | Catatan Akademis (Skripsi Bab 3):
     | Implementasi ini menerapkan **Strategy Pattern** melalui konfigurasi,
@@ -65,8 +65,8 @@ return [
     */
     'ai_engine' => env('AI_ENGINE', 'gemini'),
 
-    'n8n' => [
-        'webhook_url' => env('N8N_WEBHOOK_URL', 'http://localhost:5678/webhook/f5970dbf-c2fd-4950-9275-c7b2b51c03ab'),
+    'rag_backend' => [
+        'url' => env('RAG_BACKEND_URL', 'http://localhost:8001/chat'),
     ],
 
 ];

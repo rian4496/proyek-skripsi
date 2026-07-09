@@ -6,17 +6,17 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
- * OllamaService — Adapter untuk komunikasi dengan Ollama via n8n Webhook.
+ * OllamaService — Adapter untuk komunikasi dengan Ollama via FastAPI RAG Backend.
  *
- * Service ini mengenkapsulasi logika HTTP call ke n8n Workflow Engine
+ * Service ini mengenkapsulasi logika HTTP call ke FastAPI RAG Backend
  * yang terhubung ke model Ollama Qwen 2.5 lokal sebagai mesin
  * Generative AI RAG selama masa pengembangan (development).
  *
  * Catatan Akademis (Skripsi Bab 3/4):
- * - Menerapkan **Adapter Pattern**: mengkonversi interface n8n Webhook
+ * - Menerapkan **Adapter Pattern**: mengkonversi interface FastAPI RAG
  *   menjadi interface internal yang identik dengan GeminiService.
  * - **Single Responsibility Principle (SRP)**: tanggung jawab tunggal
- *   adalah berkomunikasi dengan n8n/Ollama lokal.
+ *   adalah berkomunikasi dengan FastAPI/Ollama lokal.
  * - **Open-Closed Principle (OCP)**: ChatbotService tidak perlu
  *   dimodifikasi saat mengganti engine AI — cukup ubah variabel
  *   `AI_ENGINE` di file `.env` antara 'gemini' dan 'ollama'.
@@ -32,10 +32,10 @@ class OllamaService
     private int $requestTimeout = 90;  // detik, untuk generate jawaban (model lokal lambat)
 
     /**
-     * Pola respons n8n/Ollama yang mengindikasikan data tidak ditemukan
+     * Pola respons Ollama yang mengindikasikan data tidak ditemukan
      * dalam dokumen RAG, sehingga perlu eskalasi ke admin manusia.
      *
-     * Catatan: Pola disesuaikan dengan prompt template di n8n Workflow.
+     * Catatan: Pola disesuaikan dengan prompt template di FastAPI RAG Backend.
      */
     private const RAG_NOT_FOUND_PATTERNS = [
         'tidak ditemukan',
@@ -51,20 +51,18 @@ class OllamaService
 
     public function __construct()
     {
-        $this->webhookUrl = config('services.n8n.webhook_url', '');
+        $this->webhookUrl = config('services.rag_backend.url', '');
     }
 
     /**
-     * Mengirim pertanyaan ke n8n Chat Trigger dan mengembalikan respons
-     * dari AI Agent (Ollama Chat Model + Query Data Tool / RAG).
+     * Mengirim pertanyaan ke FastAPI RAG Backend dan mengembalikan respons
+     * dari Ollama Qwen 2.5 dengan konteks dokumen RAG (FAISS Vector Store).
      *
-     * Alur di n8n (sesuai canvas "Chatbot Hybrid Core"):
-     * "When chat message received" → Switch → AI Agent
-     *    → Ollama Chat Model (Qwen 2.5) + Query Data Tool (Vector Store Retriever)
+     * Alur: Laravel → FastAPI (POST /chat) → FAISS Retrieval → Ollama Qwen 2.5
      *
      * Payload yang dikirim:
-     * - `chatInput`: pertanyaan mahasiswa (wajib, key standar n8n Chat Trigger)
-     * - `sessionId`: identitas sesi agar n8n menjaga konteks percakapan
+     * - `chatInput`: pertanyaan mahasiswa
+     * - `sessionId`: identitas sesi untuk konteks percakapan
      *
      * @param  string  $message    Pesan/pertanyaan dari mahasiswa
      * @param  string  $sessionId  ID sesi untuk konteks percakapan (opsional)
@@ -73,7 +71,7 @@ class OllamaService
     public function generateResponse(string $message, string $sessionId = 'default'): array
     {
         if (empty($this->webhookUrl)) {
-            Log::warning('OllamaService: N8N_WEBHOOK_URL tidak dikonfigurasi di .env');
+            Log::warning('OllamaService: RAG_BACKEND_URL tidak dikonfigurasi di .env');
             return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
         }
 
@@ -104,7 +102,7 @@ class OllamaService
                 return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
             }
 
-            $text = $this->parseN8nResponse($response);
+            $text = $this->parseRagResponse($response);
 
             if (empty($text)) {
                 return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
@@ -128,11 +126,10 @@ class OllamaService
     }
 
     /**
-     * Parse respons dari n8n Chat Trigger.
+     * Parse respons dari FastAPI RAG Backend.
      *
-     * Node "When chat message received" di n8n mengembalikan output
-     * dari AI Agent dalam format:
-     * - `{"output": "jawaban teks"}` (paling umum dari AI Agent node)
+     * FastAPI mengembalikan output dalam format:
+     * - `{"output": "jawaban teks"}` (format utama dari ChatResponse)
      * - `{"text": "..."}` atau `{"response": "..."}`
      * - Plain text langsung
      * - JSON array `[{"output": "..."}]`
@@ -140,7 +137,7 @@ class OllamaService
      * @param  \Illuminate\Http\Client\Response  $response
      * @return string  Teks jawaban dari Ollama
      */
-    private function parseN8nResponse($response): string
+    private function parseRagResponse($response): string
     {
         $body = $response->body();
 
@@ -153,7 +150,7 @@ class OllamaService
                 $data = $data[0];
             }
 
-            // Cek berbagai kemungkinan key output dari n8n
+            // Cek berbagai kemungkinan key output dari RAG Backend
             foreach (['output', 'text', 'response', 'jawaban', 'message', 'result'] as $key) {
                 if (isset($data[$key]) && is_string($data[$key]) && !empty(trim($data[$key]))) {
                     return trim($data[$key]);
@@ -224,7 +221,7 @@ class OllamaService
     }
 
     /**
-     * Respons fallback ketika n8n/Ollama tidak tersedia.
+     * Respons fallback ketika FastAPI/Ollama tidak tersedia.
      */
     private function fallbackResponse(): string
     {

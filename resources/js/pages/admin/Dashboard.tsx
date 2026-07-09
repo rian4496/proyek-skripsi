@@ -114,7 +114,9 @@ export default function Dashboard({
     const [selectedFakultas, setSelectedFakultas] = useState(filters?.fakultas || 'all');
     const [selectedProdi, setSelectedProdi] = useState(filters?.prodi || 'all');
     const [deleteTargetId, setDeleteTargetId] = useState<number | 'clear_all' | null>(null);
-    const [deleteTicketTargetId, setDeleteTicketTargetId] = useState<number | null>(null);
+    const [deleteTicketTargetId, setDeleteTicketTargetId] = useState<number | 'clear_all' | null>(null);
+    const [currentTicketPage, setCurrentTicketPage] = useState(1);
+    const ticketsPerPage = 5;
 
     const handleFilterChange = (newDateRange: string, newFakultas: string, newProdi: string) => {
         router.get(
@@ -147,6 +149,10 @@ export default function Dashboard({
         setDeleteTicketTargetId(id);
     };
 
+    const handleClearAllTickets = () => {
+        setDeleteTicketTargetId('clear_all');
+    };
+
     const executeDeleteAction = () => {
         if (deleteTargetId === 'clear_all') {
             router.delete('/admin/chat-logs/clear', {
@@ -165,7 +171,15 @@ export default function Dashboard({
     };
 
     const executeDeleteTicketAction = () => {
-        if (typeof deleteTicketTargetId === 'number') {
+        if (deleteTicketTargetId === 'clear_all') {
+            router.delete('/admin/tickets/clear', {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteTicketTargetId(null);
+                    setCurrentTicketPage(1);
+                },
+            });
+        } else if (typeof deleteTicketTargetId === 'number') {
             router.delete(`/admin/tickets/${deleteTicketTargetId}`, {
                 preserveScroll: true,
                 onSuccess: () => setDeleteTicketTargetId(null),
@@ -196,6 +210,9 @@ export default function Dashboard({
 
     const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
     const paginatedLogs = filteredLogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    const totalTicketPages = Math.ceil((tickets?.length || 0) / ticketsPerPage);
+    const paginatedTickets = (tickets || []).slice((currentTicketPage - 1) * ticketsPerPage, currentTicketPage * ticketsPerPage);
 
     // Hitung statistik sentimen tiket bantuan secara dinamis
     const sentimentStats = (() => {
@@ -920,11 +937,21 @@ export default function Dashboard({
 
                 {/* ═══ Help Tickets Table ═══ */}
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                    <div className="border-b border-slate-200 p-3.5 dark:border-slate-700">
+                    <div className="flex items-center justify-between border-b border-slate-200 p-3.5 dark:border-slate-700">
                         <h3 className="flex items-center gap-2 text-base font-bold">
                             <MessageSquare className="size-4 text-blue-500" />
                             Tiket Bantuan Masuk
                         </h3>
+                        {tickets && tickets.length > 0 && (
+                            <button
+                                onClick={handleClearAllTickets}
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                title="Kosongkan Semua Tiket Bantuan"
+                            >
+                                <Trash2 className="size-3.5" />
+                                <span>Kosongkan ({tickets.length})</span>
+                            </button>
+                        )}
                     </div>
 
                     <div className="overflow-x-auto">
@@ -941,7 +968,7 @@ export default function Dashboard({
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200 font-medium dark:divide-slate-700 text-center">
-                                {tickets && tickets.map((ticket) => (
+                                {paginatedTickets && paginatedTickets.map((ticket) => (
                                     <tr key={ticket.id_feedback} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
                                         <td className="whitespace-nowrap px-3 py-1.5 text-[11px] text-slate-500 text-center">
                                             {new Date(ticket.created_at).toLocaleString('id-ID', {
@@ -1016,6 +1043,36 @@ export default function Dashboard({
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination Controls untuk Tiket Bantuan */}
+                    {tickets && tickets.length > 0 && (
+                        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-4.5 py-3 dark:border-slate-700 dark:bg-slate-800/50 sm:flex-row">
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{(currentTicketPage - 1) * ticketsPerPage + 1}</span> hingga{' '}
+                                <span className="font-bold text-slate-900 dark:text-white">{Math.min(currentTicketPage * ticketsPerPage, tickets.length)}</span> dari{' '}
+                                <span className="font-bold text-slate-900 dark:text-white">{tickets.length}</span> tiket bantuan
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setCurrentTicketPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentTicketPage === 1}
+                                    className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    ← Sebelumnya
+                                </button>
+                                <span className="px-3 text-xs font-bold text-slate-700 dark:text-slate-300">
+                                    Halaman {currentTicketPage} / {totalTicketPages || 1}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentTicketPage(prev => Math.min(prev + 1, totalTicketPages))}
+                                    disabled={currentTicketPage === totalTicketPages || totalTicketPages === 0}
+                                    className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Selanjutnya →
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="pb-6 pt-3 text-center">
@@ -1199,7 +1256,9 @@ export default function Dashboard({
 
                             <div className="mt-4 rounded-xl">
                                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                                    Apakah Anda yakin ingin menghapus tiket bantuan ini?
+                                    {deleteTicketTargetId === 'clear_all'
+                                        ? 'Apakah Anda yakin ingin menghapus seluruh tiket bantuan yang masuk?'
+                                        : 'Apakah Anda yakin ingin menghapus tiket bantuan ini?'}
                                 </p>
                             </div>
 

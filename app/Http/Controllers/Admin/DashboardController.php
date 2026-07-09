@@ -241,4 +241,14 @@ class DashboardController extends Controller
 
         return redirect()->back()->with('success', 'Tiket bantuan berhasil dihapus.');
     }
+
+    /**
+     * Menghapus seluruh tiket bantuan masuk (DELETE /admin/tickets/clear).
+     */
+    public function destroyAllTickets()
+    {
+        \App\Models\Feedback::truncate();
+
+        return redirect()->back()->with('success', 'Seluruh data tiket bantuan berhasil dikosongkan.');
+    }
 }

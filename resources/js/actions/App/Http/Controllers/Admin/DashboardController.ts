@@ -310,6 +310,71 @@ destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number 
     
     destroy.form = destroyForm
 /**
+* @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
+ * @see app/Http/Controllers/Admin/DashboardController.php:248
+ * @route '/admin/tickets/clear'
+ */
+export const destroyAllTickets = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: destroyAllTickets.url(options),
+    method: 'delete',
+})
+
+destroyAllTickets.definition = {
+    methods: ["delete"],
+    url: '/admin/tickets/clear',
+} satisfies RouteDefinition<["delete"]>
+
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
+ * @see app/Http/Controllers/Admin/DashboardController.php:248
+ * @route '/admin/tickets/clear'
+ */
+destroyAllTickets.url = (options?: RouteQueryOptions) => {
+    return destroyAllTickets.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
+ * @see app/Http/Controllers/Admin/DashboardController.php:248
+ * @route '/admin/tickets/clear'
+ */
+destroyAllTickets.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: destroyAllTickets.url(options),
+    method: 'delete',
+})
+
+    /**
+* @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
+ * @see app/Http/Controllers/Admin/DashboardController.php:248
+ * @route '/admin/tickets/clear'
+ */
+    const destroyAllTicketsForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: destroyAllTickets.url({
+                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                        _method: 'DELETE',
+                        ...(options?.query ?? options?.mergeQuery ?? {}),
+                    }
+                }),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
+ * @see app/Http/Controllers/Admin/DashboardController.php:248
+ * @route '/admin/tickets/clear'
+ */
+        destroyAllTicketsForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: destroyAllTickets.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'DELETE',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+    
+    destroyAllTickets.form = destroyAllTicketsForm
+/**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyTicket
  * @see app/Http/Controllers/Admin/DashboardController.php:238
  * @route '/admin/tickets/{feedback}'
@@ -398,6 +463,6 @@ destroyTicket.delete = (args: { feedback: number | { id_feedback: number } } | [
         })
     
     destroyTicket.form = destroyTicketForm
-const DashboardController = { index, exportCsv, destroyAll, destroy, destroyTicket }
+const DashboardController = { index, exportCsv, destroyAll, destroy, destroyAllTickets, destroyTicket }
 
 export default DashboardController

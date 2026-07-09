@@ -764,7 +764,7 @@ export default function Dashboard({
                             {recent_logs.length > 0 && (
                                 <button
                                     onClick={handleClearAllLogs}
-                                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                     title="Kosongkan Semua Riwayat Pengujian"
                                 >
                                     <Trash2 className="size-3.5" />
@@ -872,7 +872,7 @@ export default function Dashboard({
                                                 </button>
                                                 <button
                                                     onClick={(e) => handleDeleteLog(log.id, e)}
-                                                    className="inline-flex items-center rounded-md border border-red-200 bg-red-50 p-1 text-red-600 transition-colors hover:bg-red-100 dark:border-red-800/80 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                                                    className="inline-flex items-center justify-center rounded-lg bg-red-600 p-1.5 text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                                     title="Hapus Log Percakapan Ini"
                                                 >
                                                     <Trash2 className="size-3" />
@@ -990,7 +990,7 @@ export default function Dashboard({
                         {tickets && tickets.length > 0 && (
                             <button
                                 onClick={handleClearAllTickets}
-                                className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                 title="Kosongkan Semua Tiket Keluhan"
                             >
                                 <Trash2 className="size-3.5" />
@@ -1058,7 +1058,7 @@ export default function Dashboard({
                                                 type="button"
                                                 onClick={() => handleDeleteTicket(ticket.id_feedback)}
                                                 title="Hapus Tiket"
-                                                className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-red-50 p-1.5 text-red-600 transition-colors hover:bg-red-100 dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60 shadow-sm"
+                                                className="inline-flex items-center justify-center rounded-lg bg-red-600 p-1.5 text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                             >
                                                 <Trash2 className="size-3.5" />
                                             </button>
@@ -1134,7 +1134,7 @@ export default function Dashboard({
                             {session_reviews && session_reviews.length > 0 && (
                                 <button
                                     onClick={handleClearAllReviews}
-                                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                     title="Kosongkan Semua Ulasan Sesi"
                                 >
                                     <Trash2 className="size-3.5" />
@@ -1192,7 +1192,7 @@ export default function Dashboard({
                                                 type="button"
                                                 onClick={() => handleDeleteReview(review.id)}
                                                 title="Hapus Ulasan Sesi"
-                                                className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-red-50 p-1.5 text-red-600 transition-colors hover:bg-red-100 dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60 shadow-sm"
+                                                className="inline-flex items-center justify-center rounded-lg bg-red-600 p-1.5 text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                             >
                                                 <Trash2 className="size-3.5" />
                                             </button>

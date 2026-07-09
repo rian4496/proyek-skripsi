@@ -53,6 +53,7 @@ export default function ChatWindow() {
     const [processing, setProcessing] = useState(false);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [previewImage, setPreviewImage] = useState<{ url: string; alt?: string } | null>(null);
 
     const handleClearChat = () => {
         setShowDeleteModal(true);
@@ -332,6 +333,7 @@ export default function ChatWindow() {
                                     message={msg}
                                     onFeedback={handleFeedback}
                                     onContactAdmin={() => setIsTicketModalOpen(true)}
+                                    onImageClick={(url, alt) => setPreviewImage({ url, alt })}
                                 />
                             ))}
 
@@ -740,6 +742,42 @@ export default function ChatWindow() {
                                     <Trash2 className="size-3.5" />
                                     <span>Ya, Hapus</span>
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ═══ Image Preview Lightbox Modal ═══ */}
+                {previewImage && (
+                    <div 
+                        className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md animate-in fade-in duration-200"
+                        onClick={() => setPreviewImage(null)}
+                    >
+                        <div 
+                            className="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center justify-center animate-in zoom-in-95 duration-200"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                type="button"
+                                onClick={() => setPreviewImage(null)}
+                                className="absolute -top-12 right-0 md:-right-4 flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/25 px-3.5 py-1.5 text-xs font-semibold text-white shadow-lg backdrop-blur-sm transition-all border border-white/20 active:scale-95"
+                                title="Tutup Pratinjau (ESC)"
+                            >
+                                <X className="size-4" />
+                                <span>Tutup</span>
+                            </button>
+                            
+                            <div className="overflow-hidden rounded-2xl bg-slate-900/90 border border-slate-700/80 shadow-2xl p-2 w-auto max-w-full flex flex-col items-center">
+                                <img
+                                    src={previewImage.url}
+                                    alt={previewImage.alt || 'Pratinjau Gambar'}
+                                    className="max-h-[80vh] w-auto max-w-full object-contain rounded-xl shadow-md"
+                                />
+                                {previewImage.alt && (
+                                    <div className="w-full mt-2.5 py-2 px-4 rounded-lg bg-slate-800/90 text-center text-sm font-medium text-slate-200 border border-slate-700/60">
+                                        📸 {previewImage.alt}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

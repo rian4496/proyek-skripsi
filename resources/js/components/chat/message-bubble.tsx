@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { ThumbsDown, ThumbsUp, AlertTriangle, Bot, User } from 'lucide-react';
+import { ThumbsDown, ThumbsUp, AlertTriangle, Bot, User, ZoomIn } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 /**
@@ -26,6 +26,7 @@ interface MessageBubbleProps {
     message: ChatMessage;
     onFeedback?: (chatLogId: number, isHelpful: boolean) => void;
     onContactAdmin?: () => void;
+    onImageClick?: (url: string, alt?: string) => void;
 }
 
 /**
@@ -44,7 +45,7 @@ interface MessageBubbleProps {
  * - Tombol "Hubungi Admin" muncul sebagai Human Fallback ketika data
  *   tidak ditemukan di RAG lokal (isRagFound === false).
  */
-export function MessageBubble({ message, onFeedback, onContactAdmin }: MessageBubbleProps) {
+export function MessageBubble({ message, onFeedback, onContactAdmin, onImageClick }: MessageBubbleProps) {
     const isUser = message.sender === 'user';
     const isWelcome = message.id === 'welcome';
     const showFeedback = !isUser && !isWelcome && message.chatLogId;
@@ -105,13 +106,23 @@ export function MessageBubble({ message, onFeedback, onContactAdmin }: MessageBu
                             <ReactMarkdown
                                 components={{
                                     img: ({ node, ...props }) => (
-                                        <div className="my-3 rounded-xl overflow-hidden border border-border/60 shadow-md bg-slate-50 dark:bg-slate-900/60">
-                                            <img
-                                                {...props}
-                                                className="w-full h-auto max-h-[380px] object-contain mx-auto rounded-t-xl"
-                                                loading="lazy"
-                                                alt={props.alt || 'Panduan Visual SIA Online'}
-                                            />
+                                        <div 
+                                            className="my-3 rounded-xl overflow-hidden border border-border/60 shadow-md bg-slate-50 dark:bg-slate-900/60 group relative cursor-pointer transition-all hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/80"
+                                            onClick={() => onImageClick?.(props.src || '', props.alt || '')}
+                                            title="Klik untuk melihat pratinjau ukuran penuh"
+                                        >
+                                            <div className="relative overflow-hidden">
+                                                <img
+                                                    {...props}
+                                                    className="w-full h-auto max-h-[380px] object-contain mx-auto rounded-t-xl transition-transform duration-300 group-hover:scale-[1.02]"
+                                                    loading="lazy"
+                                                    alt={props.alt || 'Panduan Visual SIA Online'}
+                                                />
+                                                <div className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-slate-900/75 px-2.5 py-1 text-[11px] font-medium text-white shadow-md backdrop-blur-sm opacity-90 group-hover:opacity-100 transition-all group-hover:bg-blue-600">
+                                                    <ZoomIn className="size-3.5" />
+                                                    <span>Pratinjau Gambar</span>
+                                                </div>
+                                            </div>
                                             {props.alt && (
                                                 <div className="p-2 text-center text-xs font-medium text-muted-foreground bg-slate-100/90 dark:bg-slate-800/90 border-t border-border/40">
                                                     📸 {props.alt}
@@ -214,7 +225,7 @@ export function MessageBubble({ message, onFeedback, onContactAdmin }: MessageBu
                         className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 shadow-sm transition-all hover:bg-amber-100 hover:shadow-md active:scale-[0.98] dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-400 dark:hover:bg-amber-900/40"
                     >
                         <AlertTriangle className="size-3.5" />
-                        Data tidak ditemukan di dokumen — Hubungi Admin Manusia
+                        Data tidak ditemukan di dokumen — Hubungi Admin
                     </button>
                 )}
             </div>

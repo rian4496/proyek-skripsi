@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
  */
-#[Fillable(['user_id', 'nama_mahasiswa', 'fakultas', 'prodi', 'user_message', 'bot_response', 'source', 'ai_engine', 'matched_rule_id', 'similarity_score', 'is_helpful'])]
+#[Fillable(['user_id', 'nama_mahasiswa', 'fakultas', 'prodi', 'user_message', 'bot_response', 'source', 'ai_engine', 'matched_rule_id', 'similarity_score', 'latency_ms', 'is_helpful'])]
 class ChatLog extends Model
 {
     /**
@@ -39,6 +39,7 @@ class ChatLog extends Model
     {
         return [
             'similarity_score' => 'float',
+            'latency_ms' => 'integer',
             'is_helpful' => 'boolean',
         ];
     }

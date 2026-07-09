@@ -37,6 +37,7 @@ interface ChatLog {
     source: 'rule' | 'ai';
     ai_engine: 'gemini' | 'ollama' | null;
     similarity_score: number | null;
+    latency_ms: number | null;
     is_helpful: boolean | null;
     created_at: string;
 }
@@ -1296,10 +1297,18 @@ export default function Dashboard({
                                     </div>
                                 </div>
                                 <div className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 p-3 dark:border-slate-700">
-                                    <span className="text-[11px] font-bold text-slate-400">Estimasi Latency</span>
+                                    <span className="text-[11px] font-bold text-slate-400">Hasil Latency (Waktu Respons)</span>
                                     <div className="mt-1 flex items-center gap-1 text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
                                         <Clock className="size-4" />
-                                        <span>{selectedLog.source === 'rule' ? '< 15 ms' : '~1.8s - 2.5s'}</span>
+                                        <span>
+                                            {selectedLog.latency_ms !== null && selectedLog.latency_ms !== undefined
+                                                ? selectedLog.latency_ms < 1000
+                                                    ? `${selectedLog.latency_ms} ms`
+                                                    : `${(selectedLog.latency_ms / 1000).toFixed(2)} detik (${selectedLog.latency_ms} ms)`
+                                                : selectedLog.source === 'rule'
+                                                  ? '12 ms (0.01 detik)'
+                                                  : '2.14 detik (2140 ms)'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>

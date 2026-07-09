@@ -101,27 +101,32 @@ class ChatbotService
      */
     public function findResponse(string $message, ?int $userId = null, array $participantData = []): array
     {
+        $startTime = microtime(true);
         $normalizedMessage = $this->normalizeText($message);
 
         if (empty(trim($normalizedMessage))) {
-            return $this->buildResult(self::FALLBACK_RESPONSE, 'rule');
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+            return $this->buildResult(self::FALLBACK_RESPONSE, 'rule', latencyMs: $latencyMs);
         }
 
         // Validasi minimum 4 karakter untuk menghindari ambiguitas
         if (mb_strlen(trim($normalizedMessage)) < self::MIN_INPUT_LENGTH) {
-            return $this->buildResult(self::TOO_SHORT_RESPONSE, 'rule');
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+            return $this->buildResult(self::TOO_SHORT_RESPONSE, 'rule', latencyMs: $latencyMs);
         }
 
         // --- Tahap 1: Rule-Based Matching (Hybrid: Damerau-Levenshtein + Ratcliff/Obershelp) ---
         $ruleResult = $this->matchByHybridSimilarity($normalizedMessage);
 
         if ($ruleResult !== null) {
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
             $result = $this->buildResult(
                 $ruleResult['response'],
                 'rule',
                 $ruleResult['rule_id'],
                 $ruleResult['similarity_score'],
                 $ruleResult['matched_keywords'],
+                latencyMs: $latencyMs,
             );
 
             $chatLogId = $this->logConversation($userId, $message, $result, $participantData);
@@ -141,21 +146,25 @@ class ChatbotService
                 : 'anon-' . session()->getId();
 
             $ollamaResult = $this->ollamaService->generateResponse($message, $sessionId);
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
 
             $result = $this->buildResult(
                 $ollamaResult['response'],
                 'ai',
                 aiEngine: 'ollama',
                 isRagFound: $ollamaResult['is_rag_found'],
+                latencyMs: $latencyMs,
             );
         } else {
             // === Engine Cloud: Google Gemini API ===
             $aiResponse = $this->geminiService->generateResponse($message);
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
 
             $result = $this->buildResult(
                 $aiResponse,
                 'ai',
                 aiEngine: 'gemini',
+                latencyMs: $latencyMs,
             );
         }
 
@@ -477,6 +486,7 @@ class ChatbotService
                 'source' => $result['source'],
                 'matched_rule_id' => $result['matched_rule_id'],
                 'similarity_score' => $result['similarity_score'],
+                'latency_ms' => $result['latency_ms'] ?? null,
                 'ai_engine' => $result['ai_engine'] ?? null,
             ]);
 
@@ -500,7 +510,7 @@ class ChatbotService
      * @param  array<int, string>  $matchedKeywords  Keywords yang cocok
      * @param  string|null  $aiEngine  Engine AI yang digunakan ('gemini' / 'ollama')
      * @param  bool|null  $isRagFound  Apakah data ditemukan di RAG (khusus Ollama)
-     * @return array{response: string, source: string, matched_rule_id: int|null, similarity_score: float|null, matched_keywords: array<int, string>, ai_engine: string|null, is_rag_found: bool|null}
+     * @return array{response: string, source: string, matched_rule_id: int|null, similarity_score: float|null, matched_keywords: array<int, string>, ai_engine: string|null, is_rag_found: bool|null, latency_ms: int|null}
      */
     private function buildResult(
         string $response,
@@ -510,6 +520,7 @@ class ChatbotService
         array $matchedKeywords = [],
         ?string $aiEngine = null,
         ?bool $isRagFound = null,
+        ?int $latencyMs = null,
     ): array {
         return [
             'response' => $response,
@@ -519,6 +530,7 @@ class ChatbotService
             'matched_keywords' => $matchedKeywords,
             'ai_engine' => $aiEngine,
             'is_rag_found' => $isRagFound,
+            'latency_ms' => $latencyMs,
         ];
     }
 }

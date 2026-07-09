@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::create
- * @see app/Http/Controllers/Admin/ChatRuleController.php:50
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:54
  * @route '/admin/chat-rules/create'
  */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::create
- * @see app/Http/Controllers/Admin/ChatRuleController.php:50
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:54
  * @route '/admin/chat-rules/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::create
- * @see app/Http/Controllers/Admin/ChatRuleController.php:50
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:54
  * @route '/admin/chat-rules/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::create
- * @see app/Http/Controllers/Admin/ChatRuleController.php:50
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:54
  * @route '/admin/chat-rules/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::create
- * @see app/Http/Controllers/Admin/ChatRuleController.php:50
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:54
  * @route '/admin/chat-rules/create'
  */
     const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::create
- * @see app/Http/Controllers/Admin/ChatRuleController.php:50
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:54
  * @route '/admin/chat-rules/create'
  */
         createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::create
- * @see app/Http/Controllers/Admin/ChatRuleController.php:50
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:54
  * @route '/admin/chat-rules/create'
  */
         createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -157,7 +157,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     create.form = createForm
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::store
- * @see app/Http/Controllers/Admin/ChatRuleController.php:68
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:72
  * @route '/admin/chat-rules'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -172,7 +172,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::store
- * @see app/Http/Controllers/Admin/ChatRuleController.php:68
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:72
  * @route '/admin/chat-rules'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -181,7 +181,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::store
- * @see app/Http/Controllers/Admin/ChatRuleController.php:68
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:72
  * @route '/admin/chat-rules'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -191,7 +191,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::store
- * @see app/Http/Controllers/Admin/ChatRuleController.php:68
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:72
  * @route '/admin/chat-rules'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -201,7 +201,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::store
- * @see app/Http/Controllers/Admin/ChatRuleController.php:68
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:72
  * @route '/admin/chat-rules'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -212,7 +212,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::edit
- * @see app/Http/Controllers/Admin/ChatRuleController.php:84
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:88
  * @route '/admin/chat-rules/{chat_rule}/edit'
  */
 export const edit = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::edit
- * @see app/Http/Controllers/Admin/ChatRuleController.php:84
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:88
  * @route '/admin/chat-rules/{chat_rule}/edit'
  */
 edit.url = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -255,7 +255,7 @@ edit.url = (args: { chat_rule: string | number } | [chat_rule: string | number ]
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::edit
- * @see app/Http/Controllers/Admin/ChatRuleController.php:84
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:88
  * @route '/admin/chat-rules/{chat_rule}/edit'
  */
 edit.get = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -264,7 +264,7 @@ edit.get = (args: { chat_rule: string | number } | [chat_rule: string | number ]
 })
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::edit
- * @see app/Http/Controllers/Admin/ChatRuleController.php:84
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:88
  * @route '/admin/chat-rules/{chat_rule}/edit'
  */
 edit.head = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -274,7 +274,7 @@ edit.head = (args: { chat_rule: string | number } | [chat_rule: string | number 
 
     /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::edit
- * @see app/Http/Controllers/Admin/ChatRuleController.php:84
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:88
  * @route '/admin/chat-rules/{chat_rule}/edit'
  */
     const editForm = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -284,7 +284,7 @@ edit.head = (args: { chat_rule: string | number } | [chat_rule: string | number 
 
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::edit
- * @see app/Http/Controllers/Admin/ChatRuleController.php:84
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:88
  * @route '/admin/chat-rules/{chat_rule}/edit'
  */
         editForm.get = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -293,7 +293,7 @@ edit.head = (args: { chat_rule: string | number } | [chat_rule: string | number 
         })
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::edit
- * @see app/Http/Controllers/Admin/ChatRuleController.php:84
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:88
  * @route '/admin/chat-rules/{chat_rule}/edit'
  */
         editForm.head = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -309,7 +309,7 @@ edit.head = (args: { chat_rule: string | number } | [chat_rule: string | number 
     edit.form = editForm
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::update
- * @see app/Http/Controllers/Admin/ChatRuleController.php:98
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:102
  * @route '/admin/chat-rules/{chat_rule}'
  */
 export const update = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -324,7 +324,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::update
- * @see app/Http/Controllers/Admin/ChatRuleController.php:98
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:102
  * @route '/admin/chat-rules/{chat_rule}'
  */
 update.url = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -352,7 +352,7 @@ update.url = (args: { chat_rule: string | number } | [chat_rule: string | number
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::update
- * @see app/Http/Controllers/Admin/ChatRuleController.php:98
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:102
  * @route '/admin/chat-rules/{chat_rule}'
  */
 update.put = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -361,7 +361,7 @@ update.put = (args: { chat_rule: string | number } | [chat_rule: string | number
 })
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::update
- * @see app/Http/Controllers/Admin/ChatRuleController.php:98
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:102
  * @route '/admin/chat-rules/{chat_rule}'
  */
 update.patch = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -371,7 +371,7 @@ update.patch = (args: { chat_rule: string | number } | [chat_rule: string | numb
 
     /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::update
- * @see app/Http/Controllers/Admin/ChatRuleController.php:98
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:102
  * @route '/admin/chat-rules/{chat_rule}'
  */
     const updateForm = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -386,7 +386,7 @@ update.patch = (args: { chat_rule: string | number } | [chat_rule: string | numb
 
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::update
- * @see app/Http/Controllers/Admin/ChatRuleController.php:98
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:102
  * @route '/admin/chat-rules/{chat_rule}'
  */
         updateForm.put = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -400,7 +400,7 @@ update.patch = (args: { chat_rule: string | number } | [chat_rule: string | numb
         })
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::update
- * @see app/Http/Controllers/Admin/ChatRuleController.php:98
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:102
  * @route '/admin/chat-rules/{chat_rule}'
  */
         updateForm.patch = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -416,7 +416,7 @@ update.patch = (args: { chat_rule: string | number } | [chat_rule: string | numb
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::destroy
- * @see app/Http/Controllers/Admin/ChatRuleController.php:114
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:118
  * @route '/admin/chat-rules/{chat_rule}'
  */
 export const destroy = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -431,7 +431,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::destroy
- * @see app/Http/Controllers/Admin/ChatRuleController.php:114
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:118
  * @route '/admin/chat-rules/{chat_rule}'
  */
 destroy.url = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -459,7 +459,7 @@ destroy.url = (args: { chat_rule: string | number } | [chat_rule: string | numbe
 
 /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::destroy
- * @see app/Http/Controllers/Admin/ChatRuleController.php:114
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:118
  * @route '/admin/chat-rules/{chat_rule}'
  */
 destroy.delete = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -469,7 +469,7 @@ destroy.delete = (args: { chat_rule: string | number } | [chat_rule: string | nu
 
     /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::destroy
- * @see app/Http/Controllers/Admin/ChatRuleController.php:114
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:118
  * @route '/admin/chat-rules/{chat_rule}'
  */
     const destroyForm = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -484,7 +484,7 @@ destroy.delete = (args: { chat_rule: string | number } | [chat_rule: string | nu
 
             /**
 * @see \App\Http\Controllers\Admin\ChatRuleController::destroy
- * @see app/Http/Controllers/Admin/ChatRuleController.php:114
+ * @see app/Http/Controllers/Admin/ChatRuleController.php:118
  * @route '/admin/chat-rules/{chat_rule}'
  */
         destroyForm.delete = (args: { chat_rule: string | number } | [chat_rule: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

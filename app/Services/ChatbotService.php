@@ -284,6 +284,12 @@ class ChatbotService
         $keywordPhrase = implode(' ', $keywordWords);
         $windowSize = count($keywordWords);
 
+        if (count($messageWords) < $windowSize) {
+            $dlScore = $this->damerauLevenshteinPercentage($message, $keywordPhrase);
+            $roScore = $this->ratcliffObershelpPercentage($message, $keywordPhrase);
+            return max($dlScore, $roScore);
+        }
+
         $maxScore = 0.0;
         for ($i = 0; $i <= count($messageWords) - $windowSize; $i++) {
             $window = implode(' ', array_slice($messageWords, $i, $windowSize));

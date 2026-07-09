@@ -28,6 +28,8 @@ use Illuminate\Support\Facades\Log;
 class OllamaService
 {
     private string $webhookUrl;
+    private int $connectTimeout = 5;   // detik, untuk cek apakah FastAPI aktif
+    private int $requestTimeout = 90;  // detik, untuk generate jawaban (model lokal lambat)
 
     /**
      * Pola respons n8n/Ollama yang mengindikasikan data tidak ditemukan
@@ -72,60 +74,48 @@ class OllamaService
     {
         if (empty($this->webhookUrl)) {
             Log::warning('OllamaService: N8N_WEBHOOK_URL tidak dikonfigurasi di .env');
+            return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
+        }
 
+        // ── Cek apakah FastAPI RAG backend aktif sebelum kirim request berat ──
+        if (!$this->isBackendReachable()) {
+            Log::warning('OllamaService: RAG backend tidak dapat dijangkau di ' . $this->webhookUrl);
             return [
-                'response' => $this->fallbackResponse(),
+                'response' => 'Maaf, layanan AI lokal sedang tidak aktif. 🔧 Pastikan FastAPI RAG backend sudah dijalankan dengan perintah: uvicorn app:app --port 8001',
                 'is_rag_found' => false,
             ];
         }
 
         try {
-            $response = Http::timeout(60)
+            // Perpanjang batas waktu PHP karena model LLM lokal butuh waktu lama
+            set_time_limit(120);
+
+            $response = Http::timeout($this->requestTimeout)
                 ->post($this->webhookUrl, [
                     'chatInput' => $message,
                     'sessionId' => $sessionId,
                 ]);
 
             if ($response->failed()) {
-                Log::error('OllamaService: n8n webhook call gagal', [
+                Log::error('OllamaService: webhook call gagal', [
                     'status' => $response->status(),
-                    'body' => $response->body(),
+                    'body'   => $response->body(),
                 ]);
-
-                return [
-                    'response' => $this->fallbackResponse(),
-                    'is_rag_found' => false,
-                ];
+                return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
             }
 
-            // Parse respons dari n8n — mendukung beberapa format output
             $text = $this->parseN8nResponse($response);
 
             if (empty($text)) {
-                return [
-                    'response' => $this->fallbackResponse(),
-                    'is_rag_found' => false,
-                ];
+                return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
             }
 
-            // Deteksi apakah Ollama menjawab bahwa data tidak ada di RAG
             $isRagFound = !$this->isRagNotFoundResponse($text);
-
-            return [
-                'response' => trim($text),
-                'is_rag_found' => $isRagFound,
-            ];
+            return ['response' => trim($text), 'is_rag_found' => $isRagFound];
 
         } catch (\Exception $e) {
-            Log::error('OllamaService: Exception saat memanggil n8n', [
-                'message' => $e->getMessage(),
-                'url' => $this->webhookUrl,
-            ]);
-
-            return [
-                'response' => $this->fallbackResponse(),
-                'is_rag_found' => false,
-            ];
+            Log::error('OllamaService: Exception', ['message' => $e->getMessage(), 'url' => $this->webhookUrl]);
+            return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
         }
     }
 
@@ -211,10 +201,33 @@ class OllamaService
     }
 
     /**
+     * Cek apakah FastAPI RAG backend bisa dijangkau via /health endpoint.
+     * Menggunakan timeout singkat (5 detik) agar tidak memblokir response lama.
+     */
+    private function isBackendReachable(): bool
+    {
+        try {
+            // Ganti /chat dengan /health untuk cek cepat tanpa beban LLM
+            $healthUrl = rtrim($this->webhookUrl, '/');
+            $healthUrl = preg_replace('/\/chat$/', '/health', $healthUrl);
+
+            $response = Http::timeout($this->connectTimeout)->get($healthUrl);
+            $data = $response->json();
+
+            // Pastikan bukan hanya server aktif, tapi RAG chain-nya juga siap
+            return $response->ok() && ($data['qa_chain_ready'] ?? false) === true;
+
+        } catch (\Exception $e) {
+            Log::debug('OllamaService: health check gagal — ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Respons fallback ketika n8n/Ollama tidak tersedia.
      */
     private function fallbackResponse(): string
     {
-        return 'Maaf, layanan AI lokal (Ollama) sedang tidak tersedia atau n8n belum aktif. 🔧 Silakan pastikan n8n dan Ollama berjalan, atau hubungi admin kampus secara langsung.';
+        return 'Maaf, layanan AI RAG lokal (Ollama) sedang tidak tersedia. 🔧 Silakan pastikan server RAG FastAPI dan Ollama sudah berjalan, atau hubungi admin kampus secara langsung.';
     }
 }

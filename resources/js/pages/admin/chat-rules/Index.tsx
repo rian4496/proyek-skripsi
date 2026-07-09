@@ -1,6 +1,6 @@
 import { type FormEventHandler, useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { Plus, Edit, Trash2, Search, CheckCircle2, MessageSquare, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, CheckCircle2, MessageSquare, AlertCircle, ArrowLeft } from 'lucide-react';
 
 interface ChatRule {
     id: number;
@@ -25,11 +25,11 @@ interface PageProps {
 
 export default function ChatRuleIndex() {
     const { props } = usePage<PageProps>();
-    const { rules, filters, flash } = props;
+    const { rules = [], filters = { search: '' }, flash = {} } = props || {};
     
     // Set form inertia specifically for SEARCH action
     const { data, setData, get, processing } = useForm({
-        search: filters.search || '',
+        search: filters?.search || '',
     });
 
     const handleSearch: FormEventHandler = (e) => {
@@ -62,14 +62,23 @@ export default function ChatRuleIndex() {
                 
                 {/* ═══ Header Section ═══ */}
                 <div className="md:flex md:items-center md:justify-between mb-6">
-                    <div className="flex-1 min-w-0">
-                        <h2 className="text-2xl font-bold leading-7 text-slate-900 dark:text-white sm:text-3xl sm:truncate flex items-center gap-2">
-                            <MessageSquare className="size-6 text-indigo-600 dark:text-indigo-400" />
-                            Manajemen Aturan Chatbot
-                        </h2>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                            Kelola data FAQ & rule base AI kampus UNISKA MAB
-                        </p>
+                    <div className="flex-1 min-w-0 flex items-center gap-3">
+                        <Link
+                            href="/admin/dashboard"
+                            className="inline-flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                            title="Kembali ke Dashboard"
+                        >
+                            <ArrowLeft className="size-5" />
+                        </Link>
+                        <div>
+                            <h2 className="text-2xl font-bold leading-7 text-slate-900 dark:text-white sm:text-3xl sm:truncate flex items-center gap-2">
+                                <MessageSquare className="size-6 text-indigo-600 dark:text-indigo-400" />
+                                Manajemen Aturan Chatbot
+                            </h2>
+                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                Kelola data FAQ & rule base AI kampus UNISKA MAB
+                            </p>
+                        </div>
                     </div>
                     
                     <div className="mt-4 flex md:mt-0 md:ml-4">
@@ -84,7 +93,7 @@ export default function ChatRuleIndex() {
                 </div>
 
                 {/* ═══ Flash Messages ═══ */}
-                {flash.success && (
+                {flash?.success && (
                     <div className="mb-6 rounded-lg bg-emerald-50 p-4 border border-emerald-200 dark:bg-emerald-950/50 dark:border-emerald-900 animate-in fade-in flex items-center gap-3">
                         <CheckCircle2 className="size-5 text-emerald-500" />
                         <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
@@ -152,11 +161,19 @@ export default function ChatRuleIndex() {
                                         <tr key={rule.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-wrap gap-1.5">
-                                                    {rule.keywords.map((kw, idx) => (
-                                                        <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300">
-                                                            {kw}
-                                                        </span>
-                                                    ))}
+                                                    {Array.isArray(rule.keywords)
+                                                        ? rule.keywords.map((kw, idx) => (
+                                                              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300">
+                                                                  {kw}
+                                                              </span>
+                                                          ))
+                                                        : typeof rule.keywords === 'string'
+                                                        ? (rule.keywords as string).split(',').map((kw, idx) => (
+                                                              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300">
+                                                                  {kw.trim()}
+                                                              </span>
+                                                          ))
+                                                        : null}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">

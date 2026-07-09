@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +25,7 @@ class DocumentController extends Controller
      */
     public function index(): Response
     {
-        $directory = public_path('documents');
+        $directory = base_path('rag-backend/data');
         
         // Buat folder jika belum ada
         if (!File::exists($directory)) {
@@ -39,7 +41,7 @@ class DocumentController extends Controller
                 'size' => $this->formatBytes($file->getSize()),
                 'raw_size' => $file->getSize(),
                 'updated_at' => date('Y-m-d H:i:s', $file->getMTime()),
-                'url' => asset('documents/' . $file->getFilename()),
+                'url' => route('admin.upload-document.download', ['filename' => $file->getFilename()]),
             ];
         }
 
@@ -74,17 +76,25 @@ class DocumentController extends Controller
         $file = $request->file('document');
         $filename = $file->getClientOriginalName();
         
-        $directory = public_path('documents');
+        $directory = base_path('rag-backend/data');
         
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 
-        // Simpan file ke direktori public/documents
+        // Simpan file ke direktori rag-backend/data
         $file->move($directory, $filename);
 
+        // Otomatis trigger re-indexing di FastAPI RAG backend (port 8001)
+        try {
+            Http::timeout(10)->get('http://127.0.0.1:8001/reload');
+            Log::info("FastAPI RAG reload triggered after uploading: {$filename}");
+        } catch (\Exception $e) {
+            Log::warning('Gagal trigger reload FastAPI RAG: ' . $e->getMessage());
+        }
+
         return redirect()->route('admin.upload-document.index')
-            ->with('success', 'Dokumen "' . $filename . '" berhasil diunggah dan siap di-index oleh RAG!');
+            ->with('success', 'Dokumen "' . $filename . '" berhasil diunggah dan otomatis di-index oleh RAG!');
     }
 
     /**
@@ -94,16 +104,40 @@ class DocumentController extends Controller
     {
         // Hindari Directory Traversal Vulnerability
         $filename = basename($filename);
-        $filePath = public_path('documents/' . $filename);
+        $filePath = base_path('rag-backend/data/' . $filename);
 
         if (File::exists($filePath)) {
             File::delete($filePath);
+
+            // Otomatis trigger re-indexing di FastAPI RAG backend (port 8001)
+            try {
+                Http::timeout(10)->get('http://127.0.0.1:8001/reload');
+                Log::info("FastAPI RAG reload triggered after deleting: {$filename}");
+            } catch (\Exception $e) {
+                Log::warning('Gagal trigger reload FastAPI RAG: ' . $e->getMessage());
+            }
+
             return redirect()->route('admin.upload-document.index')
-                ->with('success', 'Dokumen "' . $filename . '" berhasil dihapus dari server.');
+                ->with('success', 'Dokumen "' . $filename . '" berhasil dihapus dari server dan index RAG diperbarui.');
         }
 
         return redirect()->route('admin.upload-document.index')
             ->with('error', 'Dokumen tidak ditemukan.');
+    }
+
+    /**
+     * Download dokumen RAG.
+     */
+    public function download(string $filename)
+    {
+        $filename = basename($filename);
+        $filePath = base_path('rag-backend/data/' . $filename);
+
+        if (File::exists($filePath)) {
+            return response()->download($filePath);
+        }
+
+        abort(404, 'Dokumen tidak ditemukan.');
     }
 
     /**

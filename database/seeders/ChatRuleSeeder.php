@@ -20,18 +20,40 @@ class ChatRuleSeeder extends Seeder
 
         $rules = [
             [
-                // Mengubah keyword tunggal 'kuliah' menjadi lebih spesifik ke pencarian tautan/cara cek jadwal
-                'keywords' => ['link jadwal kuliah', 'cara lihat jadwal kuliah', 'dimana lihat jadwal'],
-                'response' => 'Jadwal kuliah dapat dilihat melalui portal akademik (SIA UNISKA) di menu "Jadwal Kuliah". Jadwal biasanya dipublikasikan 1 minggu sebelum perkuliahan dimulai. Untuk informasi lebih lanjut, silakan hubungi bagian akademik.',
+                'keywords' => ['jadwal kuliah', 'link jadwal kuliah resmi', 'url jadwal kuliah uniska', 'di mana web jadwal kuliah'],
+                'response' => 'Jadwal perkuliahan mahasiswa UNISKA MAB dapat dilihat dan diunduh melalui portal resmi SIA UNISKA (https://sia.uniska-bjm.ac.id) pada menu "Jadwal Kuliah". Pastikan Anda telah menyelesaikan pembayaran SPP/UKT variabel dan pengisian KRS sebelum melihat jadwal kelas.',
                 'category' => 'akademik',
                 'priority' => 10,
             ],
             [
-                // Diperketat agar tidak bertabrakan dengan SOP KRS yang ada di dokumen RAG
-                'keywords' => ['link sia uniska', 'alamat web sia', 'website sia'],
-                'response' => 'Pengisian KRS dilakukan secara online melalui portal SIA UNISKA di https://sia.uniska-bjm.ac.id sesuai jadwal kalender akademik. Pastikan Anda sudah melunasi SPP variabel.',
+                'keywords' => ['cara isi krs', 'link sia uniska', 'alamat web sia', 'website sia', 'pengisian krs online'],
+                'response' => "Pengisian Kartu Rencana Studi (KRS) dilakukan secara online melalui portal SIA UNISKA di https://sia.uniska-bjm.ac.id.\n\n**Langkah Pengisian KRS:**\n1. Login menggunakan NPM dan Password SIA.\n2. Pilih menu \"Akademik\" > \"Pengisian KRS\".\n3. Pilih mata kuliah sesuai penawaran semester atau konsultasikan dengan Dosen Penasihat Akademik (PA).\n4. Simpan KRS dan tunggu verifikasi/persetujuan Dosen PA.",
                 'category' => 'akademik',
                 'priority' => 10,
+            ],
+            [
+                'keywords' => ['info beasiswa', 'beasiswa uniska', 'daftar beasiswa', 'beasiswa kip'],
+                'response' => 'UNISKA MAB menyediakan berbagai program beasiswa bagi mahasiswa, seperti Beasiswa KIP-Kuliah, Beasiswa PPA, Beasiswa Baznas, dan Beasiswa Yayasan. Untuk informasi persyaratan dan jadwal pendaftaran terbaru, silakan cek portal resmi atau hubungi Bagian Kemahasiswaan & Alumni (BAK).',
+                'category' => 'akademik',
+                'priority' => 10,
+            ],
+            [
+                'keywords' => ['biaya ukt', 'nomor rekening spp', 'cara bayar ukt lewat bank', 'pembayaran ukt bank apa', 'info ukt'],
+                'response' => 'Informasi rincian nominal Biaya Uang Kuliah Tunggal (UKT) / SPP variabel dapat dilihat secara transparan melalui akun SIA masing-masing mahasiswa pada menu "Tagihan & Pembayaran". Pembayaran dilakukan melalui bank mitra resmi UNISKA (BSI, Bank Kalsel, Mandiri, BRI). Jika ada kendala, silakan hubungi bagian keuangan kampus.',
+                'category' => 'administrasi',
+                'priority' => 9,
+            ],
+            [
+                'keywords' => ['info skripsi', 'persyaratan skripsi', 'syarat daftar skripsi', 'pendaftaran skripsi'],
+                'response' => "Persyaratan umum pendaftaran Skripsi di lingkungan UNISKA MAB:\n\n1. Telah menempuh minimal 138 SKS dengan IPK minimal 2.75.\n2. Lulus mata kuliah Metodologi Penelitian dan Seminar Proposal.\n3. Bebas nilai D dan E pada mata kuliah pokok prodi.\n4. Mendaftar secara online melalui portal fakultas masing-masing dengan mengunggah persetujuan Dosen Pembimbing.",
+                'category' => 'akademik',
+                'priority' => 10,
+            ],
+            [
+                'keywords' => ['perpustakaan', 'jam buka perpustakaan', 'jadwal operasional perpus', 'perpus uniska'],
+                'response' => 'Perpustakaan Pusat UNISKA MAB berlokasi di Kampus Adhyaksa dan buka setiap Senin–Jumat pukul 08.00–16.00 WITA serta Sabtu pukul 08.00–13.00 WITA. Untuk peminjaman buku fisik maupun akses e-library / skripsi digital, mahasiswa wajib membawa Kartu Tanda Mahasiswa (KTM) yang terdaftar sebagai anggota.',
+                'category' => 'umum',
+                'priority' => 8,
             ],
             [
                 'keywords' => ['link kalender akademik', 'tautan kalender akademik', 'url kalender akademik'],
@@ -44,21 +66,6 @@ class ChatRuleSeeder extends Seeder
                 'response' => 'Bagian Administrasi Akademik (BAK) buka setiap Senin–Sabtu pukul 09:00–14:00 WITA.',
                 'category' => 'administrasi',
                 'priority' => 8,
-            ],
-            [
-                // Diperketat agar pertanyaan tentang nominal atau aturan keuangan rumit dilempar ke RAG/BAK
-                'keywords' => ['nomor rekening spp', 'cara bayar ukt lewat bank', 'pembayaran ukt bank apa'],
-                'response' => 'Informasi UKT (Uang Kuliah Tunggal) dan pembayaran dapat dilihat di portal mahasiswa. Pembayaran dilakukan melalui bank yang telah ditunjuk. Jika ada kendala pembayaran, silakan hubungi bagian keuangan kampus.',
-                'category' => 'administrasi',
-                'priority' => 9,
-            ],
-            [
-                // KELOMPOK BEASISWA, CUTI, YUDISIUM, & ATURAN UAS DIHAPUS TOTAL DARI SEEDER INI
-                // AGAR KALIMAT PERTANYAAN PANJANG MAHASISWA OTOMATIS LOLOS LANGSUNG KE N8N (LAMA/QWEN)
-                'keywords' => ['jam buka perpustakaan', 'jadwal operasional perpus'],
-                'response' => 'Perpustakaan kampus buka setiap Senin–Jumat pukul 08.00–16.00. Untuk meminjam buku, Anda memerlukan kartu anggota perpustakaan. Pendaftaran anggota dapat dilakukan langsung di perpustakaan dengan membawa KTM.',
-                'category' => 'umum',
-                'priority' => 5,
             ],
             [
                 'keywords' => ['halo', 'hai', 'hi', 'hello', 'assalamualaikum', 'selamat pagi', 'selamat siang'],

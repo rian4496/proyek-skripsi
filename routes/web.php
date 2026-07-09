@@ -25,8 +25,11 @@ Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.s
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/export-csv', [DashboardController::class, 'exportCsv'])->name('export-csv');
+    Route::delete('/chat-logs/clear', [DashboardController::class, 'destroyAll'])->name('chat-logs.destroy-all');
+    Route::delete('/chat-logs/{chatLog}', [DashboardController::class, 'destroy'])->name('chat-logs.destroy');
     Route::resource('chat-rules', ChatRuleController::class)->except(['show']);
     Route::get('/upload-document', [App\Http\Controllers\Admin\DocumentController::class, 'index'])->name('upload-document.index');
+    Route::get('/upload-document/download/{filename}', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('upload-document.download');
     Route::post('/upload-document', [App\Http\Controllers\Admin\DocumentController::class, 'store'])->name('upload-document.store');
     Route::delete('/upload-document/{filename}', [App\Http\Controllers\Admin\DocumentController::class, 'destroy'])->name('upload-document.destroy');
 });

@@ -18,9 +18,9 @@ interface PageProps {
 
 export default function ChatRuleForm() {
     const { props } = usePage<PageProps>();
-    const { chatRule } = props;
+    const { chatRule = { id: null, keywords: '', response: '', category: 'akademik', priority: 10, is_active: true } } = props || {};
     
-    const isEdit = chatRule.id !== null;
+    const isEdit = chatRule?.id !== null && chatRule?.id !== undefined;
 
     // Prefill kata kunci dari URL query parameter jika menambahkan rule baru (AI fallback recommendation)
     const getKeywordFromUrl = (): string => {

@@ -185,7 +185,7 @@ export default function UploadDocument({ files, flash }: UploadDocumentProps) {
 
                                 <div className="rounded-lg bg-slate-50 p-3 text-[11px] text-slate-500 dark:bg-slate-900/50 leading-relaxed">
                                     <span className="font-bold text-slate-700 dark:text-slate-300 block mb-1">Catatan RAG:</span>
-                                    Untuk mengupdate database RAG n8n, silakan unggah dokumen dengan nama yang sama (misal <code className="px-1 rounded bg-slate-200 dark:bg-slate-800 font-mono text-[10px]">aturan.txt</code>) untuk menimpanya, lalu jalankan alur indexing data pada n8n.
+                                    Untuk mengupdate database RAG lokal, silakan unggah dokumen dengan nama yang sama (misal <code className="px-1 rounded bg-slate-200 dark:bg-slate-800 font-mono text-[10px]">aturan.txt</code>) atau berkas baru agar otomatis di-index oleh server FastAPI RAG.
                                 </div>
 
                                 <button

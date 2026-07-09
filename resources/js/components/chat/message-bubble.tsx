@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { ThumbsDown, ThumbsUp, AlertTriangle, Bot, User } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 /**
  * Tipe pesan dalam riwayat chat.
@@ -69,6 +70,11 @@ export function MessageBubble({ message, onFeedback, onContactAdmin }: MessageBu
     /** Apakah perlu menampilkan tombol Human Fallback */
     const showHumanFallback = !isUser && !isWelcome && message.isRagFound === false;
 
+    /** Membersihkan literal \n (\ + n) menjadi baris baru yang rapi di Markdown */
+    const formattedText = (message.text || '')
+        .replace(/\\n/g, '\n\n')
+        .replace(/([^\n])\n([1-9]\. )/g, '$1\n\n$2');
+
     return (
         <div
             className={cn(
@@ -92,7 +98,56 @@ export function MessageBubble({ message, onFeedback, onContactAdmin }: MessageBu
                             : 'rounded-bl-md border border-border/50 bg-card text-card-foreground dark:bg-muted',
                     )}
                 >
-                    <p className="whitespace-pre-wrap break-words">{message.text}</p>
+                    {isUser ? (
+                        <p className="whitespace-pre-wrap break-words">{formattedText}</p>
+                    ) : (
+                        <div className="prose prose-sm max-w-none dark:prose-invert break-words text-card-foreground dark:text-gray-100">
+                            <ReactMarkdown
+                                components={{
+                                    img: ({ node, ...props }) => (
+                                        <div className="my-3 rounded-xl overflow-hidden border border-border/60 shadow-md bg-slate-50 dark:bg-slate-900/60">
+                                            <img
+                                                {...props}
+                                                className="w-full h-auto max-h-[380px] object-contain mx-auto rounded-t-xl"
+                                                loading="lazy"
+                                                alt={props.alt || 'Panduan Visual SIA Online'}
+                                            />
+                                            {props.alt && (
+                                                <div className="p-2 text-center text-xs font-medium text-muted-foreground bg-slate-100/90 dark:bg-slate-800/90 border-t border-border/40">
+                                                    📸 {props.alt}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ),
+                                    a: ({ node, ...props }) => (
+                                        <a
+                                            {...props}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="font-medium text-blue-600 dark:text-blue-400 underline underline-offset-4 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                                        />
+                                    ),
+                                    p: ({ node, ...props }) => (
+                                        <p {...props} className="mb-2 last:mb-0 leading-relaxed" />
+                                    ),
+                                    ul: ({ node, ...props }) => (
+                                        <ul {...props} className="list-disc list-outside ml-4 my-2 space-y-1" />
+                                    ),
+                                    ol: ({ node, ...props }) => (
+                                        <ol {...props} className="list-decimal list-outside ml-4 my-2 space-y-1" />
+                                    ),
+                                    li: ({ node, ...props }) => (
+                                        <li {...props} className="leading-relaxed" />
+                                    ),
+                                    strong: ({ node, ...props }) => (
+                                        <strong {...props} className="font-semibold text-foreground dark:text-white" />
+                                    ),
+                                }}
+                            >
+                                {formattedText}
+                            </ReactMarkdown>
+                        </div>
+                    )}
 
                     <div className="mt-1 flex items-center gap-2">
                         <span

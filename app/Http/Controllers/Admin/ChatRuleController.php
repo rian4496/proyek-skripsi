@@ -41,6 +41,10 @@ class ChatRuleController extends Controller
         return Inertia::render('admin/chat-rules/Index', [
             'rules' => $rules,
             'filters' => ['search' => $search],
+            'flash' => [
+                'success' => session('success'),
+                'error' => session('error'),
+            ],
         ]);
     }
 

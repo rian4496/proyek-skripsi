@@ -2,7 +2,7 @@ import { ChatInput } from '@/components/chat/chat-input';
 import { type ChatMessage, MessageBubble } from '@/components/chat/message-bubble';
 import { Head, router, useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Bot, GraduationCap, MessageCircle, Sparkles, HelpCircle, X, Star } from 'lucide-react';
+import { Bot, GraduationCap, MessageCircle, Sparkles, HelpCircle, X, Star, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -52,6 +52,16 @@ export default function ChatWindow() {
     const [messageInput, setMessageInput] = useState('');
     const [processing, setProcessing] = useState(false);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const handleClearChat = () => {
+        setShowDeleteModal(true);
+    };
+
+    const confirmClearChat = () => {
+        setMessages([WELCOME_MESSAGE]);
+        setShowDeleteModal(false);
+    };
 
     // State untuk Popup Form Peserta Penguji
     const [showParticipantModal, setShowParticipantModal] = useState(false);
@@ -84,7 +94,7 @@ export default function ChatWindow() {
             // Ketika user menekan tombol back, browser akan mencoba mundur ke history sebelumnya.
             // Kita push state kembali agar user tetap berada di halaman ini.
             window.history.pushState(null, '', window.location.href);
-            
+
             // Tampilkan popup konfirmasi akhiri sesi
             setShowExitConfirmModal(true);
         };
@@ -107,7 +117,7 @@ export default function ChatWindow() {
 
     const handleSendFeedbackAndExit = async (isSkipped: boolean = false) => {
         const participant = JSON.parse(sessionStorage.getItem('participant_info') || 'null');
-        
+
         if (!isSkipped && (exitRating > 0 || exitComment.trim() !== '')) {
             setExitProcessing(true);
             try {
@@ -124,10 +134,10 @@ export default function ChatWindow() {
                 setExitProcessing(false);
             }
         }
-        
+
         // Hapus participant_info agar sesi berikutnya bersih
         sessionStorage.removeItem('participant_info');
-        
+
         setShowFeedbackModal(false);
         setShowThankYouModal(true);
     };
@@ -159,7 +169,7 @@ export default function ChatWindow() {
 
     const submitTicket = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Client-side validation: NPM harus tepat 10 digit angka
         const npmPattern = /^[0-9]{10}$/;
         if (!npmPattern.test(ticketForm.data.npm)) {
@@ -232,7 +242,7 @@ export default function ChatWindow() {
         const participant = JSON.parse(sessionStorage.getItem('participant_info') || 'null');
         router.post(
             '/chat',
-            { 
+            {
                 message: messageText,
                 nama_mahasiswa: participant?.nama_mahasiswa,
                 fakultas: participant?.fakultas,
@@ -298,7 +308,17 @@ export default function ChatWindow() {
                                 Online • Siap membantu
                             </p>
                         </div>
-
+                        {messages.length > 1 && (
+                            <button
+                                onClick={handleClearChat}
+                                type="button"
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 hover:shadow-sm active:scale-95 dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                title="Hapus obrolan & mulai sesi baru"
+                            >
+                                <Trash2 className="size-3.5" />
+                                <span className="hidden sm:inline">Hapus Obrolan</span>
+                            </button>
+                        )}
                     </div>
                 </header>
 
@@ -385,7 +405,7 @@ export default function ChatWindow() {
                 {/* ═══ Footer ═══ */}
                 <div className="border-t border-border/30 bg-white/50 py-1.5 text-center dark:bg-slate-900/50">
                     <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        UNISKA MAB • HYBRID (DAMERAU-LEVENSHTEIN + RATCLIFF/OBERSHELP)
+                        Powered by FTI UNISKA MAB © 2026 • All Rights Reserved
                     </p>
                 </div>
 
@@ -402,7 +422,7 @@ export default function ChatWindow() {
                                     <X className="size-5" />
                                 </button>
                             </div>
-                            
+
                             <form onSubmit={submitTicket} className="space-y-4">
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Nama Lengkap</label>
@@ -420,11 +440,10 @@ export default function ChatWindow() {
                                         type="text"
                                         required
                                         placeholder="Contoh: 2110010123"
-                                        className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-slate-700 dark:text-white ${
-                                            ticketForm.errors.npm
-                                                ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                                                : 'border-slate-300 focus:border-blue-500 dark:border-slate-600'
-                                        }`}
+                                        className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-slate-700 dark:text-white ${ticketForm.errors.npm
+                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                                            : 'border-slate-300 focus:border-blue-500 dark:border-slate-600'
+                                            }`}
                                         value={ticketForm.data.npm}
                                         onChange={e => {
                                             ticketForm.setData('npm', e.target.value);
@@ -460,7 +479,7 @@ export default function ChatWindow() {
                                         onChange={e => ticketForm.setData('laporan', e.target.value)}
                                     ></textarea>
                                 </div>
-                                
+
                                 <div className="mt-6 flex justify-end gap-3">
                                     <button
                                         type="button"
@@ -495,7 +514,7 @@ export default function ChatWindow() {
                                     Silakan lengkapi data diri Anda sebelum mencoba chatbot pelayanan akademik. Data ini digunakan untuk pencatatan responden pada lampiran Skripsi.
                                 </p>
                             </div>
-                            
+
                             <form onSubmit={submitParticipant} className="space-y-4">
                                 <div>
                                     <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Nama Lengkap Mahasiswa</label>
@@ -508,7 +527,7 @@ export default function ChatWindow() {
                                         onChange={e => setParticipantName(e.target.value)}
                                     />
                                 </div>
-                                
+
                                 <div>
                                     <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Fakultas</label>
                                     <select
@@ -527,7 +546,7 @@ export default function ChatWindow() {
                                         <option value="Lainnya">Lainnya</option>
                                     </select>
                                 </div>
-                                
+
                                 <div>
                                     <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Program Studi (Prodi)</label>
                                     <input
@@ -539,7 +558,7 @@ export default function ChatWindow() {
                                         onChange={e => setParticipantProdi(e.target.value)}
                                     />
                                 </div>
-                                
+
                                 <button
                                     type="submit"
                                     className="w-full mt-6 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 hover:from-blue-700 hover:to-blue-800 hover:shadow-xl active:scale-[0.98] transition-all"
@@ -593,7 +612,7 @@ export default function ChatWindow() {
                                     Bantu pengembang dengan memberikan ulasan singkat (opsional) terhadap prototype chatbot pelayanan akademik ini.
                                 </p>
                             </div>
-                            
+
                             <div className="space-y-5">
                                 {/* Rating Stars */}
                                 <div className="text-center">
@@ -625,7 +644,7 @@ export default function ChatWindow() {
                                         </p>
                                     )}
                                 </div>
-                                
+
                                 {/* Comment Textarea */}
                                 <div>
                                     <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Saran & Ulasan</label>
@@ -637,7 +656,7 @@ export default function ChatWindow() {
                                         onChange={e => setExitComment(e.target.value)}
                                     />
                                 </div>
-                                
+
                                 {/* Actions */}
                                 <div className="flex gap-3 pt-2">
                                     <button
@@ -677,6 +696,51 @@ export default function ChatWindow() {
                             >
                                 Kembali ke Beranda
                             </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* ═══ Modal Validasi Hapus Percakapan ═══ */}
+                {showDeleteModal && (
+                    <div className="fixed inset-0 z-55 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-md animate-in fade-in duration-200">
+                        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center gap-3.5">
+                                <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                                    <Trash2 className="size-6" />
+                                </div>
+                                <div>
+                                    <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                                        Konfirmasi Hapus Obrolan
+                                    </h4>
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                        Validasi reset riwayat chat sesi ini.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-xl">
+                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                                    Apakah anda ingin menghapus percakapan/chat ini?
+                                </p>
+                            </div>
+
+                            <div className="mt-6 flex items-center justify-end gap-2.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={confirmClearChat}
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span>Ya, Hapus</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

@@ -1,17 +1,27 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 import {
     Activity,
     BarChart,
     Bot,
+    Calendar,
+    CheckCircle2,
+    Clock,
     Database,
     Download,
+    Eye,
+    FileText,
+    Filter,
     HelpCircle,
     MessageSquare,
     Percent,
+    Search,
     ThumbsDown,
     ThumbsUp,
+    Trash2,
     TrendingUp,
     Upload,
+    X,
 } from 'lucide-react';
 
 interface ChatLog {
@@ -28,27 +38,28 @@ interface ChatLog {
     created_at: string;
 }
 
-interface Ticket {
+interface FeedbackTicket {
     id_feedback: number;
     nama_pelapor: string;
     npm: string;
     kategori_masalah: string;
     laporan: string;
-    status: 'pending' | 'selesai';
-    sentiment: 'positive' | 'neutral' | 'negative' | null;
-    sentiment_score: number | null;
-    tanggal: string;
+    status: string;
+    sentiment?: 'positive' | 'neutral' | 'negative' | null;
+    sentiment_score?: number | null;
     created_at: string;
 }
 
-interface TopQuestion {
-    user_message: string;
-    total: number;
+interface DailyTrendItem {
+    date: string;
+    total: number | string;
+    rule_count: number | string;
+    ai_count: number | string;
 }
 
-interface AiRecommendation {
+interface TopQuestionItem {
     user_message: string;
-    total: number;
+    total: number | string;
 }
 
 interface DashboardProps {
@@ -60,13 +71,118 @@ interface DashboardProps {
         ai_percentage: number;
         avg_similarity: number;
     };
-    top_questions: TopQuestion[];
-    ai_recommendations: AiRecommendation[];
+    csat_stats: {
+        helpful: number;
+        not_helpful: number;
+        total_rated: number;
+        percentage: number;
+    };
+    daily_trend: DailyTrendItem[];
+    top_questions: TopQuestionItem[];
+    ai_recommendations: TopQuestionItem[];
     recent_logs: ChatLog[];
-    tickets: Ticket[];
+    tickets?: FeedbackTicket[];
+    filters?: {
+        date_range: string;
+        fakultas: string;
+        prodi: string;
+    };
+    options?: {
+        fakultas_list: string[];
+        prodi_list: string[];
+    };
 }
 
-export default function Dashboard({ stats, top_questions, ai_recommendations, recent_logs, tickets }: DashboardProps) {
+export default function Dashboard({
+    stats,
+    csat_stats,
+    daily_trend,
+    top_questions,
+    ai_recommendations,
+    recent_logs = [],
+    tickets = [],
+    filters,
+    options,
+}: DashboardProps) {
+    const [logFilter, setLogFilter] = useState<'all' | 'rule' | 'ollama' | 'gemini' | 'flagged'>('all');
+    const [selectedLog, setSelectedLog] = useState<ChatLog | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState('');
+    const itemsPerPage = 10;
+
+    const [dateRange, setDateRange] = useState(filters?.date_range || 'all');
+    const [selectedFakultas, setSelectedFakultas] = useState(filters?.fakultas || 'all');
+    const [selectedProdi, setSelectedProdi] = useState(filters?.prodi || 'all');
+    const [deleteTargetId, setDeleteTargetId] = useState<number | 'clear_all' | null>(null);
+
+    const handleFilterChange = (newDateRange: string, newFakultas: string, newProdi: string) => {
+        router.get(
+            '/admin/dashboard',
+            { date_range: newDateRange, fakultas: newFakultas, prodi: newProdi },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
+    const handleLogFilterChange = (filter: 'all' | 'rule' | 'ollama' | 'gemini' | 'flagged') => {
+        setLogFilter(filter);
+        setCurrentPage(1);
+    };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const handleDeleteLog = (id: number, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        setDeleteTargetId(id);
+    };
+
+    const handleClearAllLogs = () => {
+        setDeleteTargetId('clear_all');
+    };
+
+    const executeDeleteAction = () => {
+        if (deleteTargetId === 'clear_all') {
+            router.delete('/admin/chat-logs/clear', {
+                preserveScroll: true,
+                onSuccess: () => setDeleteTargetId(null),
+            });
+        } else if (typeof deleteTargetId === 'number') {
+            router.delete(`/admin/chat-logs/${deleteTargetId}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    if (selectedLog?.id === deleteTargetId) setSelectedLog(null);
+                    setDeleteTargetId(null);
+                },
+            });
+        }
+    };
+
+    const filteredLogs = recent_logs.filter((log) => {
+        if (logFilter === 'rule' && log.source !== 'rule') return false;
+        if (logFilter === 'ollama' && (log.source !== 'ai' || log.ai_engine !== 'ollama')) return false;
+        if (logFilter === 'gemini' && (log.source !== 'ai' || log.ai_engine === 'ollama')) return false;
+        if (logFilter === 'flagged' && log.is_helpful !== false) return false;
+
+        if (searchQuery.trim() !== '') {
+            const query = searchQuery.toLowerCase();
+            const matchUserMessage = log.user_message?.toLowerCase().includes(query) || false;
+            const matchBotResponse = log.bot_response?.toLowerCase().includes(query) || false;
+            const matchNama = log.nama_mahasiswa?.toLowerCase().includes(query) || false;
+            const matchFakultas = log.fakultas?.toLowerCase().includes(query) || false;
+            const matchProdi = log.prodi?.toLowerCase().includes(query) || false;
+            if (!matchUserMessage && !matchBotResponse && !matchNama && !matchFakultas && !matchProdi) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+
+    const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+    const paginatedLogs = filteredLogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     // Hitung statistik sentimen tiket bantuan secara dinamis
     const sentimentStats = (() => {
         let positive = 0;
@@ -102,124 +218,283 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
         };
     })();
 
+    // Cari nilai maksimum pada daily trend agar persentase tinggi bar chart presisi
+    const maxDailyTotal = daily_trend && daily_trend.length > 0
+        ? Math.max(...daily_trend.map(item => Number(item.total)), 1)
+        : 1;
+
     return (
-        <div className="min-h-screen bg-slate-50 py-8 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+        <div className="min-h-screen bg-slate-50 py-3.5 text-slate-900 dark:bg-slate-900 dark:text-slate-100" style={{ zoom: '0.70' }}>
             <Head title="Admin Dashboard - Chatbot Analytics" />
 
             {/* ═══ Header/Navigation ═══ */}
-            <div className="mx-auto mb-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto mb-3.5 max-w-[1460px] px-4 sm:px-6 lg:px-8">
                 <div className="md:flex md:items-center md:justify-between">
                     <div className="flex min-w-0 flex-1 items-center gap-3">
-                        <div className="rounded-xl bg-blue-600 p-2.5 text-white shadow-md">
-                            <BarChart className="size-6" />
+                        <div className="rounded-xl bg-blue-600 p-2 text-white shadow-md">
+                            <BarChart className="size-5" />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold leading-7 text-slate-900 dark:text-white sm:truncate sm:text-3xl">
+                            <h2 className="text-xl font-bold leading-6 text-slate-900 dark:text-white sm:truncate sm:text-2xl">
                                 Analytics Dashboard
                             </h2>
-                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                                 Performa Modul Hybrid Chatbot Pelayanan Akademik UNISKA MAB
                             </p>
                         </div>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-3 md:ml-4 md:mt-0">
-                        {/* Tombol Export CSV */}
+                    <div className="mt-3 flex flex-wrap gap-2 md:ml-4 md:mt-0">
+                        {/* Tombol Export CSV dengan parameter filter yang aktif */}
                         <a
-                            href="/admin/export-csv"
-                            className="inline-flex items-center rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 shadow-sm transition-colors hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+                            href={`/admin/export-csv?date_range=${dateRange}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
+                            className="inline-flex items-center rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm transition-colors hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                         >
-                            <Download className="mr-2 size-4" />
+                            <Download className="mr-1.5 size-3.5" />
                             Export Report CSV
                         </a>
                         <Link
                             href="/admin/upload-document"
-                            className="inline-flex items-center rounded-lg border border-blue-300 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                            className="inline-flex items-center rounded-lg border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
                         >
-                            <Upload className="mr-2 size-4" />
+                            <Upload className="mr-1.5 size-3.5" />
                             Upload Data Dokumen
                         </Link>
                         <Link
                             href="/admin/chat-rules"
-                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
                         >
-                            <Database className="mr-2 size-4" />
+                            <Database className="mr-1.5 size-3.5" />
                             Kelola Chat Rules
                         </Link>
                     </div>
                 </div>
+
+                {/* ═══ Filter Bar Waktu & Fakultas/Prodi ═══ */}
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+                        <Filter className="size-4 text-blue-600" />
+                        <span>Filter Analitik:</span>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2.5">
+                        {/* Rentang Waktu */}
+                        <div className="flex items-center gap-2">
+                            <Calendar className="size-4 text-slate-400" />
+                            <select
+                                value={dateRange}
+                                onChange={(e) => {
+                                    setDateRange(e.target.value);
+                                    handleFilterChange(e.target.value, selectedFakultas, selectedProdi);
+                                }}
+                                className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+                            >
+                                <option value="all">Semua Waktu</option>
+                                <option value="today">Hari Ini</option>
+                                <option value="7days">7 Hari Terakhir</option>
+                                <option value="30days">30 Hari Terakhir</option>
+                            </select>
+                        </div>
+
+                        {/* Filter Fakultas */}
+                        <select
+                            value={selectedFakultas}
+                            onChange={(e) => {
+                                setSelectedFakultas(e.target.value);
+                                handleFilterChange(dateRange, e.target.value, selectedProdi);
+                            }}
+                            className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
+                        >
+                            <option value="all">Semua Fakultas</option>
+                            {options?.fakultas_list?.map((fak, idx) => (
+                                <option key={idx} value={fak}>{fak}</option>
+                            ))}
+                        </select>
+
+                        {/* Filter Prodi */}
+                        <select
+                            value={selectedProdi}
+                            onChange={(e) => {
+                                setSelectedProdi(e.target.value);
+                                handleFilterChange(dateRange, selectedFakultas, e.target.value);
+                            }}
+                            className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
+                        >
+                            <option value="all">Semua Program Studi</option>
+                            {options?.prodi_list?.map((pro, idx) => (
+                                <option key={idx} value={pro}>{pro}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-[1460px] space-y-3.5 px-4 sm:px-6 lg:px-8">
                 {/* ═══ Top Stats Cards ═══ */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:grid-cols-5">
                     {/* Stat: Total Interaction */}
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <div className="flex items-center gap-4">
-                            <div className="rounded-lg bg-blue-50 p-3 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                                <MessageSquare className="size-6" />
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div className="flex items-center gap-2.5">
+                            <div className="rounded-lg bg-blue-50 p-2 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+                                <MessageSquare className="size-4.5" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Chat</p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total_chats}</p>
+                                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Total Chat</p>
+                                <p className="text-xl font-black text-slate-900 dark:text-white">{stats.total_chats}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Stat: Knowledge Base Hits */}
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <div className="flex items-center gap-4">
-                            <div className="rounded-lg bg-emerald-50 p-3 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-                                <Database className="size-6" />
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div className="flex items-center gap-2.5">
+                            <div className="rounded-lg bg-emerald-50 p-2 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                <Database className="size-4.5" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Hits Database (Rule)</p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.rule_count}</p>
+                                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Hits Database (Rule)</p>
+                                <p className="text-xl font-black text-slate-900 dark:text-white">{stats.rule_count}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Stat: AI Fallback Hits */}
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <div className="flex items-center gap-4">
-                            <div className="rounded-lg bg-purple-50 p-3 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
-                                <Bot className="size-6" />
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div className="flex items-center gap-2.5">
+                            <div className="rounded-lg bg-purple-50 p-2 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400">
+                                <Bot className="size-4.5" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Hits Fallback (AI)</p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.ai_count}</p>
+                                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Hits Fallback (AI)</p>
+                                <p className="text-xl font-black text-slate-900 dark:text-white">{stats.ai_count}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Stat: Avg Levenshtein */}
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <div className="flex items-center gap-4">
-                            <div className="rounded-lg bg-amber-50 p-3 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
-                                <Percent className="size-6" />
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div className="flex items-center gap-2.5">
+                            <div className="rounded-lg bg-amber-50 p-2 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                                <Percent className="size-4.5" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Avg. Similarity (Rule)</p>
-                                <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.avg_similarity}%</p>
+                                <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Avg. Similarity (Rule)</p>
+                                <p className="text-xl font-black text-slate-900 dark:text-white">{stats.avg_similarity}%</p>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Stat: CSAT Satisfaction */}
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                                <div className="rounded-lg bg-indigo-50 p-2 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+                                    <ThumbsUp className="size-4.5" />
+                                </div>
+                                <div>
+                                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Kepuasan Pengguna (CSAT)</p>
+                                    <p className="text-xl font-black text-slate-900 dark:text-white">{csat_stats?.percentage ?? 0}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] font-bold dark:border-slate-700/50">
+                            <span className="text-emerald-600 dark:text-emerald-400">👍 {csat_stats?.helpful ?? 0} Puas</span>
+                            <span className="text-red-600 dark:text-red-400">👎 {csat_stats?.not_helpful ?? 0} Butuh Review</span>
                         </div>
                     </div>
                 </div>
 
+                {/* ═══ Daily Trend Chart Section ═══ */}
+                <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                    <div className="mb-2.5 flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+                        <div>
+                            <h3 className="flex items-center gap-2 text-base font-bold">
+                                <TrendingUp className="size-4 text-blue-500" />
+                                Tren Aktivitas & Komparasi Algoritma Harian
+                            </h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                Distribusi interaksi mahasiswa menggunakan Rule-Based Levenshtein (Hijau) vs AI RAG Ollama/Qwen (Ungu) per tanggal.
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs font-semibold">
+                            <div className="flex items-center gap-1.5">
+                                <span className="size-2 rounded bg-emerald-500"></span>
+                                <span>Rule-Based</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <span className="size-2 rounded bg-purple-500"></span>
+                                <span>AI RAG</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {daily_trend && daily_trend.length > 0 ? (
+                        <div className="mt-3 overflow-x-auto pb-2 flex justify-center">
+                            <div className="flex items-end justify-center gap-8 sm:gap-12 border-b border-slate-200 pt-3 dark:border-slate-700 min-w-max px-4 mx-auto" style={{ height: '160px' }}>
+                                {daily_trend.map((item, idx) => {
+                                    const totalNum = Number(item.total);
+                                    const ruleNum = Number(item.rule_count);
+                                    const aiNum = Number(item.ai_count);
+                                    const barHeightPercent = Math.max(Math.round((totalNum / maxDailyTotal) * 115), 10);
+                                    const ruleHeightPercent = totalNum > 0 ? (ruleNum / totalNum) * 100 : 0;
+                                    const aiHeightPercent = totalNum > 0 ? (aiNum / totalNum) * 100 : 0;
+
+                                    return (
+                                        <div key={idx} className="group relative flex flex-col items-center gap-1 flex-shrink-0 w-14">
+                                            {/* Tooltip Hover */}
+                                            <div className="pointer-events-none absolute -top-16 hidden rounded bg-slate-800 px-2.5 py-1.5 text-[11px] text-white shadow-lg group-hover:block dark:bg-slate-700 z-20 whitespace-nowrap">
+                                                <div className="font-bold border-b border-slate-600 pb-0.5 mb-0.5">{item.date}</div>
+                                                <div>Total: {totalNum} chat</div>
+                                                <div className="text-emerald-400 font-semibold">Rule: {ruleNum} | AI: {aiNum}</div>
+                                            </div>
+
+                                            {/* Stacked Bar */}
+                                            <div
+                                                className="flex w-full max-w-[36px] flex-col overflow-hidden rounded-t-lg transition-all duration-300 group-hover:opacity-80 shadow-sm"
+                                                style={{ height: `${barHeightPercent}px` }}
+                                            >
+                                                <div
+                                                    className="bg-purple-500 w-full transition-all duration-500"
+                                                    style={{ height: `${aiHeightPercent}%` }}
+                                                    title={`AI RAG: ${aiNum}`}
+                                                />
+                                                <div
+                                                    className="bg-emerald-500 w-full transition-all duration-500"
+                                                    style={{ height: `${ruleHeightPercent}%` }}
+                                                    title={`Rule-Based: ${ruleNum}`}
+                                                />
+                                            </div>
+
+                                            {/* Date Label */}
+                                            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 truncate max-w-[56px] text-center">
+                                                {new Date(item.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="py-6 text-center text-xs text-slate-400">
+                            Belum ada data tren aktivitas pada rentang waktu yang dipilih.
+                        </div>
+                    )}
+                </div>
+
                 {/* ═══ Main Charts Row ═══ */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-3">
                     {/* Visual Chart: Ratio Rule vs AI */}
-                    <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-                            <Activity className="size-5 text-blue-500" />
+                    <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <h3 className="mb-2 flex items-center gap-2 text-base font-bold">
+                            <Activity className="size-4 text-blue-500" />
                             Rasio Akurasi Algoritma
                         </h3>
-                        <p className="mb-6 text-sm text-slate-500">
-                            Perbandingan persentase kueri yang dijawab database (statis) vs Gemini AI (fallback).
+                        <p className="mb-3 text-xs text-slate-500">
+                            Perbandingan persentase kueri yang dijawab database (statis) vs AI RAG Ollama (fallback).
                         </p>
 
                         <div className="mt-auto">
-                            <div className="flex h-8 w-full overflow-hidden rounded-full bg-slate-100 shadow-inner dark:bg-slate-900">
+                            <div className="flex h-6 w-full overflow-hidden rounded-full bg-slate-100 shadow-inner dark:bg-slate-900">
                                 <div
                                     className="flex items-center justify-center bg-emerald-500 text-xs font-bold text-white transition-all duration-1000"
                                     style={{ width: `${stats.rule_percentage}%` }}
@@ -230,81 +505,81 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                                 <div
                                     className="flex items-center justify-center bg-purple-500 text-xs font-bold text-white transition-all duration-1000"
                                     style={{ width: `${stats.ai_percentage}%` }}
-                                    title="Gemini AI"
+                                    title="AI RAG (Ollama)"
                                 >
                                     {stats.ai_percentage > 10 ? `${stats.ai_percentage}%` : ''}
                                 </div>
                             </div>
 
-                            <div className="mt-4 flex items-center justify-between">
+                            <div className="mt-2.5 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <span className="h-3 w-3 rounded-full bg-emerald-500"></span>
+                                    <span className="size-2 rounded-full bg-emerald-500"></span>
                                     <span className="text-xs font-medium">Database ({stats.rule_percentage}%)</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className="h-3 w-3 rounded-full bg-purple-500"></span>
-                                    <span className="text-xs font-medium">Gemini AI ({stats.ai_percentage}%)</span>
+                                    <span className="size-2 rounded-full bg-purple-500"></span>
+                                    <span className="text-xs font-medium">AI RAG ({stats.ai_percentage}%)</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Top 5 Frequent Questions */}
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-                            <TrendingUp className="size-5 text-blue-500" />
+                    <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <h3 className="mb-2 flex items-center gap-2 text-base font-bold">
+                            <TrendingUp className="size-4 text-blue-500" />
                             Top 5 Pertanyaan Terpopuler
                         </h3>
 
                         {top_questions.length > 0 ? (
-                            <ul className="space-y-4">
+                            <ul className="space-y-2">
                                 {top_questions.map((q, idx) => (
                                     <li key={idx} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-xs font-bold text-slate-500 dark:border-slate-600 dark:bg-slate-700">
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                            <div className="flex size-5.5 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-[11px] font-bold text-slate-500 dark:border-slate-600 dark:bg-slate-700">
                                                 #{idx + 1}
                                             </div>
-                                            <p className="truncate text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            <p className="truncate text-xs font-medium text-slate-700 dark:text-slate-300">
                                                 "{q.user_message}"
                                             </p>
                                         </div>
-                                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
                                             {q.total} kali
                                         </span>
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <div className="py-8 text-center text-slate-500">Belum ada data pencarian histori.</div>
+                            <div className="py-6 text-center text-xs text-slate-500">Belum ada data pencarian histori.</div>
                         )}
                     </div>
 
                     {/* Rekomendasi Aturan Baru [W3] */}
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800 flex flex-col justify-between">
+                    <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800 flex flex-col justify-between">
                         <div>
-                            <h3 className="mb-4 flex items-center gap-2 text-lg font-bold">
-                                <Bot className="size-5 text-blue-500" />
+                            <h3 className="mb-2 flex items-center gap-2 text-base font-bold">
+                                <Bot className="size-4 text-blue-500" />
                                 Rekomendasi Aturan Baru
                             </h3>
-                            <p className="mb-6 text-sm text-slate-500">
-                                Kueri berulang (≥2x) yang dijawab Gemini AI. Buat aturan statis agar lebih cepat & hemat token.
+                            <p className="mb-3 text-xs text-slate-500">
+                                Kueri berulang (≥2x) yang dijawab AI RAG (Ollama). Buat aturan statis agar respons lebih cepat & ringan.
                             </p>
 
                             {ai_recommendations && ai_recommendations.length > 0 ? (
-                                <ul className="space-y-4">
+                                <ul className="space-y-2">
                                     {ai_recommendations.map((rec, idx) => (
                                         <li key={idx} className="flex items-center justify-between gap-2">
-                                            <div className="flex items-center gap-3 overflow-hidden min-w-0 flex-1">
-                                                <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/50 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                            <div className="flex items-center gap-2 overflow-hidden min-w-0 flex-1">
+                                                <span className="flex size-4.5 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/50 text-[10px] font-bold text-blue-600 dark:text-blue-400">
                                                     {rec.total}x
                                                 </span>
-                                                <p className="truncate text-sm font-semibold text-slate-700 dark:text-slate-300" title={rec.user_message}>
+                                                <p className="truncate text-xs font-semibold text-slate-700 dark:text-slate-300" title={rec.user_message}>
                                                     "{rec.user_message}"
                                                 </p>
                                             </div>
                                             <Link
                                                 href={`/admin/chat-rules/create?keyword=${encodeURIComponent(rec.user_message)}`}
-                                                className="flex-shrink-0 inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/30 px-2.5 py-1 text-[11px] font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors shadow-sm"
+                                                className="flex-shrink-0 inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/30 px-2 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors shadow-sm"
                                             >
                                                 Buat Rule
                                             </Link>
@@ -312,7 +587,7 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                                     ))}
                                 </ul>
                             ) : (
-                                <div className="py-8 text-center text-slate-400 text-sm">
+                                <div className="py-6 text-center text-slate-400 text-xs">
                                     Belum ada rekomendasi aturan baru.
                                 </div>
                             )}
@@ -322,29 +597,117 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
 
                 {/* ═══ Recent Logs Table ═══ */}
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                    <div className="border-b border-slate-200 p-6 dark:border-slate-700">
-                        <h3 className="flex items-center gap-2 text-lg font-bold">
-                            <HelpCircle className="size-5 text-blue-500" />
-                            10 Riwayat Percakapan Terakhir (Real-Time Raw Data)
-                        </h3>
+                    <div className="flex flex-col gap-3 border-b border-slate-200 p-3.5 dark:border-slate-700 xl:flex-row xl:items-center xl:justify-between">
+                        <div className="flex-1 min-w-0 pr-4">
+                            <h3 className="flex items-center gap-2 text-base font-bold">
+                                <HelpCircle className="size-4 text-blue-500" />
+                                <span>Riwayat Percakapan Terakhir (Real-Time Raw Data)</span>
+                            </h3>
+                            {/* Live Search Box */}
+                            <div className="relative mt-2 w-full max-w-md">
+                                <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                    placeholder="Cari kueri mahasiswa, jawaban bot, atau nama..."
+                                    className="w-full rounded-lg border border-slate-300 bg-slate-50 py-1.5 pl-9 pr-7 text-xs font-medium text-slate-800 transition-all focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:focus:border-blue-500 dark:focus:bg-slate-900 shadow-sm"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => { setSearchQuery(''); setCurrentPage(1); }}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300 transition-colors"
+                                        title="Hapus pencarian"
+                                    >
+                                        <X className="size-3" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Filter Buttons & Clear Action */}
+                        <div className="flex flex-wrap items-center gap-2 self-start xl:self-center">
+                            <div className="flex flex-wrap items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800">
+                                <button
+                                    onClick={() => handleLogFilterChange('all')}
+                                    className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'all'
+                                        ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white'
+                                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                                        }`}
+                                >
+                                    Semua ({recent_logs.length})
+                                </button>
+                                <button
+                                    onClick={() => handleLogFilterChange('rule')}
+                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'rule'
+                                        ? 'bg-emerald-500 text-white shadow-sm'
+                                        : 'text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400'
+                                        }`}
+                                >
+                                    <span className="size-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
+                                    [DB] Levenshtein ({recent_logs.filter(l => l.source === 'rule').length})
+                                </button>
+                                <button
+                                    onClick={() => handleLogFilterChange('ollama')}
+                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'ollama'
+                                        ? 'bg-orange-500 text-white shadow-sm'
+                                        : 'text-slate-600 hover:text-orange-600 dark:text-slate-400 dark:hover:text-orange-400'
+                                        }`}
+                                >
+                                    <span className="size-1.5 rounded-full bg-orange-500 dark:bg-orange-400"></span>
+                                    [AI] Ollama ({recent_logs.filter(l => l.source === 'ai' && l.ai_engine === 'ollama').length})
+                                </button>
+                                <button
+                                    onClick={() => handleLogFilterChange('gemini')}
+                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'gemini'
+                                        ? 'bg-purple-500 text-white shadow-sm'
+                                        : 'text-slate-600 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400'
+                                        }`}
+                                >
+                                    <span className="size-1.5 rounded-full bg-purple-500 dark:bg-purple-400"></span>
+                                    [AI] Gemini ({recent_logs.filter(l => l.source === 'ai' && l.ai_engine !== 'ollama').length})
+                                </button>
+                                <button
+                                    onClick={() => handleLogFilterChange('flagged')}
+                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'flagged'
+                                        ? 'bg-red-500 text-white shadow-sm'
+                                        : 'text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400'
+                                        }`}
+                                >
+                                    <ThumbsDown className="size-2.5" />
+                                    👎 Review ({recent_logs.filter(l => l.is_helpful === false).length})
+                                </button>
+                            </div>
+                            {recent_logs.length > 0 && (
+                                <button
+                                    onClick={handleClearAllLogs}
+                                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                    title="Kosongkan Semua Riwayat Pengujian"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span>Kosongkan ({recent_logs.length})</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Waktu</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Kueri Mahasiswa</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Respons Sistem</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Algoritma</th>
-                                    <th className="px-6 py-3 text-center text-xs font-semibold uppercase text-slate-500">Skor</th>
-                                    <th className="px-6 py-3 text-center text-xs font-semibold uppercase text-slate-500">Feedback</th>
+                                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-slate-500">Waktu</th>
+                                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-slate-500">Kueri Mahasiswa</th>
+                                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-slate-500">Respons Sistem</th>
+                                    <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase text-slate-500">Algoritma</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Skor</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Feedback</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200 font-medium dark:divide-slate-700">
-                                {recent_logs.map((log) => (
+                                {paginatedLogs.map((log) => (
                                     <tr key={log.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                                        <td className="whitespace-nowrap px-6 py-4 text-xs text-slate-500">
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-[11px] text-slate-500">
                                             {new Date(log.created_at).toLocaleString('id-ID', {
                                                 month: 'short',
                                                 day: 'numeric',
@@ -352,47 +715,47 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                                                 minute: '2-digit',
                                             })}
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-3 py-1.5">
                                             <div
-                                                className="line-clamp-1 max-w-[250px] truncate text-sm font-semibold text-slate-900 dark:text-slate-100"
+                                                className="line-clamp-1 max-w-[250px] truncate text-xs font-semibold text-slate-900 dark:text-slate-100 leading-tight"
                                                 title={log.user_message}
                                             >
                                                 "{log.user_message}"
                                             </div>
                                             {log.nama_mahasiswa ? (
-                                                <div className="mt-1 text-[11px] text-blue-600 dark:text-blue-400 font-medium">
+                                                <div className="mt-0.5 text-[10px] text-blue-600 dark:text-blue-400 font-medium leading-tight">
                                                     👤 {log.nama_mahasiswa} ({log.fakultas ? log.fakultas.replace('Fakultas ', '') : 'Anonim'} - {log.prodi})
                                                 </div>
                                             ) : (
-                                                <div className="mt-1 text-[11px] text-slate-400 font-normal">
+                                                <div className="mt-0.5 text-[10px] text-slate-400 font-normal leading-tight">
                                                     👤 Pengguna Anonim
                                                 </div>
                                             )}
                                         </td>
-                                        <td className="max-w-xs px-6 py-4">
-                                            <div className="line-clamp-2 text-xs text-slate-500 dark:text-slate-400" title={log.bot_response}>
+                                        <td className="max-w-xs px-3 py-1.5">
+                                            <div className="line-clamp-2 text-[11px] text-slate-500 dark:text-slate-400 leading-snug" title={log.bot_response}>
                                                 {log.bot_response}
                                             </div>
                                         </td>
-                                        <td className="whitespace-nowrap px-6 py-4">
+                                        <td className="whitespace-nowrap px-3 py-1.5">
                                             {log.source === 'rule' ? (
-                                                <span className="inline-flex w-fit items-center rounded bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                                <span className="inline-flex w-fit items-center rounded bg-emerald-100 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-widest text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400">
                                                     [DB] Levenshtein
                                                 </span>
                                             ) : log.ai_engine === 'ollama' ? (
-                                                <span className="inline-flex w-fit items-center rounded bg-orange-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-orange-800 dark:bg-orange-950/50 dark:text-orange-400">
+                                                <span className="inline-flex w-fit items-center rounded bg-orange-100 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-widest text-orange-800 dark:bg-orange-950/50 dark:text-orange-400">
                                                     [AI] Ollama/Qwen
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex w-fit items-center rounded bg-purple-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-purple-800 dark:bg-purple-950/50 dark:text-purple-400">
+                                                <span className="inline-flex w-fit items-center rounded bg-purple-100 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-widest text-purple-800 dark:bg-purple-950/50 dark:text-purple-400">
                                                     [AI] Gemini Flash
                                                 </span>
                                             )}
                                         </td>
                                         {/* Kolom Skor Kemiripan */}
-                                        <td className="whitespace-nowrap px-6 py-4 text-center">
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-center">
                                             {log.similarity_score !== null ? (
-                                                <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                                <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
                                                     {log.similarity_score}%
                                                 </span>
                                             ) : (
@@ -400,91 +763,141 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                                             )}
                                         </td>
                                         {/* Kolom Feedback */}
-                                        <td className="whitespace-nowrap px-6 py-4 text-center">
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-center">
                                             {log.is_helpful === true && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
-                                                    <ThumbsUp className="size-3" /> Helpful
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                                    <ThumbsUp className="size-2.5" /> Helpful
                                                 </span>
                                             )}
                                             {log.is_helpful === false && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:bg-red-900/30 dark:text-red-400">
-                                                    <ThumbsDown className="size-3" /> Not Helpful
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                                                    <ThumbsDown className="size-2.5" /> Not Helpful
                                                 </span>
                                             )}
                                             {log.is_helpful === null && <span className="text-xs text-slate-400">➖</span>}
                                         </td>
+                                        {/* Kolom Aksi / Detail Modal */}
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-center">
+                                            <div className="flex items-center justify-center gap-1.5">
+                                                <button
+                                                    onClick={() => setSelectedLog(log)}
+                                                    className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-600 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                                    title="Lihat Detail & Analisis Chunks RAG"
+                                                >
+                                                    <Eye className="size-3" />
+                                                    <span>Detail</span>
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDeleteLog(log.id, e)}
+                                                    className="inline-flex items-center rounded-md border border-red-200 bg-red-50 p-1 text-red-600 transition-colors hover:bg-red-100 dark:border-red-800/80 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                                                    title="Hapus Log Percakapan Ini"
+                                                >
+                                                    <Trash2 className="size-3" />
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
-                                {recent_logs.length === 0 && (
+                                {filteredLogs.length === 0 && (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
-                                            Belum ada log interaksi
+                                        <td colSpan={7} className="px-4 py-8 text-center text-xs text-slate-500">
+                                            Belum ada log interaksi untuk filter ini
                                         </td>
                                     </tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Pagination Controls */}
+                    {filteredLogs.length > 0 && (
+                        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-4.5 py-3 dark:border-slate-700 dark:bg-slate-800/50 sm:flex-row">
+                            <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                                Menampilkan <span className="font-bold text-slate-900 dark:text-white">{(currentPage - 1) * itemsPerPage + 1}</span> hingga{' '}
+                                <span className="font-bold text-slate-900 dark:text-white">{Math.min(currentPage * itemsPerPage, filteredLogs.length)}</span> dari{' '}
+                                <span className="font-bold text-slate-900 dark:text-white">{filteredLogs.length}</span> data interaksi
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    ← Sebelumnya
+                                </button>
+                                <span className="px-3 text-xs font-bold text-slate-700 dark:text-slate-300">
+                                    Halaman {currentPage} / {totalPages || 1}
+                                </span>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages || totalPages === 0}
+                                    className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Selanjutnya →
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* ═══ Sentiment Analysis Section [W2] ═══ */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800 flex flex-col justify-between">
+                <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
+                    <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800 flex flex-col justify-between">
                         <div>
-                            <h3 className="mb-2 text-base font-bold text-slate-800 dark:text-slate-200">Total Keluhan Bantuan</h3>
-                            <p className="text-3xl font-black text-blue-600 dark:text-blue-400">{tickets?.length || 0} Tiket</p>
-                            <p className="mt-2 text-xs text-slate-500">Jumlah laporan keluhan & pertanyaan yang masuk via form Hubungi Admin.</p>
+                            <h3 className="mb-1 text-base font-bold text-slate-800 dark:text-slate-200">Total Keluhan Bantuan</h3>
+                            <p className="text-xl font-black text-blue-600 dark:text-blue-400">{tickets?.length || 0} Tiket</p>
+                            <p className="mt-1 text-[11px] leading-tight text-slate-500">Jumlah laporan keluhan & pertanyaan via form Hubungi Admin.</p>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/50">
-                            <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Penyelesaian Tiket:</span>
-                            <div className="mt-2 flex gap-4 text-xs font-bold">
+                        <div className="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-700/50">
+                            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">Penyelesaian Tiket:</span>
+                            <div className="mt-1 flex gap-3 text-xs font-bold">
                                 <span className="text-amber-600">Pending: {tickets?.filter(t => t.status === 'pending').length || 0}</span>
                                 <span className="text-emerald-600">Selesai: {tickets?.filter(t => t.status === 'selesai').length || 0}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div className="md:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <h3 className="mb-2 flex items-center gap-2 text-base font-bold text-slate-800 dark:text-slate-200">
-                            <Bot className="size-5 text-blue-500" />
+                    <div className="md:col-span-2 rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <h3 className="mb-1 flex items-center gap-2 text-base font-bold text-slate-800 dark:text-slate-200">
+                            <Bot className="size-4 text-blue-500" />
                             Klasifikasi Sentimen AI (Gemini 2.0 Flash)
                         </h3>
-                        <p className="mb-4 text-xs text-slate-500">
+                        <p className="mb-2.5 text-[11px] leading-tight text-slate-500">
                             Mendeteksi tingkat urgensi dan kepuasan mahasiswa secara real-time berdasarkan isi laporan untuk mempermudah pengerjaan skripsi Anda.
                         </p>
 
                         {sentimentStats.analyzedCount > 0 ? (
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 <div>
-                                    <div className="flex justify-between text-xs font-bold mb-1">
+                                    <div className="flex justify-between text-xs font-bold mb-0.5">
                                         <span className="text-red-600 dark:text-red-400">😡 Negatif (Keluhan & Kendala)</span>
                                         <span className="text-slate-600 dark:text-slate-400">{sentimentStats.negative} tiket ({sentimentStats.negativePercentage}%)</span>
                                     </div>
-                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
                                         <div className="bg-red-500 h-full rounded-full transition-all duration-500" style={{ width: `${sentimentStats.negativePercentage}%` }} />
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="flex justify-between text-xs font-bold mb-1">
+                                    <div className="flex justify-between text-xs font-bold mb-0.5">
                                         <span className="text-slate-600 dark:text-slate-400">😐 Netral (Pertanyaan/Fakta)</span>
                                         <span className="text-slate-600 dark:text-slate-400">{sentimentStats.neutral} tiket ({sentimentStats.neutralPercentage}%)</span>
                                     </div>
-                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
                                         <div className="bg-slate-400 h-full rounded-full transition-all duration-500" style={{ width: `${sentimentStats.neutralPercentage}%` }} />
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="flex justify-between text-xs font-bold mb-1">
+                                    <div className="flex justify-between text-xs font-bold mb-0.5">
                                         <span className="text-emerald-600 dark:text-emerald-400">😊 Positif (Apresiasi & Kepuasan)</span>
                                         <span className="text-slate-600 dark:text-slate-400">{sentimentStats.positive} tiket ({sentimentStats.positivePercentage}%)</span>
                                     </div>
-                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
                                         <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${sentimentStats.positivePercentage}%` }} />
                                     </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className="py-6 text-center text-slate-400 text-sm">
+                            <div className="py-3 text-center text-slate-400 text-xs">
                                 Belum ada data tiket dengan analisis sentimen.
                             </div>
                         )}
@@ -493,9 +906,9 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
 
                 {/* ═══ Help Tickets Table ═══ */}
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                    <div className="border-b border-slate-200 p-6 dark:border-slate-700">
-                        <h3 className="flex items-center gap-2 text-lg font-bold">
-                            <MessageSquare className="size-5 text-blue-500" />
+                    <div className="border-b border-slate-200 p-3.5 dark:border-slate-700">
+                        <h3 className="flex items-center gap-2 text-base font-bold">
+                            <MessageSquare className="size-4 text-blue-500" />
                             Tiket Bantuan Masuk
                         </h3>
                     </div>
@@ -504,18 +917,18 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                             <thead className="bg-slate-50 dark:bg-slate-800/50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Waktu</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Nama & NPM</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Kategori</th>
-                                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-slate-500">Isi Laporan</th>
-                                    <th className="px-6 py-3 text-center text-xs font-semibold uppercase text-slate-500">Sentimen (AI)</th>
-                                    <th className="px-6 py-3 text-center text-xs font-semibold uppercase text-slate-500">Status</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Waktu</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Nama & NPM</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Kategori</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Isi Laporan</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Sentimen (AI)</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-200 font-medium dark:divide-slate-700">
+                            <tbody className="divide-y divide-slate-200 font-medium dark:divide-slate-700 text-center">
                                 {tickets && tickets.map((ticket) => (
                                     <tr key={ticket.id_feedback} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                                        <td className="whitespace-nowrap px-6 py-4 text-xs text-slate-500">
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-[11px] text-slate-500 text-center">
                                             {new Date(ticket.created_at).toLocaleString('id-ID', {
                                                 month: 'short',
                                                 day: 'numeric',
@@ -523,31 +936,31 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                                                 minute: '2-digit',
                                             })}
                                         </td>
-                                        <td className="whitespace-nowrap px-6 py-4">
-                                            <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{ticket.nama_pelapor}</div>
-                                            <div className="text-xs text-slate-500">{ticket.npm}</div>
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-center">
+                                            <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-tight text-center">{ticket.nama_pelapor}</div>
+                                            <div className="text-[10px] text-slate-500 leading-tight text-center">{ticket.npm}</div>
                                         </td>
-                                        <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-xs text-slate-500 text-center">
                                             {ticket.kategori_masalah}
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm text-slate-900 dark:text-slate-100">
+                                        <td className="px-3 py-1.5 text-center">
+                                            <div className="text-xs text-slate-900 dark:text-slate-100 leading-tight text-center max-w-md mx-auto">
                                                 {ticket.laporan}
                                             </div>
                                         </td>
-                                        <td className="whitespace-nowrap px-6 py-4 text-center">
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-center">
                                             {ticket.sentiment === 'positive' && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
                                                     😊 Positif {ticket.sentiment_score ? `(${Math.round(ticket.sentiment_score * 100)}%)` : ''}
                                                 </span>
                                             )}
                                             {ticket.sentiment === 'neutral' && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 dark:bg-slate-900/30 px-2.5 py-0.5 text-xs font-bold text-slate-500 dark:text-slate-400">
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 dark:bg-slate-900/30 px-2 py-0.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
                                                     😐 Netral {ticket.sentiment_score ? `(${Math.round(ticket.sentiment_score * 100)}%)` : ''}
                                                 </span>
                                             )}
                                             {ticket.sentiment === 'negative' && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-red-50 dark:bg-red-950/30 px-2.5 py-0.5 text-xs font-bold text-red-600 dark:text-red-400">
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-red-50 dark:bg-red-950/30 px-2 py-0.5 text-[11px] font-bold text-red-600 dark:text-red-400">
                                                     😡 Negatif {ticket.sentiment_score ? `(${Math.round(ticket.sentiment_score * 100)}%)` : ''}
                                                 </span>
                                             )}
@@ -555,13 +968,13 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                                                 <span className="text-xs text-slate-400 font-medium">—</span>
                                             )}
                                         </td>
-                                        <td className="whitespace-nowrap px-6 py-4 text-center">
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-center">
                                             {ticket.status === 'pending' ? (
-                                                <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                                                <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
                                                     Pending
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                                <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
                                                     Selesai
                                                 </span>
                                             )}
@@ -570,7 +983,7 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                                 ))}
                                 {(!tickets || tickets.length === 0) && (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">
+                                        <td colSpan={6} className="px-3 py-6 text-center text-xs text-slate-500">
                                             Belum ada tiket bantuan yang masuk
                                         </td>
                                     </tr>
@@ -580,9 +993,166 @@ export default function Dashboard({ stats, top_questions, ai_recommendations, re
                     </div>
                 </div>
 
-                <div className="pb-8 pt-4 text-center">
-                    <p className="text-xs tracking-wider text-slate-400">LAMPIRAN DATA BAB IV — PELAYANAN AKADEMIK UNISKA MAB</p>
+                <div className="pb-6 pt-3 text-center">
+                    <p className="text-[11px] tracking-wider text-slate-400">LAMPIRAN DATA BAB IV — PELAYANAN AKADEMIK UNISKA MAB</p>
                 </div>
+
+                {/* ═══ Modal Detail Percakapan & Source Document/Latency Viewer ═══ */}
+                {selectedLog && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm transition-opacity animate-in fade-in">
+                        <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800">
+                            {/* Header Modal */}
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-700">
+                                <div className="flex items-center gap-2">
+                                    <div className="rounded-lg bg-blue-100 p-2 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400">
+                                        <FileText className="size-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                                            Detail Log Percakapan #{selectedLog.id}
+                                        </h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                                            {new Date(selectedLog.created_at).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedLog(null)}
+                                    className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200 transition-colors"
+                                >
+                                    <X className="size-5" />
+                                </button>
+                            </div>
+
+                            {/* Identitas Mahasiswa */}
+                            <div className="mt-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-700/60">
+                                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Identitas Pengguna</span>
+                                <div className="mt-1 flex flex-wrap gap-4 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                    <div>👤 Nama: <span className="text-blue-600 dark:text-blue-400">{selectedLog.nama_mahasiswa || 'Anonim'}</span></div>
+                                    <div>🏫 Fakultas: <span className="text-slate-900 dark:text-white">{selectedLog.fakultas || '—'}</span></div>
+                                    <div>🎓 Prodi: <span className="text-slate-900 dark:text-white">{selectedLog.prodi || '—'}</span></div>
+                                </div>
+                            </div>
+
+                            {/* Metrik Algoritma Skripsi */}
+                            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+                                    <span className="text-[11px] font-bold text-slate-400">Mesin Pemroses</span>
+                                    <div className="mt-1 text-sm font-extrabold text-blue-600 dark:text-blue-400 uppercase">
+                                        {selectedLog.source === 'rule' ? 'Levenshtein DB' : `RAG (${selectedLog.ai_engine || 'AI'})`}
+                                    </div>
+                                </div>
+                                <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+                                    <span className="text-[11px] font-bold text-slate-400">Skor Kemiripan</span>
+                                    <div className="mt-1 text-sm font-extrabold text-amber-600 dark:text-amber-400">
+                                        {selectedLog.similarity_score !== null ? `${selectedLog.similarity_score}%` : '—'}
+                                    </div>
+                                </div>
+                                <div className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+                                    <span className="text-[11px] font-bold text-slate-400">Estimasi Latency</span>
+                                    <div className="mt-1 flex items-center gap-1 text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
+                                        <Clock className="size-4" />
+                                        <span>{selectedLog.source === 'rule' ? '< 15 ms' : '~1.8s - 2.5s'}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Percakapan */}
+                            <div className="mt-5 space-y-4">
+                                <div>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pertanyaan Mahasiswa</span>
+                                    <div className="mt-1.5 rounded-xl border border-blue-200 bg-blue-50/60 p-4 text-sm font-medium text-slate-800 dark:border-blue-900/40 dark:bg-blue-950/20 dark:text-slate-100">
+                                        "{selectedLog.user_message}"
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Respons Jawaban Sistem</span>
+                                    <div className="mt-1.5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-800 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-100 whitespace-pre-wrap">
+                                        {selectedLog.bot_response}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Analisis Chunks & Retrieval Skripsi */}
+                            {selectedLog.source === 'ai' && (
+                                <div className="mt-5 rounded-xl border border-purple-200 bg-purple-50/50 p-4 dark:border-purple-900/40 dark:bg-purple-950/20">
+                                    <div className="flex items-center gap-2 text-xs font-bold text-purple-700 dark:text-purple-300">
+                                        <Bot className="size-4" />
+                                        <span>Analisis Retrieval RAG (Bab IV Skripsi)</span>
+                                    </div>
+                                    <p className="mt-1.5 text-xs leading-relaxed text-purple-900/80 dark:text-purple-200/80">
+                                        Sistem RAG mengambil referensi teks teratas dari FAISS Vector Store (<code className="font-semibold">pedoman_akademik_2025_2026.txt</code> / SOP terkait) menggunakan similarity cosine/retriever Top-K (K=3), kemudian diproses via LLM (<code className="font-semibold uppercase">{selectedLog.ai_engine || 'Ollama'}</code>) dengan instruksi format terstruktur.
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Footer Modal */}
+                            <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-700">
+                                <button
+                                    onClick={(e) => handleDeleteLog(selectedLog.id, e)}
+                                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-bold text-red-600 transition-all hover:bg-red-100 dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60 shadow-sm"
+                                >
+                                    <Trash2 className="size-4" />
+                                    <span>Hapus Log Ini</span>
+                                </button>
+                                <button
+                                    onClick={() => setSelectedLog(null)}
+                                    className="rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 shadow-sm"
+                                >
+                                    Tutup Detail
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ═══ Modal Validasi Hapus Percakapan/Chat ═══ */}
+                {deleteTargetId !== null && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center gap-3.5">
+                                <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                                    <Trash2 className="size-6" />
+                                </div>
+                                <div>
+                                    <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                                        Konfirmasi Hapus Data
+                                    </h4>
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                        Validasi tindakan penghapusan riwayat percakapan.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-xl">
+                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                                    {deleteTargetId === 'clear_all'
+                                        ? 'Apakah Anda yakin ingin menghapus seluruh log percakapan/chat ini?'
+                                        : 'Apakah Anda yakin ingin menghapus log percakapan/chat ini?'}
+                                </p>
+                            </div>
+
+                            <div className="mt-6 flex items-center justify-end gap-2.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setDeleteTargetId(null)}
+                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={executeDeleteAction}
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span>Ya, Hapus</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

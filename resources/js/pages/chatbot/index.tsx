@@ -224,7 +224,7 @@ export default function ChatbotIndex() {
                 {/* ═══ Footer ═══ */}
                 <div className="border-t border-border/30 bg-white/50 py-1.5 text-center dark:bg-slate-900/50">
                     <p className="text-[10px] text-muted-foreground">
-                        Hybrid Chatbot Pelayanan Akademik • UNISKA MAB • Levenshtein + Gemini AI
+                        Chatbot Hybrid Pelayanan Akademik • UNISKA MAB
                     </p>
                 </div>
             </div>

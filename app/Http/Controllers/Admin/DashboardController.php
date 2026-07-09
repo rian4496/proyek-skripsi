@@ -233,22 +233,22 @@ class DashboardController extends Controller
     }
 
     /**
-     * Menghapus 1 tiket bantuan masuk (DELETE /admin/tickets/{feedback}).
+     * Menghapus 1 tiket keluhan masuk (DELETE /admin/tickets/{feedback}).
      */
     public function destroyTicket(\App\Models\Feedback $feedback)
     {
         $feedback->delete();
 
-        return redirect()->back()->with('success', 'Tiket bantuan berhasil dihapus.');
+        return redirect()->back()->with('success', 'Tiket keluhan berhasil dihapus.');
     }
 
     /**
-     * Menghapus seluruh tiket bantuan masuk (DELETE /admin/tickets/clear).
+     * Menghapus seluruh tiket keluhan masuk (DELETE /admin/tickets/clear).
      */
     public function destroyAllTickets()
     {
         \App\Models\Feedback::truncate();
 
-        return redirect()->back()->with('success', 'Seluruh data tiket bantuan berhasil dikosongkan.');
+        return redirect()->back()->with('success', 'Seluruh data tiket keluhan berhasil dikosongkan.');
     }
 }

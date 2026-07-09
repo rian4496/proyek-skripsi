@@ -182,7 +182,7 @@ export default function ChatWindow() {
             onSuccess: () => {
                 setIsTicketModalOpen(false);
                 ticketForm.reset();
-                alert('Tiket bantuan berhasil dikirim! Admin akan segera menindaklanjutinya.');
+                alert('Tiket keluhan berhasil dikirim! Admin akan segera menindaklanjutinya.');
             },
         });
     };
@@ -386,7 +386,7 @@ export default function ChatWindow() {
                                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md active:scale-95"
                             >
                                 <HelpCircle className="size-4" />
-                                Hubungi Admin (Tiket Bantuan)
+                                Laporkan Keluhan / Kendala
                             </button>
                         </div>
                     </div>
@@ -414,7 +414,7 @@ export default function ChatWindow() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
                         <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-slate-800">
                             <div className="mb-4 flex items-center justify-between">
-                                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Buat Tiket Bantuan</h2>
+                                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Kirim Laporan Keluhan</h2>
                                 <button
                                     onClick={() => setIsTicketModalOpen(false)}
                                     className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"

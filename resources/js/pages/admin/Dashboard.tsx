@@ -214,7 +214,7 @@ export default function Dashboard({
     const totalTicketPages = Math.ceil((tickets?.length || 0) / ticketsPerPage);
     const paginatedTickets = (tickets || []).slice((currentTicketPage - 1) * ticketsPerPage, currentTicketPage * ticketsPerPage);
 
-    // Hitung statistik sentimen tiket bantuan secara dinamis
+    // Hitung statistik sentimen tiket keluhan secara dinamis
     const sentimentStats = (() => {
         let positive = 0;
         let neutral = 0;
@@ -875,7 +875,7 @@ export default function Dashboard({
                 <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
                     <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800 flex flex-col justify-between">
                         <div>
-                            <h3 className="mb-1 text-base font-bold text-slate-800 dark:text-slate-200">Total Keluhan Bantuan</h3>
+                            <h3 className="mb-1 text-base font-bold text-slate-800 dark:text-slate-200">Total Tiket Keluhan</h3>
                             <p className="text-xl font-black text-blue-600 dark:text-blue-400">{tickets?.length || 0} Tiket</p>
                             <p className="mt-1 text-[11px] leading-tight text-slate-500">Jumlah laporan keluhan & pertanyaan via form Hubungi Admin.</p>
                         </div>
@@ -940,13 +940,13 @@ export default function Dashboard({
                     <div className="flex items-center justify-between border-b border-slate-200 p-3.5 dark:border-slate-700">
                         <h3 className="flex items-center gap-2 text-base font-bold">
                             <MessageSquare className="size-4 text-blue-500" />
-                            Tiket Bantuan Masuk
+                            Tiket Keluhan Masuk
                         </h3>
                         {tickets && tickets.length > 0 && (
                             <button
                                 onClick={handleClearAllTickets}
                                 className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-bold text-red-600 shadow-sm transition-all hover:bg-red-100 hover:shadow dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
-                                title="Kosongkan Semua Tiket Bantuan"
+                                title="Kosongkan Semua Tiket Keluhan"
                             >
                                 <Trash2 className="size-3.5" />
                                 <span>Kosongkan ({tickets.length})</span>
@@ -1036,7 +1036,7 @@ export default function Dashboard({
                                 {(!tickets || tickets.length === 0) && (
                                     <tr>
                                         <td colSpan={7} className="px-3 py-6 text-center text-xs text-slate-500">
-                                            Belum ada tiket bantuan yang masuk
+                                            Belum ada tiket keluhan yang masuk
                                         </td>
                                     </tr>
                                 )}
@@ -1044,13 +1044,13 @@ export default function Dashboard({
                         </table>
                     </div>
 
-                    {/* Pagination Controls untuk Tiket Bantuan */}
+                    {/* Pagination Controls untuk Tiket Keluhan */}
                     {tickets && tickets.length > 0 && (
                         <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-4.5 py-3 dark:border-slate-700 dark:bg-slate-800/50 sm:flex-row">
                             <div className="text-[11px] text-slate-500 dark:text-slate-400">
                                 Menampilkan <span className="font-bold text-slate-900 dark:text-white">{(currentTicketPage - 1) * ticketsPerPage + 1}</span> hingga{' '}
                                 <span className="font-bold text-slate-900 dark:text-white">{Math.min(currentTicketPage * ticketsPerPage, tickets.length)}</span> dari{' '}
-                                <span className="font-bold text-slate-900 dark:text-white">{tickets.length}</span> tiket bantuan
+                                <span className="font-bold text-slate-900 dark:text-white">{tickets.length}</span> tiket keluhan
                             </div>
                             <div className="flex items-center gap-2">
                                 <button
@@ -1236,7 +1236,7 @@ export default function Dashboard({
                     </div>
                 )}
 
-                {/* ═══ Modal Validasi Hapus Tiket Bantuan Masuk ═══ */}
+                {/* ═══ Modal Validasi Hapus Tiket Keluhan Masuk ═══ */}
                 {deleteTicketTargetId !== null && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
                         <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
@@ -1249,7 +1249,7 @@ export default function Dashboard({
                                         Konfirmasi Hapus Tiket
                                     </h4>
                                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                        Validasi tindakan penghapusan tiket bantuan masuk.
+                                        Validasi tindakan penghapusan tiket keluhan masuk.
                                     </p>
                                 </div>
                             </div>
@@ -1257,8 +1257,8 @@ export default function Dashboard({
                             <div className="mt-4 rounded-xl">
                                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                                     {deleteTicketTargetId === 'clear_all'
-                                        ? 'Apakah Anda yakin ingin menghapus seluruh tiket bantuan yang masuk?'
-                                        : 'Apakah Anda yakin ingin menghapus tiket bantuan ini?'}
+                                        ? 'Apakah Anda yakin ingin menghapus seluruh tiket keluhan yang masuk?'
+                                        : 'Apakah Anda yakin ingin menghapus tiket keluhan ini?'}
                                 </p>
                             </div>
 

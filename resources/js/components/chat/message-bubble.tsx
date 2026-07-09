@@ -118,9 +118,8 @@ export function MessageBubble({ message, onFeedback, onContactAdmin, onImageClic
                                                     loading="lazy"
                                                     alt={props.alt || 'Panduan Visual SIA Online'}
                                                 />
-                                                <div className="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-slate-900/75 px-2.5 py-1 text-[11px] font-medium text-white shadow-md backdrop-blur-sm opacity-90 group-hover:opacity-100 transition-all group-hover:bg-blue-600">
-                                                    <ZoomIn className="size-3.5" />
-                                                    <span>Pratinjau Gambar</span>
+                                                <div className="absolute top-2.5 right-2.5 flex size-8 items-center justify-center rounded-full bg-slate-900/75 text-white shadow-md backdrop-blur-sm opacity-85 transition-all duration-200 group-hover:scale-110 group-hover:bg-blue-600 group-hover:opacity-100">
+                                                    <ZoomIn className="size-4" />
                                                 </div>
                                             </div>
                                             {props.alt && (

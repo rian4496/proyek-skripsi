@@ -1120,13 +1120,13 @@ export default function Dashboard({
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl px-3.5 py-1.5 shadow-sm">
+                            <div className="flex items-center gap-2">
                                 <Star className="size-5 text-amber-500 fill-amber-500" />
                                 <div>
-                                    <span className="text-sm font-black text-amber-600 dark:text-amber-400">
+                                    <span className="text-sm font-bold text-slate-800 dark:text-slate-100">
                                         {session_review_stats?.avg_rating || 0} / 5.0
                                     </span>
-                                    <span className="ml-1.5 text-[11px] text-slate-500 font-semibold">
+                                    <span className="ml-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                                         ({session_review_stats?.total_reviews || 0} Responden)
                                     </span>
                                 </div>

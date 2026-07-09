@@ -117,23 +117,9 @@ export default function ChatWindow() {
     };
 
     const handleSendFeedbackAndExit = async (isSkipped: boolean = false) => {
-        const participant = JSON.parse(sessionStorage.getItem('participant_info') || 'null');
-
         if (!isSkipped && (exitRating > 0 || exitComment.trim() !== '')) {
-            setExitProcessing(true);
-            try {
-                // Post ke endpoint /feedback yang sudah terintegrasi analisis sentimen otomatis
-                await axios.post('/feedback', {
-                    nama_pelapor: participant?.nama_mahasiswa || 'Responden Uji Coba',
-                    npm: '0000000000', // Dummy NPM untuk melewati validasi format regex backend 10-digit
-                    kategori_masalah: 'Feedback Sesi',
-                    laporan: `Rating: ${exitRating}/5 Bintang. Komentar: ${exitComment.trim() || 'Tidak ada komentar.'}`
-                });
-            } catch (err) {
-                console.error('Gagal mengirim feedback sesi:', err);
-            } finally {
-                setExitProcessing(false);
-            }
+            // Catat ulasan sesi lokal tanpa mencampuradukkan ke dalam tabel Tiket Keluhan Masuk
+            console.log('Feedback Sesi Responden:', { exitRating, exitComment });
         }
 
         // Hapus participant_info agar sesi berikutnya bersih

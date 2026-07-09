@@ -89,7 +89,7 @@ class DashboardController extends Controller
             ->get();
 
         $recentLogs = $applyFilters(ChatLog::latest())->limit(100)->get();
-        $tickets = \App\Models\Feedback::latest()->get();
+        $tickets = \App\Models\Feedback::where('kategori_masalah', '!=', 'Feedback Sesi')->latest()->get();
 
         // Daftar unik Fakultas dan Prodi untuk opsi filter dropdown
         $fakultasList = ChatLog::whereNotNull('fakultas')

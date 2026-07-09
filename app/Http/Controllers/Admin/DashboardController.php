@@ -231,4 +231,14 @@ class DashboardController extends Controller
 
         return redirect()->back()->with('success', 'Seluruh riwayat log percakapan berhasil dikosongkan.');
     }
+
+    /**
+     * Menghapus 1 tiket bantuan masuk (DELETE /admin/tickets/{feedback}).
+     */
+    public function destroyTicket(\App\Models\Feedback $feedback)
+    {
+        $feedback->delete();
+
+        return redirect()->back()->with('success', 'Tiket bantuan berhasil dihapus.');
+    }
 }

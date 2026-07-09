@@ -114,6 +114,7 @@ export default function Dashboard({
     const [selectedFakultas, setSelectedFakultas] = useState(filters?.fakultas || 'all');
     const [selectedProdi, setSelectedProdi] = useState(filters?.prodi || 'all');
     const [deleteTargetId, setDeleteTargetId] = useState<number | 'clear_all' | null>(null);
+    const [deleteTicketTargetId, setDeleteTicketTargetId] = useState<number | null>(null);
 
     const handleFilterChange = (newDateRange: string, newFakultas: string, newProdi: string) => {
         router.get(
@@ -142,6 +143,10 @@ export default function Dashboard({
         setDeleteTargetId('clear_all');
     };
 
+    const handleDeleteTicket = (id: number) => {
+        setDeleteTicketTargetId(id);
+    };
+
     const executeDeleteAction = () => {
         if (deleteTargetId === 'clear_all') {
             router.delete('/admin/chat-logs/clear', {
@@ -155,6 +160,15 @@ export default function Dashboard({
                     if (selectedLog?.id === deleteTargetId) setSelectedLog(null);
                     setDeleteTargetId(null);
                 },
+            });
+        }
+    };
+
+    const executeDeleteTicketAction = () => {
+        if (typeof deleteTicketTargetId === 'number') {
+            router.delete(`/admin/tickets/${deleteTicketTargetId}`, {
+                preserveScroll: true,
+                onSuccess: () => setDeleteTicketTargetId(null),
             });
         }
     };
@@ -923,6 +937,7 @@ export default function Dashboard({
                                     <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Isi Laporan</th>
                                     <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Sentimen (AI)</th>
                                     <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Status</th>
+                                    <th className="px-3 py-2 text-center text-[11px] font-semibold uppercase text-slate-500">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200 font-medium dark:divide-slate-700 text-center">
@@ -979,11 +994,21 @@ export default function Dashboard({
                                                 </span>
                                             )}
                                         </td>
+                                        <td className="whitespace-nowrap px-3 py-1.5 text-center">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteTicket(ticket.id_feedback)}
+                                                title="Hapus Tiket"
+                                                className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-red-50 p-1.5 text-red-600 transition-colors hover:bg-red-100 dark:border-red-800/60 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-900/60 shadow-sm"
+                                            >
+                                                <Trash2 className="size-3.5" />
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 {(!tickets || tickets.length === 0) && (
                                     <tr>
-                                        <td colSpan={6} className="px-3 py-6 text-center text-xs text-slate-500">
+                                        <td colSpan={7} className="px-3 py-6 text-center text-xs text-slate-500">
                                             Belum ada tiket bantuan yang masuk
                                         </td>
                                     </tr>
@@ -1144,6 +1169,51 @@ export default function Dashboard({
                                 <button
                                     type="button"
                                     onClick={executeDeleteAction}
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span>Ya, Hapus</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ═══ Modal Validasi Hapus Tiket Bantuan Masuk ═══ */}
+                {deleteTicketTargetId !== null && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
+                            <div className="flex items-center gap-3.5">
+                                <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                                    <Trash2 className="size-6" />
+                                </div>
+                                <div>
+                                    <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                                        Konfirmasi Hapus Tiket
+                                    </h4>
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                        Validasi tindakan penghapusan tiket bantuan masuk.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-xl">
+                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                                    Apakah Anda yakin ingin menghapus tiket bantuan ini?
+                                </p>
+                            </div>
+
+                            <div className="mt-6 flex items-center justify-end gap-2.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setDeleteTicketTargetId(null)}
+                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={executeDeleteTicketAction}
                                     className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
                                 >
                                     <Trash2 className="size-3.5" />

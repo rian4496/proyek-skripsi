@@ -1,5 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import chatLogs from './chat-logs'
+import tickets from './tickets'
 import chatRules from './chat-rules'
 import uploadDocument from './upload-document'
 /**
@@ -162,6 +163,7 @@ const admin = {
     dashboard: Object.assign(dashboard, dashboard),
 exportCsv: Object.assign(exportCsv, exportCsv),
 chatLogs: Object.assign(chatLogs, chatLogs),
+tickets: Object.assign(tickets, tickets),
 chatRules: Object.assign(chatRules, chatRules),
 uploadDocument: Object.assign(uploadDocument, uploadDocument),
 }

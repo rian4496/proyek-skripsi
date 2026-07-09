@@ -35,7 +35,7 @@ const SUGGESTIONS = [
 /** Pesan pembuka dari bot */
 const WELCOME_MESSAGE: ChatMessage = {
     id: 'welcome',
-    text: 'Halo! 👋 Saya adalah Chatbot Kampus. Saya siap membantu menjawab pertanyaan seputar akademik, administrasi, dan informasi umum kampus.\n\nSilakan ketik pertanyaan Anda atau pilih topik di bawah ini!',
+    text: 'Halo! 👋 Saya adalah Chatbot Pelayanan Akademik. Saya siap membantu menjawab pertanyaan seputar akademik, administrasi, dan informasi umum kampus.\n\nSilakan ketik pertanyaan Anda atau pilih topik di bawah ini!',
     sender: 'bot',
     timestamp: new Date(),
 };
@@ -289,7 +289,7 @@ export default function ChatWindow() {
 
     return (
         <>
-            <Head title="Chatbot Kampus UNISKA MAB" />
+            <Head title="Chatbot Pelayanan Akademik UNISKA MAB" />
 
             <div className="flex h-dvh flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950/20">
                 {/* ═══ Header ═══ */}
@@ -300,7 +300,7 @@ export default function ChatWindow() {
                         </div>
                         <div className="flex-1">
                             <h1 className="flex items-center gap-1.5 text-base font-semibold text-foreground">
-                                Chatbot Kampus UNISKA
+                                Chatbot Pelayanan Akademik
                                 <Sparkles className="size-3.5 text-amber-500" />
                             </h1>
                             <p className="flex items-center gap-1 text-xs text-muted-foreground">

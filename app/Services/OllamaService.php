@@ -79,7 +79,7 @@ class OllamaService
         if (!$this->isBackendReachable()) {
             Log::warning('OllamaService: RAG backend tidak dapat dijangkau di ' . $this->webhookUrl);
             return [
-                'response' => 'Maaf, layanan AI lokal sedang tidak aktif. 🔧 Pastikan FastAPI RAG backend sudah dijalankan dengan perintah: uvicorn app:app --port 8001',
+                'response' => 'Maaf, layanan AI lokal sedang tidak aktif. 🔧 Pastikan FastAPI RAG backend sudah dijalankan di terminal baru dengan perintah: cd rag-backend && uvicorn app:app --port 8001',
                 'is_rag_found' => false,
             ];
         }

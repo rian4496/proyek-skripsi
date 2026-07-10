@@ -33,6 +33,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ChatLog extends Model
 {
     /**
+     * @var list<string>
+     */
+    protected $fillable = [
+        'user_id',
+        'nama_mahasiswa',
+        'fakultas',
+        'prodi',
+        'user_message',
+        'bot_response',
+        'source',
+        'ai_engine',
+        'matched_rule_id',
+        'similarity_score',
+        'latency_ms',
+        'is_helpful',
+    ];
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

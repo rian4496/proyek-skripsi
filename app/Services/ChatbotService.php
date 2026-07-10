@@ -485,8 +485,8 @@ class ChatbotService
                 'bot_response' => $result['response'],
                 'source' => $result['source'],
                 'matched_rule_id' => $result['matched_rule_id'],
-                'similarity_score' => $result['similarity_score'],
-                'latency_ms' => $result['latency_ms'] ?? null,
+                'similarity_score' => is_numeric($result['similarity_score'] ?? null) ? (float) $result['similarity_score'] : null,
+                'latency_ms' => is_numeric($result['latency_ms'] ?? null) ? (int) $result['latency_ms'] : null,
                 'ai_engine' => $result['ai_engine'] ?? null,
             ]);
 

@@ -35,6 +35,16 @@ use Illuminate\Database\Eloquent\Model;
 class ChatRule extends Model
 {
     /**
+     * @var list<string>
+     */
+    protected $fillable = [
+        'keywords',
+        'response',
+        'category',
+        'is_active',
+        'priority',
+    ];
+    /**
      * Attribute casting untuk transformasi data otomatis.
      *
      * - `keywords` → array: JSON string di database di-cast ke PHP array

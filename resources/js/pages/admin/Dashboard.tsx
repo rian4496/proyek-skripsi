@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Activity,
     BarChart,
@@ -142,6 +142,25 @@ export default function Dashboard({
     const ticketsPerPage = 10;
     const [currentReviewPage, setCurrentReviewPage] = useState(1);
     const reviewsPerPage = 10;
+
+    const [isLiveRefresh, setIsLiveRefresh] = useState(true);
+    const [isRefreshingNow, setIsRefreshingNow] = useState(false);
+
+    useEffect(() => {
+        if (!isLiveRefresh) return;
+
+        const interval = setInterval(() => {
+            setIsRefreshingNow(true);
+            router.reload({
+                only: ['chatLogs', 'tickets', 'session_reviews', 'stats', 'daily_stats', 'session_review_stats'],
+                preserveScroll: true,
+                preserveState: true,
+                onFinish: () => setIsRefreshingNow(false),
+            });
+        }, 5000); // Polling otomatis setiap 5 detik (Real-Time Live Update)
+
+        return () => clearInterval(interval);
+    }, [isLiveRefresh]);
 
     const handleFilterChange = (newDateRange: string, newFakultas: string, newProdi: string) => {
         router.get(
@@ -351,6 +370,19 @@ export default function Dashboard({
                             <Database className="mr-1.5 size-3.5" />
                             Kelola Chat Rules
                         </Link>
+                        {/* Tombol Live Refresh / Polling Toggle */}
+                        <button
+                            onClick={() => setIsLiveRefresh(!isLiveRefresh)}
+                            className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all ${
+                                isLiveRefresh
+                                    ? 'border-green-400 bg-green-50 text-green-700 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/30 dark:text-green-300'
+                                    : 'border-slate-300 bg-slate-100 text-slate-500 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                            }`}
+                            title="Aktifkan/Nonaktifkan pembaruan data real-time otomatis setiap 5 detik"
+                        >
+                            <span className={`mr-1.5 size-2 rounded-full ${isLiveRefresh ? (isRefreshingNow ? 'bg-amber-500 animate-ping' : 'bg-green-500 animate-pulse') : 'bg-slate-400'}`} />
+                            {isLiveRefresh ? (isRefreshingNow ? 'Memperbarui...' : 'Live Update (5s)') : 'Live Update (Off)'}
+                        </button>
                     </div>
                 </div>
 
@@ -686,6 +718,12 @@ export default function Dashboard({
                             <h3 className="flex items-center gap-2 text-base font-bold">
                                 <HelpCircle className="size-4 text-blue-500" />
                                 <span>Riwayat Percakapan Terakhir (Real-Time Raw Data)</span>
+                                {isLiveRefresh && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/40 dark:text-green-300">
+                                        <span className={`size-1.5 rounded-full ${isRefreshingNow ? 'bg-amber-500 animate-ping' : 'bg-green-500 animate-pulse'}`} />
+                                        {isRefreshingNow ? 'Memperbarui...' : 'Live 5s'}
+                                    </span>
+                                )}
                             </h3>
                             {/* Live Search Box */}
                             <div className="relative mt-2 w-full max-w-md">

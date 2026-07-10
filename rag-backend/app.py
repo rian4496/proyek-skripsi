@@ -27,7 +27,7 @@ EMBED_MODEL     = os.getenv("EMBED_MODEL", "nomic-embed-text")
 
 # --- OPSI ENGINE LLM UNTUK FASTAPI RAG ---
 # LLM_PROVIDER: "ollama" (Lokal Qwen 2.5) atau "openrouter" (Cloud gpt-oss-120b:free)
-LLM_PROVIDER        = os.getenv("LLM_PROVIDER", "openrouter")
+LLM_PROVIDER        = os.getenv("LLM_PROVIDER", "ollama")
 OLLAMA_LLM_MODEL    = os.getenv("LLM_MODEL", "qwen2.5:7b")
 OPENROUTER_API_KEY  = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_MODEL    = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-120b:free")

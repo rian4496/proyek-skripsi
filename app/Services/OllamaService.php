@@ -89,6 +89,10 @@ class OllamaService
             set_time_limit(300);
 
             $response = Http::timeout($this->requestTimeout)
+                ->withHeaders([
+                    'Bypass-Tunnel-Reminder' => 'true',
+                    'User-Agent' => 'Laravel-RAG-Client',
+                ])
                 ->post($this->webhookUrl, [
                     'chatInput' => $message,
                     'sessionId' => $sessionId,
@@ -208,7 +212,12 @@ class OllamaService
             $healthUrl = rtrim($this->webhookUrl, '/');
             $healthUrl = preg_replace('/\/chat$/', '/health', $healthUrl);
 
-            $response = Http::timeout($this->connectTimeout)->get($healthUrl);
+            $response = Http::timeout($this->connectTimeout)
+                ->withHeaders([
+                    'Bypass-Tunnel-Reminder' => 'true',
+                    'User-Agent' => 'Laravel-RAG-Client',
+                ])
+                ->get($healthUrl);
             $data = $response->json();
 
             // Pastikan bukan hanya server aktif, tapi RAG chain-nya juga siap

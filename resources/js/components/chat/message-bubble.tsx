@@ -18,7 +18,7 @@ export interface ChatMessage {
     source?: 'rule' | 'ai';
     chatLogId?: number | null;
     isHelpful?: boolean | null;
-    aiEngine?: 'gemini' | 'ollama';
+    aiEngine?: 'gemini' | 'ollama' | 'openrouter';
     isRagFound?: boolean;
 }
 
@@ -54,6 +54,7 @@ export function MessageBubble({ message, onFeedback, onContactAdmin, onImageClic
     const getAiBadgeLabel = () => {
         if (message.source === 'rule') return '📚 Rule';
         if (message.aiEngine === 'ollama') return '🦙 Ollama/Qwen';
+        if (message.aiEngine === 'openrouter') return '⚡ OpenRouter gpt-oss-120b';
         return '🤖 Gemini AI';
     };
 
@@ -64,6 +65,9 @@ export function MessageBubble({ message, onFeedback, onContactAdmin, onImageClic
         }
         if (message.aiEngine === 'ollama') {
             return 'bg-orange-100 text-orange-700 dark:bg-orange-950/50 dark:text-orange-400';
+        }
+        if (message.aiEngine === 'openrouter') {
+            return 'bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400';
         }
         return 'bg-purple-100 text-purple-700 dark:bg-purple-950/50 dark:text-purple-400';
     };

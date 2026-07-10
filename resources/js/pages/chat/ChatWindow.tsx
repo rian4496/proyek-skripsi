@@ -17,7 +17,7 @@ interface PageProps {
         similarity_score: number | null;
         matched_keywords?: string[];
         chat_log_id: number | null;
-        ai_engine?: 'gemini' | 'ollama' | null;
+        ai_engine?: 'gemini' | 'ollama' | 'openrouter' | null;
         is_rag_found?: boolean | null;
     };
 }

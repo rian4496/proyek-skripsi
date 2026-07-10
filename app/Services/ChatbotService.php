@@ -159,12 +159,22 @@ class ChatbotService
         } elseif ($activeEngine === 'openrouter') {
             // === Engine Cloud: OpenRouter (gpt-oss-120b:free / Qwen 2.5) ===
             $aiResponse = $this->openRouterService->generateResponse($message);
+
+            // Jika model gratis OpenRouter sedang rate-limited (HTTP 429) atau error,
+            // otomatis alihkan (auto-fallback) ke Google Gemini Cloud API agar obrolan mahasiswa tidak pernah terputus!
+            $aiEngineUsed = 'openrouter';
+            if (str_starts_with($aiResponse, 'Maaf, ')) {
+                \Illuminate\Support\Facades\Log::warning('ChatbotService: OpenRouter rate-limited/error upstream, auto-fallback ke Google Gemini.');
+                $aiResponse = $this->geminiService->generateResponse($message);
+                $aiEngineUsed = 'gemini';
+            }
+
             $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
 
             $result = $this->buildResult(
                 $aiResponse,
                 'ai',
-                aiEngine: 'openrouter',
+                aiEngine: $aiEngineUsed,
                 latencyMs: $latencyMs,
             );
         } else {

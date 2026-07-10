@@ -2,7 +2,8 @@ import { ChatInput } from '@/components/chat/chat-input';
 import { type ChatMessage, MessageBubble } from '@/components/chat/message-bubble';
 import { Head, router, useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Bot, GraduationCap, MessageCircle, Sparkles, HelpCircle, X, Star, Trash2 } from 'lucide-react';
+import { Bot, GraduationCap, MessageCircle, Sparkles, HelpCircle, X, Star, Trash2, Sun, Moon } from 'lucide-react';
+import { useAppearance } from '@/hooks/use-appearance';
 import { useEffect, useRef, useState } from 'react';
 
 /**
@@ -48,12 +49,36 @@ const WELCOME_MESSAGE: ChatMessage = {
  * pada setiap respon bot untuk evaluasi kepuasan pengguna (Bab IV).
  */
 export default function ChatWindow() {
-    const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
+    const [messages, setMessages] = useState<ChatMessage[]>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('chat_messages_storage');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    return parsed.map((m: any) => ({
+                        ...m,
+                        timestamp: new Date(m.timestamp),
+                    }));
+                } catch (e) {
+                    console.error('Failed to parse chat messages from storage', e);
+                }
+            }
+        }
+        return [WELCOME_MESSAGE];
+    });
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && messages.length > 0) {
+            localStorage.setItem('chat_messages_storage', JSON.stringify(messages));
+        }
+    }, [messages]);
+
     const [messageInput, setMessageInput] = useState('');
     const [processing, setProcessing] = useState(false);
     const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [previewImage, setPreviewImage] = useState<{ url: string; alt?: string } | null>(null);
+    const { resolvedAppearance, updateAppearance } = useAppearance();
 
     const handleClearChat = () => {
         setShowDeleteModal(true);
@@ -61,6 +86,9 @@ export default function ChatWindow() {
 
     const confirmClearChat = () => {
         setMessages([WELCOME_MESSAGE]);
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('chat_messages_storage');
+        }
         setShowDeleteModal(false);
     };
 
@@ -136,8 +164,9 @@ export default function ChatWindow() {
             }
         }
 
-        // Hapus participant_info agar sesi berikutnya bersih
+        // Hapus participant_info & chat_messages_storage agar sesi berikutnya bersih
         sessionStorage.removeItem('participant_info');
+        localStorage.removeItem('chat_messages_storage');
 
         setShowFeedbackModal(false);
         setShowThankYouModal(true);
@@ -285,7 +314,7 @@ export default function ChatWindow() {
         <>
             <Head title="Chatbot Pelayanan Akademik UNISKA MAB" />
 
-            <div className="flex h-dvh flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950/20">
+            <div className="flex h-dvh flex-col overscroll-none bg-gradient-to-br from-slate-50 via-white to-slate-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950/20">
                 {/* ═══ Header ═══ */}
                 <header className="relative border-b border-border/50 bg-white/80 backdrop-blur-md dark:bg-slate-900/80">
                     <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
@@ -302,22 +331,36 @@ export default function ChatWindow() {
                                 Online • Siap membantu
                             </p>
                         </div>
-                        {messages.length > 1 && (
+                        <div className="flex items-center gap-2">
                             <button
-                                onClick={handleClearChat}
+                                onClick={() => updateAppearance(resolvedAppearance === 'dark' ? 'light' : 'dark')}
                                 type="button"
-                                className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 hover:shadow-sm active:scale-95 dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
-                                title="Hapus obrolan & mulai sesi baru"
+                                className="flex size-8 items-center justify-center rounded-lg border border-border/60 bg-slate-100/80 text-slate-700 transition-all hover:bg-slate-200 active:scale-95 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:bg-slate-700"
+                                title={resolvedAppearance === 'dark' ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'}
                             >
-                                <Trash2 className="size-3.5" />
-                                <span className="hidden sm:inline">Hapus Obrolan</span>
+                                {resolvedAppearance === 'dark' ? (
+                                    <Sun className="size-4 text-amber-400" />
+                                ) : (
+                                    <Moon className="size-4 text-slate-700" />
+                                )}
                             </button>
-                        )}
+                            {messages.length > 1 && (
+                                <button
+                                    onClick={handleClearChat}
+                                    type="button"
+                                    className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 hover:shadow-sm active:scale-95 dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-900/60"
+                                    title="Hapus obrolan & mulai sesi baru"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span className="hidden sm:inline">Hapus Obrolan</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </header>
 
                 {/* ═══ Chat Messages Area ═══ */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto overscroll-y-none">
                     <div className="mx-auto max-w-3xl px-4 py-4">
                         <div className="flex flex-col gap-3">
                             {messages.map((msg) => (
@@ -477,7 +520,19 @@ export default function ChatWindow() {
                 {/* ═══ Participant Modal ═══ */}
                 {showParticipantModal && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-md">
-                        <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800 border border-slate-100 dark:border-slate-700 transition-all duration-300 animate-in zoom-in-95 duration-200">
+                        <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800 border border-slate-100 dark:border-slate-700 transition-all duration-300 animate-in zoom-in-95 duration-200">
+                            <button
+                                onClick={() => updateAppearance(resolvedAppearance === 'dark' ? 'light' : 'dark')}
+                                type="button"
+                                className="absolute right-4 top-4 flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-100/80 text-slate-700 transition-all hover:bg-slate-200 active:scale-95 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-700"
+                                title={resolvedAppearance === 'dark' ? 'Ganti ke Mode Terang' : 'Ganti ke Mode Gelap'}
+                            >
+                                {resolvedAppearance === 'dark' ? (
+                                    <Sun className="size-4 text-amber-400" />
+                                ) : (
+                                    <Moon className="size-4 text-slate-700" />
+                                )}
+                            </button>
                             <div className="text-center mb-6">
                                 <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30 mb-3">
                                     <GraduationCap className="size-6" />

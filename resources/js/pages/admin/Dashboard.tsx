@@ -23,6 +23,7 @@ import {
     ThumbsUp,
     Trash2,
     TrendingUp,
+    Terminal,
     Upload,
     X,
 } from 'lucide-react';
@@ -369,6 +370,13 @@ export default function Dashboard({
                         >
                             <Database className="mr-1.5 size-3.5" />
                             Kelola Chat Rules
+                        </Link>
+                        <Link
+                            href="/admin/system-logs"
+                            className="inline-flex items-center rounded-lg border border-purple-300 bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-100 dark:border-purple-700 dark:bg-purple-900/30 dark:text-purple-300 dark:hover:bg-purple-900/50"
+                        >
+                            <Terminal className="mr-1.5 size-3.5 text-purple-600 dark:text-purple-400" />
+                            System Logs
                         </Link>
                         {/* Tombol Live Refresh / Polling Toggle */}
                         <button

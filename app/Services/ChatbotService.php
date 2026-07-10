@@ -156,15 +156,36 @@ class ChatbotService
                 : 'anon-' . session()->getId();
 
             $ollamaResult = $this->ollamaService->generateResponse($message, $sessionId);
-            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
 
-            $result = $this->buildResult(
-                $ollamaResult['response'],
-                'ai',
-                aiEngine: 'ollama',
-                isRagFound: $ollamaResult['is_rag_found'],
-                latencyMs: $latencyMs,
-            );
+            // === AUTO-FALLBACK SEAMLESS KE GEMINI CLOUD API JIKA OLLAMA/TUNNEL TIMEOUT/GAGAL ===
+            if (!$ollamaResult['is_rag_found'] && (
+                str_contains(strtolower($ollamaResult['response']), 'tidak dapat dihubungi') ||
+                str_contains(strtolower($ollamaResult['response']), 'curl error') ||
+                str_contains(strtolower($ollamaResult['response']), 'timeout') ||
+                empty(trim($ollamaResult['response']))
+            )) {
+                Log::warning("ChatbotService: Ollama/Tunnel lambat/offline, auto-switching ke Gemini Cloud API agar tidak stuck.");
+                $aiResponse = $this->geminiService->generateResponse($message);
+                $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+
+                $result = $this->buildResult(
+                    $aiResponse,
+                    'ai',
+                    aiEngine: 'gemini',
+                    isRagFound: true,
+                    latencyMs: $latencyMs,
+                );
+            } else {
+                $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+
+                $result = $this->buildResult(
+                    $ollamaResult['response'],
+                    'ai',
+                    aiEngine: 'ollama',
+                    isRagFound: $ollamaResult['is_rag_found'],
+                    latencyMs: $latencyMs,
+                );
+            }
         } else {
             // === Engine Cloud: Google Gemini API ===
             $aiResponse = $this->geminiService->generateResponse($message);

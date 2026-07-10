@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\Log;
 class OllamaService
 {
     private string $webhookUrl;
-    private int $connectTimeout = 5;   // detik, untuk cek apakah FastAPI aktif
-    private int $requestTimeout = 300; // detik, untuk generate jawaban (model 7B lokal lambat di CPU offload)
+    private int $connectTimeout = 4;   // detik, untuk cek koneksi tunnel/FastAPI
+    private int $requestTimeout = 15;  // detik, maksimal waktu tunggu sebelum fallback otomatis ke Gemini Cloud API
 
     /**
      * Pola respons Ollama yang mengindikasikan data tidak ditemukan

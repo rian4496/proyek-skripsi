@@ -36,8 +36,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('chat-rules', ChatRuleController::class)->except(['show']);
     Route::get('/upload-document', [App\Http\Controllers\Admin\DocumentController::class, 'index'])->name('upload-document.index');
     Route::get('/upload-document/download/{filename}', [App\Http\Controllers\Admin\DocumentController::class, 'download'])->name('upload-document.download');
-    Route::post('/upload-document', [App\Http\Controllers\Admin\DocumentController::class, 'store'])->name('upload-document.store');
     Route::delete('/upload-document/{filename}', [App\Http\Controllers\Admin\DocumentController::class, 'destroy'])->name('upload-document.destroy');
+    Route::get('/system-logs', [App\Http\Controllers\Admin\SystemLogController::class, 'index'])->name('system-logs.index');
+    Route::delete('/system-logs/clear', [App\Http\Controllers\Admin\SystemLogController::class, 'clear'])->name('system-logs.clear');
 });
 
 require __DIR__.'/settings.php';

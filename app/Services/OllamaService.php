@@ -75,15 +75,6 @@ class OllamaService
             return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
         }
 
-        // ── Cek apakah FastAPI RAG backend aktif sebelum kirim request berat ──
-        if (!$this->isBackendReachable()) {
-            Log::warning('OllamaService: RAG backend tidak dapat dijangkau di ' . $this->webhookUrl);
-            return [
-                'response' => 'Maaf, layanan AI lokal sedang tidak aktif. 🔧 Pastikan FastAPI RAG backend sudah dijalankan di terminal baru dengan perintah: cd rag-backend && uvicorn app:app --port 8001',
-                'is_rag_found' => false,
-            ];
-        }
-
         try {
             // Perpanjang batas waktu PHP karena model LLM lokal butuh waktu lama
             set_time_limit(300);
@@ -91,6 +82,7 @@ class OllamaService
             $response = Http::timeout($this->requestTimeout)
                 ->withHeaders([
                     'Bypass-Tunnel-Reminder' => 'true',
+                    'bypass-tunnel-reminder' => 'true',
                     'User-Agent' => 'Laravel-RAG-Client',
                 ])
                 ->post($this->webhookUrl, [
@@ -117,7 +109,10 @@ class OllamaService
 
         } catch (\Exception $e) {
             Log::error('OllamaService: Exception', ['message' => $e->getMessage(), 'url' => $this->webhookUrl]);
-            return ['response' => $this->fallbackResponse(), 'is_rag_found' => false];
+            return [
+                'response' => 'Maaf, layanan AI RAG sedang tidak dapat dihubungi via tunnel. 🔧 (' . substr($e->getMessage(), 0, 100) . ')',
+                'is_rag_found' => false,
+            ];
         }
     }
 

@@ -12,10 +12,12 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Admin::create([
-            'name' => 'Admin UNISKA',
-            'email' => 'admin@uniska-bjm.ac.id',
-            'password' => bcrypt('uniska2026'), // Ganti sesuai keinginan
-        ]);
+        \App\Models\Admin::updateOrCreate(
+            ['email' => 'admin@uniska-bjm.ac.id'],
+            [
+                'name' => 'Admin UNISKA',
+                'password' => bcrypt('uniska2026'), // Ganti sesuai keinginan
+            ]
+        );
     }
 }

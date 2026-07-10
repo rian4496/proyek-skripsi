@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from langchain_community.document_loaders import PDFPlumberLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
+from langchain_openai import ChatOpenAI
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
@@ -23,7 +24,15 @@ load_dotenv()
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 EMBED_MODEL     = os.getenv("EMBED_MODEL", "nomic-embed-text")
-LLM_MODEL       = os.getenv("LLM_MODEL", "qwen2.5:7b")
+
+# --- OPSI ENGINE LLM UNTUK FASTAPI RAG ---
+# LLM_PROVIDER: "ollama" (Lokal Qwen 2.5) atau "openrouter" (Cloud gpt-oss-120b:free)
+LLM_PROVIDER        = os.getenv("LLM_PROVIDER", "openrouter")
+OLLAMA_LLM_MODEL    = os.getenv("LLM_MODEL", "qwen2.5:7b")
+OPENROUTER_API_KEY  = os.getenv("OPENROUTER_API_KEY", "")
+OPENROUTER_MODEL    = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-120b:free")
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
 DATA_FOLDER     = "./data"
 HASH_FILE       = ".pdf_index_hash"
 CHUNK_SIZE      = 1000
@@ -125,8 +134,37 @@ Pertanyaan Mahasiswa: {question}
 Jawaban:""",
     )
 
+    # =========================================================================================
+    # RIWAYAT / KODE SETUP OLLAMA QWEN LOKAL (Disimpan agar tidak lupa saat setup semula)
+    # Jika ingin kembali murni menggunakan Qwen 2.5 lokal dari laptop Anda, cukup set di .env:
+    # LLM_PROVIDER=ollama
+    #
+    # Atau jika ingin mengaktifkan blok kode asli Ollama di bawah ini secara manual:
+    # _state["qa_chain"] = RetrievalQA.from_chain_type(
+    #     llm=OllamaLLM(model=OLLAMA_LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0.2),
+    #     chain_type="stuff",
+    #     retriever=_state["vector_store"].as_retriever(search_type="similarity", search_kwargs={"k": RETRIEVER_TOP_K}),
+    #     return_source_documents=False,
+    #     chain_type_kwargs={"prompt": prompt},
+    # )
+    # =========================================================================================
+
+    if LLM_PROVIDER == "openrouter":
+        log.info(f"Mengaktifkan RAG dengan LLM Cloud OpenRouter ('{OPENROUTER_MODEL}')...")
+        llm_engine = ChatOpenAI(
+            model=OPENROUTER_MODEL,
+            openai_api_key=OPENROUTER_API_KEY,
+            openai_api_base=OPENROUTER_BASE_URL,
+            temperature=0.2,
+            max_tokens=1024,
+            default_headers={"HTTP-Referer": "http://localhost", "X-Title": "Chatbot RAG UNISKA"},
+        )
+    else:
+        log.info(f"Mengaktifkan RAG dengan LLM Lokal Ollama ('{OLLAMA_LLM_MODEL}')...")
+        llm_engine = OllamaLLM(model=OLLAMA_LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0.2)
+
     _state["qa_chain"] = RetrievalQA.from_chain_type(
-        llm=OllamaLLM(model=LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0.2),
+        llm=llm_engine,
         chain_type="stuff",
         retriever=_state["vector_store"].as_retriever(search_type="similarity", search_kwargs={"k": RETRIEVER_TOP_K}),
         return_source_documents=False,

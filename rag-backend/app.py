@@ -173,7 +173,7 @@ SOP_VISUAL_MAP = [
         ]
     },
     {
-        "keywords": ["login", "profil", "password", "masuk portal", "biodata", "akses website"],
+        "keywords": ["login sia", "login portal", "masuk portal", "profil sia", "melengkapi profil", "lupa password sia", "ganti password sia", "ubah password sia", "password akun sia", "biodata sia"],
         "title": "Panduan Visual: Alur Login & Melengkapi Profil SIA",
         "images": [
             ("/assets/img/sia/urutan-1.jpeg", "1. Tampilan Halaman Utama SIA UNISKA - Ketik URL sia.uniska.ac.id"),
@@ -243,8 +243,14 @@ SOP_VISUAL_MAP = [
 def attach_visual_sop(query: str, answer: str) -> str:
     clean_answer = re.sub(r'!\[.*?\]\(.*?\)', '', answer).strip()
     query_lower = query.lower()
+    
+    # Abaikan jika pertanyaan tentang KKN atau pertanyaan pemrograman/coding umum (di luar SIA)
     if "kkn" in query_lower or "kuliah kerja nyata" in query_lower:
         return clean_answer
+    if any(code_kw in query_lower for code_kw in ["javascript", "python", "php", "html", "css", "c++", "java ", "buatkan kode", "coding", "script", "function", "var ", "const "]):
+        if not any(sia_kw in query_lower for sia_kw in ["sia", "krs", "khs", "portal", "yudisium", "akademik"]):
+            return clean_answer
+
     for sop in SOP_VISUAL_MAP:
         if any(all(w in query_lower for w in kw.split()) for kw in sop["keywords"]):
             gallery = f"\n\n---\n### 🖼️ {sop['title']}\n\n"

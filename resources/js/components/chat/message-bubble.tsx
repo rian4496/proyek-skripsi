@@ -105,15 +105,18 @@ export function MessageBubble({ message, onFeedback, onContactAdmin, onImageClic
                         <div className="prose prose-sm max-w-none dark:prose-invert break-words text-card-foreground dark:text-gray-100">
                             <ReactMarkdown
                                 components={{
-                                    img: ({ node, ...props }) => (
+                                    img: ({ node, ...props }) => {
+                                        const cleanSrc = (props.src || '').replace(/^http:\/\/proyek-skripsi\.test|^http:\/\/localhost\/?/, '/');
+                                        return (
                                         <div 
                                             className="my-3 rounded-xl overflow-hidden border border-border/60 shadow-md bg-slate-50 dark:bg-slate-900/60 group relative cursor-pointer transition-all hover:shadow-lg hover:border-blue-400/80 dark:hover:border-blue-500/80"
-                                            onClick={() => onImageClick?.(props.src || '', props.alt || '')}
+                                            onClick={() => onImageClick?.(cleanSrc, props.alt || '')}
                                             title="Klik untuk melihat pratinjau ukuran penuh"
                                         >
                                             <div className="relative overflow-hidden">
                                                 <img
                                                     {...props}
+                                                    src={cleanSrc}
                                                     className="w-full h-auto max-h-[380px] object-contain mx-auto rounded-t-xl transition-transform duration-300 group-hover:scale-[1.02]"
                                                     loading="lazy"
                                                     alt={props.alt || 'Panduan Visual SIA Online'}
@@ -128,7 +131,8 @@ export function MessageBubble({ message, onFeedback, onContactAdmin, onImageClic
                                                 </div>
                                             )}
                                         </div>
-                                    ),
+                                    );
+                                    },
                                     a: ({ node, ...props }) => (
                                         <a
                                             {...props}

@@ -115,6 +115,16 @@ class ChatbotService
             return $this->buildResult(self::TOO_SHORT_RESPONSE, 'rule', latencyMs: $latencyMs);
         }
 
+        // --- Tahap 0: Fast Out-of-Domain Guard (Penolakan topik pemrograman & non-akademik) ---
+        if ($this->isOutOfDomainQuery($normalizedMessage)) {
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+            $response = 'Mohon maaf, saya adalah Asisten Pelayanan Akademik UNISKA MAB. 🎓 Saya khusus membantu memberikan informasi seputar pelayanan akademik, KRS, jadwal perkuliahan, UKT, dan layanan portal SIA kampus. Saya tidak dapat menjawab atau membantu pertanyaan di luar topik akademik tersebut. 😊';
+            $result = $this->buildResult($response, 'rule', latencyMs: $latencyMs);
+            $chatLogId = $this->logConversation($userId, $message, $result, $participantData);
+            $result['chat_log_id'] = $chatLogId;
+            return $result;
+        }
+
         // --- Tahap 1: Rule-Based Matching (Hybrid: Damerau-Levenshtein + Ratcliff/Obershelp) ---
         $ruleResult = $this->matchByHybridSimilarity($normalizedMessage);
 
@@ -457,6 +467,26 @@ class ChatbotService
 
         // Strip punctuation, preserve spaces and alphanumeric
         return preg_replace('/[^\p{L}\p{N}\s]/u', '', $lowered);
+    }
+
+    /**
+     * Memeriksa apakah input pesan berada di luar konteks pelayanan akademik kampus (Out-of-Domain).
+     */
+    private function isOutOfDomainQuery(string $text): bool
+    {
+        $outOfDomainKeywords = [
+            'javascript', 'python', 'coding', 'source code', 'buatkan kode', 'c++', 'html', 'css', 
+            'sql', 'random password', 'script', 'resep', 'masakan', 'lirik lagu', 'berita bola', 
+            'prediksi bola', 'tutorial pemrograman', 'program java', 'code javascript',
+        ];
+
+        foreach ($outOfDomainKeywords as $keyword) {
+            if (str_contains($text, $keyword)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -67,7 +67,7 @@ return [
     'ai_engine' => env('AI_ENGINE', 'gemini'),
 
     'rag_backend' => [
-        'url' => env('RAG_BACKEND_URL', 'http://localhost:8001/chat'),
+        'url' => env('OLLAMA_RAG_URL', env('RAG_BACKEND_URL', 'http://localhost:8001/chat')),
     ],
 
 ];

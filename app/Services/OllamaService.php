@@ -51,7 +51,7 @@ class OllamaService
 
     public function __construct()
     {
-        $this->webhookUrl = config('services.rag_backend.url', '');
+        $this->webhookUrl = (string) (config('services.rag_backend.url') ?? '');
     }
 
     /**

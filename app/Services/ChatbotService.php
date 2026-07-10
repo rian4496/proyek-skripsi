@@ -70,6 +70,7 @@ class ChatbotService
     public function __construct(
         private readonly GeminiService $geminiService,
         private readonly OllamaService $ollamaService,
+        private readonly OpenRouterService $openRouterService,
     ) {}
 
     /**
@@ -153,6 +154,17 @@ class ChatbotService
                 'ai',
                 aiEngine: 'ollama',
                 isRagFound: $ollamaResult['is_rag_found'],
+                latencyMs: $latencyMs,
+            );
+        } elseif ($activeEngine === 'openrouter') {
+            // === Engine Cloud: OpenRouter (gpt-oss-120b:free / Qwen 2.5) ===
+            $aiResponse = $this->openRouterService->generateResponse($message);
+            $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+
+            $result = $this->buildResult(
+                $aiResponse,
+                'ai',
+                aiEngine: 'openrouter',
                 latencyMs: $latencyMs,
             );
         } else {

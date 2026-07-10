@@ -49,6 +49,11 @@ return [
         'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
     ],
 
+    'openrouter' => [
+        'api_key' => env('OPENROUTER_API_KEY', ''),
+        'model' => env('OPENROUTER_MODEL', 'openai/gpt-oss-120b:free'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | AI Engine Switch & FastAPI RAG Backend (Local Development)

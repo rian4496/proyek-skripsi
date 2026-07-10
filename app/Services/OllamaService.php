@@ -29,7 +29,7 @@ class OllamaService
 {
     private string $webhookUrl;
     private int $connectTimeout = 5;   // detik, untuk cek apakah FastAPI aktif
-    private int $requestTimeout = 90;  // detik, untuk generate jawaban (model lokal lambat)
+    private int $requestTimeout = 300; // detik, untuk generate jawaban (model 7B lokal lambat di CPU offload)
 
     /**
      * Pola respons Ollama yang mengindikasikan data tidak ditemukan
@@ -86,7 +86,7 @@ class OllamaService
 
         try {
             // Perpanjang batas waktu PHP karena model LLM lokal butuh waktu lama
-            set_time_limit(120);
+            set_time_limit(300);
 
             $response = Http::timeout($this->requestTimeout)
                 ->post($this->webhookUrl, [

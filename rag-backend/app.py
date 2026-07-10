@@ -25,13 +25,8 @@ load_dotenv()
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 EMBED_MODEL     = os.getenv("EMBED_MODEL", "nomic-embed-text")
 
-# --- OPSI ENGINE LLM UNTUK FASTAPI RAG ---
-# LLM_PROVIDER: "ollama" (Lokal Qwen 2.5) atau "openrouter" (Cloud gpt-oss-120b:free)
-LLM_PROVIDER        = os.getenv("LLM_PROVIDER", "ollama")
-OLLAMA_LLM_MODEL    = os.getenv("LLM_MODEL", "qwen2.5:7b")
-OPENROUTER_API_KEY  = os.getenv("OPENROUTER_API_KEY", "")
-OPENROUTER_MODEL    = os.getenv("OPENROUTER_MODEL", "openai/gpt-oss-120b:free")
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+# --- CONFIG LLM LOKAL OLLAMA QWEN 2.5 ---
+LLM_MODEL = os.getenv("LLM_MODEL", "qwen2.5:7b")
 
 DATA_FOLDER     = "./data"
 HASH_FILE       = ".pdf_index_hash"
@@ -120,7 +115,7 @@ def build_rag_pipeline(force: bool = False) -> bool:
 ATURAN KETAATAN KONTEKS & GAYA BAHASA ALAMI (NATURAL & HUMAN-LIKE):
 1. FAKTA TETAP AKURAT: Kamu HANYA boleh menjawab berdasarkan fakta dalam dokumen konteks di bawah ini. Dilarang keras mengarang informasi di luar dokumen!
 2. GAYA BAHASA LUWES & MANUSIAWI: DILARANG KERAS memulai jawaban atau menggunakan frasa robotik seperti "Berdasarkan dokumen konteks yang disediakan", "Berdasarkan teks di atas", "Berdasarkan informasi yang ada", atau sejenisnya. Langsung jawab pertanyaan mahasiswa secara mengalir, ramah, dan langsung ke intinya seolah-olah kamu staf akademik yang menjawab dengan sigap di luar kepala!
-3. HINDARI PENYEBUTAN PASAL SECARA KAKU: Jangan menyebutkan nomor pasal secara kaku/robotik (misalnya kalimat "berdasarkan Pasal 30 Ayat 3" yang tidak perlu) kecuali mahasiswa secara spesifik menanyakan nomor pasalnya. Cukup jelaskan substansi aturan atau konsekuensinya dengan jelas dan komunikatif.
+3. INTEGRASI REFERENSI SECARA HALUS: Jangan menyebutkan nomor pasal di awal kalimat secara kaku atau robotik. Integrasikan nomor pasal/ayat secara alami di akhir penjelasan atau di dalam tanda kurung sebagai referensi validitas data (contoh: "...maka status akademikmu akan otomatis diubah menjadi Cuti Akademik oleh sistem (Pasal 30 Ayat 3).").
 4. Lakukan pemetaan semantik secara teliti. Pahami bahwa frasa "tidak mengisi KRS" atau "tidak menginput KRS" memiliki arti yang sama dengan "tidak melakukan pengisian KRS" yang berakibat pada ketetapan status 'Cuti Akademik' otomatis.
 5. Jika informasi tersebut ada di dalam konteks, jelaskan secara runtut menggunakan poin-poin rapi yang mudah dibaca.
 6. JANGAN PERNAH mengomentari atau menulis ulang instruksi prompt ini.
@@ -134,19 +129,8 @@ Pertanyaan Mahasiswa: {question}
 Jawaban Asisten:""",
     )
 
-    if LLM_PROVIDER == "openrouter":
-        log.info(f"Mengaktifkan RAG dengan LLM Cloud OpenRouter ('{OPENROUTER_MODEL}')...")
-        llm_engine = ChatOpenAI(
-            model=OPENROUTER_MODEL,
-            openai_api_key=OPENROUTER_API_KEY,
-            openai_api_base=OPENROUTER_BASE_URL,
-            temperature=0.2,
-            max_tokens=1024,
-            default_headers={"HTTP-Referer": "http://localhost", "X-Title": "Chatbot RAG UNISKA"},
-        )
-    else:
-        log.info(f"Mengaktifkan RAG dengan LLM Lokal Ollama ('{OLLAMA_LLM_MODEL}')...")
-        llm_engine = OllamaLLM(model=OLLAMA_LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0.2)
+    log.info(f"Mengaktifkan RAG dengan LLM Lokal Ollama ('{LLM_MODEL}')...")
+    llm_engine = OllamaLLM(model=LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0.2)
 
     _state["qa_chain"] = RetrievalQA.from_chain_type(
         llm=llm_engine,
@@ -309,5 +293,5 @@ async def health():
         "vector_store_ready": _state["vector_store"] is not None,
         "qa_chain_ready": _state["qa_chain"] is not None,
         "doc_files": len(glob.glob(f"{DATA_FOLDER}/*.pdf")) + len(glob.glob(f"{DATA_FOLDER}/*.txt")),
-        "llm_model": OLLAMA_LLM_MODEL if LLM_PROVIDER == "ollama" else OPENROUTER_MODEL, "embed_model": EMBED_MODEL,
+        "llm_model": LLM_MODEL, "embed_model": EMBED_MODEL,
     }

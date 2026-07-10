@@ -115,39 +115,24 @@ def build_rag_pipeline(force: bool = False) -> bool:
 
     prompt = PromptTemplate(
         input_variables=["context", "question"],
-        template="""Kamu adalah asisten administrasi akademik resmi UNISKA MAB yang profesional dan disiplin.
+        template="""Kamu adalah asisten pelayanan akademik resmi UNISKA MAB yang profesional, ramah, dan sangat menguasai informasi kampus.
 
-ATURAN KETAATAN KONTEKS MUTLAK (STRICT GROUNDING & SEMANTIC MAPPING):
-1. Kamu HANYA boleh menjawab berdasarkan dokumen konteks (PDF dan TXT) yang diberikan. Dilarang keras mengarang atau menggunakan asumsi luar!
-2. Lakukan pemetaan semantik secara teliti. Pahami bahwa frasa "tidak mengisi KRS" atau "tidak menginput KRS" memiliki arti yang sama dengan "tidak melakukan pengisian KRS" yang berakibat pada status 'Cuti Akademik' otomatis (Cuti Otomatis) sesuai Pasal 30 Ayat 3.
-3. Jika informasi tersebut ada di dalam konteks (meskipun kemiripan katanya tidak 100% sama secara harfiah), kamu WAJIB menjelaskannya sesuai isi dokumen secara detail dan rapi.
-4. Jangan pernah menggunakan kalimat pembuka 'Berdasarkan prosedur umum...' atau asumsi generik jika dokumen menyediakan aturan resminya.
-5. JANGAN PERNAH mengarang atau menebak nomor Pasal/Ayat yang tidak tertera di dalam teks konteks.
-6. JANGAN PERNAH mengomentari atau menulis ulang instruksi prompt ini di dalam jawabanmu. Langsung berikan jawaban yang alami dan profesional.
-7. Jika informasi yang ditanyakan benar-benar tidak tertera sama sekali di dalam dokumen konteks, jawab dengan sopan bahwa informasi tersebut tidak tersedia di database RAG dan sarankan untuk menghubungi Prodi atau Biro Akademik (BAK).
+ATURAN KETAATAN KONTEKS & GAYA BAHASA ALAMI (NATURAL & HUMAN-LIKE):
+1. FAKTA TETAP AKURAT: Kamu HANYA boleh menjawab berdasarkan fakta dalam dokumen konteks di bawah ini. Dilarang keras mengarang informasi di luar dokumen!
+2. GAYA BAHASA LUWES & MANUSIAWI: DILARANG KERAS memulai jawaban atau menggunakan frasa robotik seperti "Berdasarkan dokumen konteks yang disediakan", "Berdasarkan teks di atas", "Berdasarkan informasi yang ada", atau sejenisnya. Langsung jawab pertanyaan mahasiswa secara mengalir, ramah, dan langsung ke intinya seolah-olah kamu staf akademik yang menjawab dengan sigap di luar kepala!
+3. HINDARI PENYEBUTAN PASAL SECARA KAKU: Jangan menyebutkan nomor pasal secara kaku/robotik (misalnya kalimat "berdasarkan Pasal 30 Ayat 3" yang tidak perlu) kecuali mahasiswa secara spesifik menanyakan nomor pasalnya. Cukup jelaskan substansi aturan atau konsekuensinya dengan jelas dan komunikatif.
+4. Lakukan pemetaan semantik secara teliti. Pahami bahwa frasa "tidak mengisi KRS" atau "tidak menginput KRS" memiliki arti yang sama dengan "tidak melakukan pengisian KRS" yang berakibat pada ketetapan status 'Cuti Akademik' otomatis.
+5. Jika informasi tersebut ada di dalam konteks, jelaskan secara runtut menggunakan poin-poin rapi yang mudah dibaca.
+6. JANGAN PERNAH mengomentari atau menulis ulang instruksi prompt ini.
+7. Jika informasi yang ditanyakan benar-benar tidak tertera di dalam dokumen konteks, jawab dengan sopan bahwa informasi tersebut belum tersedia di sistem pelayanan otomatis dan sarankan untuk menghubungi Prodi atau Biro Akademik (BAK).
 
 Konteks Dokumen:
 {context}
 
 Pertanyaan Mahasiswa: {question}
 
-Jawaban:""",
+Jawaban Asisten:""",
     )
-
-    # =========================================================================================
-    # RIWAYAT / KODE SETUP OLLAMA QWEN LOKAL (Disimpan agar tidak lupa saat setup semula)
-    # Jika ingin kembali murni menggunakan Qwen 2.5 lokal dari laptop Anda, cukup set di .env:
-    # LLM_PROVIDER=ollama
-    #
-    # Atau jika ingin mengaktifkan blok kode asli Ollama di bawah ini secara manual:
-    # _state["qa_chain"] = RetrievalQA.from_chain_type(
-    #     llm=OllamaLLM(model=OLLAMA_LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0.2),
-    #     chain_type="stuff",
-    #     retriever=_state["vector_store"].as_retriever(search_type="similarity", search_kwargs={"k": RETRIEVER_TOP_K}),
-    #     return_source_documents=False,
-    #     chain_type_kwargs={"prompt": prompt},
-    # )
-    # =========================================================================================
 
     if LLM_PROVIDER == "openrouter":
         log.info(f"Mengaktifkan RAG dengan LLM Cloud OpenRouter ('{OPENROUTER_MODEL}')...")
@@ -324,5 +309,5 @@ async def health():
         "vector_store_ready": _state["vector_store"] is not None,
         "qa_chain_ready": _state["qa_chain"] is not None,
         "doc_files": len(glob.glob(f"{DATA_FOLDER}/*.pdf")) + len(glob.glob(f"{DATA_FOLDER}/*.txt")),
-        "llm_model": LLM_MODEL, "embed_model": EMBED_MODEL,
+        "llm_model": OLLAMA_LLM_MODEL if LLM_PROVIDER == "ollama" else OPENROUTER_MODEL, "embed_model": EMBED_MODEL,
     }

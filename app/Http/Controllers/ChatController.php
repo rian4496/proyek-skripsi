@@ -22,7 +22,7 @@ class ChatController extends Controller
     /**
      * Menerima dan memproses pesan chatbot (POST /chat).
      */
-    public function store(SendMessageRequest $request, ChatbotService $chatbotService): RedirectResponse
+    public function store(SendMessageRequest $request, ChatbotService $chatbotService): \Inertia\Response
     {
         $userId = $request->user()?->id;
 
@@ -36,7 +36,9 @@ class ChatController extends Controller
             ]
         );
 
-        return back()->with('result', $result);
+        return \Inertia\Inertia::render('chat/ChatWindow', [
+            'result' => $result,
+        ]);
     }
 
     /**

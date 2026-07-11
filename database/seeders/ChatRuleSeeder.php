@@ -62,6 +62,12 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 8,
             ],
             [
+                'keywords' => ['rektor uniska', 'siapa rektor uniska', 'siapa rektor uniska saat ini', 'pimpinan uniska', 'wakil rektor uniska', 'siapa rektor'],
+                'response' => "Rektor Universitas Islam Kalimantan Muhammad Arsyad Al Banjari (UNISKA MAB) saat ini adalah **Prof. Dr. H. Mohammad Zainul, S.E., M.M.** Ia menjabat untuk periode masa bakti 2025–2030.\n\nInformasi lebih lanjut mengenai pimpinan dan jajaran universitas dapat dilihat di laman resmi UNISKA MAB (https://uniska-bjm.ac.id).\n\n**PIMPINAN UNISKA MAB:**\n• **REKTOR:** Prof. Dr. H. Mohammad Zainul, S.E., M.M.\n• **WAKIL REKTOR 1 (WR 1):** Prof. Dr. Ir. Aam Gunawan, M.P., IPU.",
+                'category' => 'umum',
+                'priority' => 10,
+            ],
+            [
                 'keywords' => ['jam kerja bak', 'jam buka bak', 'operasional bak', 'bak buka jam berapa'],
                 'response' => 'Bagian Administrasi Akademik (BAK) buka setiap Senin–Sabtu pukul 09:00–14:00 WITA.',
                 'category' => 'administrasi',

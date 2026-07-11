@@ -527,28 +527,33 @@ class ChatbotService
     private function logConversation(?int $userId, string $originalMessage, array $result, array $participantData = []): ?int
     {
         try {
-            $log = ChatLog::create([
-                'user_id' => $userId,
-                'nama_mahasiswa' => $participantData['nama_mahasiswa'] ?? null,
-                'fakultas' => $participantData['fakultas'] ?? null,
-                'prodi' => $participantData['prodi'] ?? null,
+            $columns = \Illuminate\Support\Facades\Schema::getColumnListing('chat_logs');
+            $data = [
                 'user_message' => $originalMessage,
                 'bot_response' => $result['response'] ?? '',
                 'source' => $result['source'] ?? 'rule',
-                'matched_rule_id' => $result['matched_rule_id'] ?? null,
-                'similarity_score' => is_numeric($result['similarity_score'] ?? null) ? (float) $result['similarity_score'] : null,
-                'latency_ms' => is_numeric($result['latency_ms'] ?? null) ? (int) $result['latency_ms'] : null,
-                'ai_engine' => $result['ai_engine'] ?? null,
-            ]);
+            ];
 
+            if (in_array('user_id', $columns)) $data['user_id'] = $userId;
+            if (in_array('nama_mahasiswa', $columns)) $data['nama_mahasiswa'] = $participantData['nama_mahasiswa'] ?? null;
+            if (in_array('fakultas', $columns)) $data['fakultas'] = $participantData['fakultas'] ?? null;
+            if (in_array('prodi', $columns)) $data['prodi'] = $participantData['prodi'] ?? null;
+            if (in_array('matched_rule_id', $columns)) $data['matched_rule_id'] = $result['matched_rule_id'] ?? null;
+            if (in_array('similarity_score', $columns)) $data['similarity_score'] = is_numeric($result['similarity_score'] ?? null) ? (float) $result['similarity_score'] : null;
+            if (in_array('latency_ms', $columns)) $data['latency_ms'] = is_numeric($result['latency_ms'] ?? null) ? (int) $result['latency_ms'] : null;
+            if (in_array('ai_engine', $columns)) $data['ai_engine'] = $result['ai_engine'] ?? null;
+
+            $log = ChatLog::create($data);
             return $log->id;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal menyimpan log chat lengkap, mencoba simpan core log minimal', [
+            \Illuminate\Support\Facades\Log::error('Gagal menyimpan log chat (mencoba fallback core)', [
                 'error' => $e->getMessage(),
             ]);
 
-            // Jika gagal karena kendala kolom baru/tipe data, simpan kolom core minimal tanpa query DDL/ALTER TABLE agar aman dari deadlock
             try {
+                // Reset/reconnect koneksi database jika transaksi PostgreSQL sebelumnya aborted (25P02)
+                \Illuminate\Support\Facades\DB::reconnect();
+
                 $logCore = ChatLog::create([
                     'user_id' => $userId,
                     'user_message' => $originalMessage,

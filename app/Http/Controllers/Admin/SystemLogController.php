@@ -61,7 +61,7 @@ class SystemLogController extends Controller
         $tunnelUrl = config('services.rag_backend.url', 'http://localhost:8001/chat');
         $sessionDriver = config('session.driver', 'cookie');
         $dbPath = database_path('database.sqlite');
-        $dbSize = File::exists($dbPath) ? round(File::size($dbPath) / 1024, 2) . ' KB' : 'Database Cloud / MySQL';
+        $dbSize = File::exists($dbPath) ? round(File::size($dbPath) / 1024, 2) . ' KB' : 'Database Cloud (PostgreSQL)';
 
         // Ping singkat ke Tunnel/Ollama untuk tes konektivitas (maksimal 2 detik)
         $tunnelStatus = 'Offline / Timeout';

@@ -69,22 +69,22 @@ class DashboardController extends Controller
                 DB::raw("sum(case when source = 'ai' then 1 else 0 end) as ai_count")
             )
             ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy('date', 'asc')
+            ->orderByRaw('DATE(created_at) asc')
             ->limit(30)
             ->get();
 
         $topQuestions = $applyFilters(ChatLog::query())
             ->select('user_message', DB::raw('count(*) as total'))
             ->groupBy('user_message')
-            ->orderByDesc('total')
+            ->orderByRaw('count(*) desc')
             ->limit(5)
             ->get();
 
         $aiRecommendations = $applyFilters(ChatLog::where('source', 'ai'))
             ->select('user_message', DB::raw('count(*) as total'))
             ->groupBy('user_message')
-            ->having('total', '>=', 2)
-            ->orderByDesc('total')
+            ->havingRaw('count(*) >= 2')
+            ->orderByRaw('count(*) desc')
             ->limit(5)
             ->get();
 

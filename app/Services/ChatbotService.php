@@ -543,52 +543,22 @@ class ChatbotService
 
             return $log->id;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal menyimpan log chat (Percobaan pertama, mencoba perbaikan tabel otomatis)', [
+            \Illuminate\Support\Facades\Log::error('Gagal menyimpan log chat lengkap, mencoba simpan core log minimal', [
                 'error' => $e->getMessage(),
             ]);
 
-            // Coba perbaiki skema tabel secara dinamis jika ada kolom baru yang belum tereksekusi migrasinya
+            // Jika gagal karena kendala kolom baru/tipe data, simpan kolom core minimal tanpa query DDL/ALTER TABLE agar aman dari deadlock
             try {
-                if (\Illuminate\Support\Facades\Schema::hasTable('chat_logs')) {
-                    \Illuminate\Support\Facades\Schema::table('chat_logs', function (\Illuminate\Database\Schema\Blueprint $table) {
-                        if (! \Illuminate\Support\Facades\Schema::hasColumn('chat_logs', 'nama_mahasiswa')) $table->string('nama_mahasiswa', 100)->nullable();
-                        if (! \Illuminate\Support\Facades\Schema::hasColumn('chat_logs', 'fakultas')) $table->string('fakultas', 100)->nullable();
-                        if (! \Illuminate\Support\Facades\Schema::hasColumn('chat_logs', 'prodi')) $table->string('prodi', 100)->nullable();
-                        if (! \Illuminate\Support\Facades\Schema::hasColumn('chat_logs', 'ai_engine')) $table->string('ai_engine', 50)->nullable();
-                        if (! \Illuminate\Support\Facades\Schema::hasColumn('chat_logs', 'latency_ms')) $table->integer('latency_ms')->nullable();
-                        if (! \Illuminate\Support\Facades\Schema::hasColumn('chat_logs', 'is_helpful')) $table->boolean('is_helpful')->nullable();
-                    });
-                }
-
-                $logRetry = ChatLog::create([
+                $logCore = ChatLog::create([
                     'user_id' => $userId,
-                    'nama_mahasiswa' => $participantData['nama_mahasiswa'] ?? null,
-                    'fakultas' => $participantData['fakultas'] ?? null,
-                    'prodi' => $participantData['prodi'] ?? null,
                     'user_message' => $originalMessage,
                     'bot_response' => $result['response'] ?? '',
                     'source' => $result['source'] ?? 'rule',
-                    'matched_rule_id' => $result['matched_rule_id'] ?? null,
-                    'similarity_score' => is_numeric($result['similarity_score'] ?? null) ? (float) $result['similarity_score'] : null,
-                    'latency_ms' => is_numeric($result['latency_ms'] ?? null) ? (int) $result['latency_ms'] : null,
-                    'ai_engine' => $result['ai_engine'] ?? null,
                 ]);
-
-                return $logRetry->id;
-            } catch (\Throwable $eRetry) {
-                // Jika masih gagal karena constraint lain, simpan kolom core minimal agar data percakapan tetap masuk
-                try {
-                    $logCore = ChatLog::create([
-                        'user_id' => $userId,
-                        'user_message' => $originalMessage,
-                        'bot_response' => $result['response'] ?? '',
-                        'source' => $result['source'] ?? 'rule',
-                    ]);
-                    return $logCore->id;
-                } catch (\Throwable $eFinal) {
-                    \Illuminate\Support\Facades\Log::error('Gagal final menyimpan log chat core', ['error' => $eFinal->getMessage()]);
-                    return null;
-                }
+                return $logCore->id;
+            } catch (\Throwable $eFinal) {
+                \Illuminate\Support\Facades\Log::error('Gagal final menyimpan log chat core', ['error' => $eFinal->getMessage()]);
+                return null;
             }
         }
     }

@@ -51,6 +51,25 @@ class ChatRuleSeeder extends Seeder
             ],
             [
                 'keywords' => [
+                    'berkas apa saja yang disiapkan untuk daftar yudisium',
+                    'berkas untuk daftar yudisium',
+                    'berkas pendaftaran yudisium',
+                    'berkas yudisium',
+                    'syarat berkas yudisium',
+                    'dokumen yudisium',
+                    'dokumen daftar yudisium',
+                    'apa saja berkas yudisium',
+                    'siapkan berkas yudisium',
+                    'berkas daftar yudisium uniska',
+                    'persyaratan berkas yudisium',
+                    'upload berkas yudisium',
+                ],
+                'response' => "Berkas pendaftaran Yudisium yang wajib disiapkan dan diunggah (upload) mahasiswa UNISKA MAB melalui portal SIA (maksimal 100 KB per file) serta diserahkan fisiknya ke Fakultas/BAK mencakup:\n\n**1. Bukti Konsultasi Bimbingan:**\nRekap bimbingan skripsi/tesis (minimal masing-masing **8 kali pertemuan** dengan Dosen Pembimbing I dan Pembimbing II) yang tercatat sah di sistem.\n\n**2. Naskah Skripsi / Tesis Final:**\nSoftcopy naskah skripsi lengkap beserta lembar pengesahan dan lembar cover yang sudah direvisi serta ditandatangani lengkap (Pembimbing, Penguji, dan Dekan).\n\n**3. Data Identitas Akademik:**\nScan Kartu Tanda Penduduk (KTP), Kartu Keluarga (KK), dan Akta Kelahiran terbaru.\n\n**4. Pasfoto Studio Resmi:**\nPasfoto studio hitam putih cetak doff (background cerah) mengenakan jas almamater UNISKA MAB, dengan ketentuan posisi tegap, tidak memakai kacamata, dan memenuhi standar resolusi BAK.\n\n**5. Berkas Tambahan (Mahasiswa Alih Jenjang / Pindahan):**\nIjazah dan transkrip nilai dari Perguruan Tinggi asal serta surat keterangan konversi nilai SKS.\n\n**6. Bukti Bebas Tanggungan:**\nBukti bebas pustaka (Perpustakaan Pusat & Fakultas), bukti bebas tanggungan keuangan (SPP/UKT), dan bukti penyerahan CD Skripsi/Jurnal.\n\n*Catatan: Format teknis dan kelengkapan tambahan bisa memiliki penyesuaian khusus di tiap fakultas. Selalu cek Surat Keputusan (SK) Yudisium terbaru di portal SIA atau hubungi admin prodi masing-masing.*\n\n![Upload Berkas Persyaratan Yudisium SIA (Maks 100 KB)](/assets/img/yudisium/langkah-3.jpeg)\n\n![Diagram Alur SOP Pendaftaran Yudisium Online](/assets/img/yudisium/sop-a.jpeg)",
+                'category' => 'akademik',
+                'priority' => 15,
+            ],
+            [
+                'keywords' => [
                     'alur pendaftaran yudisium online',
                     'pendaftaran yudisium online',
                     'cara daftar yudisium online',

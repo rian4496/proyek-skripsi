@@ -29,7 +29,7 @@ class OllamaService
 {
     private string $webhookUrl;
     private int $connectTimeout = 4;   // detik, untuk cek koneksi tunnel/FastAPI
-    private int $requestTimeout = 15;  // detik, maksimal waktu tunggu sebelum fallback otomatis ke Gemini Cloud API
+    private int $requestTimeout = 60;  // detik, maksimal waktu tunggu sebelum fallback otomatis ke Gemini Cloud API
 
     /**
      * Pola respons Ollama yang mengindikasikan data tidak ditemukan
@@ -51,7 +51,7 @@ class OllamaService
 
     public function __construct()
     {
-        $this->webhookUrl = (string) (config('services.rag_backend.url') ?? '');
+        $this->webhookUrl = trim((string) (config('services.rag_backend.url') ?? ''));
     }
 
     /**

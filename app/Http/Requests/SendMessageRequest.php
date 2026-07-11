@@ -32,6 +32,7 @@ class SendMessageRequest extends FormRequest
         return [
             'message' => ['required', 'string', 'max:1000'],
             'nama_mahasiswa' => ['nullable', 'string', 'max:100'],
+            'npm' => ['nullable', 'string', 'max:50'],
             'fakultas' => ['nullable', 'string', 'max:100'],
             'prodi' => ['nullable', 'string', 'max:100'],
         ];

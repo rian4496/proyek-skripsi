@@ -4,6 +4,7 @@ import tickets from './tickets'
 import sessionReviews from './session-reviews'
 import chatRules from './chat-rules'
 import uploadDocument from './upload-document'
+import systemLogs from './system-logs'
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
  * @see app/Http/Controllers/Admin/DashboardController.php:25
@@ -168,6 +169,7 @@ tickets: Object.assign(tickets, tickets),
 sessionReviews: Object.assign(sessionReviews, sessionReviews),
 chatRules: Object.assign(chatRules, chatRules),
 uploadDocument: Object.assign(uploadDocument, uploadDocument),
+systemLogs: Object.assign(systemLogs, systemLogs),
 }
 
 export default admin

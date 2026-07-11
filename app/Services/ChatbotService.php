@@ -552,6 +552,7 @@ class ChatbotService
 
             if (in_array('user_id', $columns)) $data['user_id'] = $userId;
             if (in_array('nama_mahasiswa', $columns) && !empty($participantData['nama_mahasiswa'])) $data['nama_mahasiswa'] = substr(trim($participantData['nama_mahasiswa']), 0, 100);
+            if (in_array('npm', $columns) && !empty($participantData['npm'])) $data['npm'] = substr(trim($participantData['npm']), 0, 50);
             if (in_array('fakultas', $columns) && !empty($participantData['fakultas'])) $data['fakultas'] = substr(trim($participantData['fakultas']), 0, 100);
             if (in_array('prodi', $columns) && !empty($participantData['prodi'])) $data['prodi'] = substr(trim($participantData['prodi']), 0, 100);
             if (in_array('matched_rule_id', $columns) && !empty($result['matched_rule_id'])) $data['matched_rule_id'] = (int) $result['matched_rule_id'];

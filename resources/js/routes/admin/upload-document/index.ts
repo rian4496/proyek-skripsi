@@ -175,61 +175,6 @@ download.head = (args: { filename: string | number } | [filename: string | numbe
     
     download.form = downloadForm
 /**
-* @see \App\Http\Controllers\Admin\DocumentController::store
- * @see app/Http/Controllers/Admin/DocumentController.php:65
- * @route '/admin/upload-document'
- */
-export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: store.url(options),
-    method: 'post',
-})
-
-store.definition = {
-    methods: ["post"],
-    url: '/admin/upload-document',
-} satisfies RouteDefinition<["post"]>
-
-/**
-* @see \App\Http\Controllers\Admin\DocumentController::store
- * @see app/Http/Controllers/Admin/DocumentController.php:65
- * @route '/admin/upload-document'
- */
-store.url = (options?: RouteQueryOptions) => {
-    return store.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Admin\DocumentController::store
- * @see app/Http/Controllers/Admin/DocumentController.php:65
- * @route '/admin/upload-document'
- */
-store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: store.url(options),
-    method: 'post',
-})
-
-    /**
-* @see \App\Http\Controllers\Admin\DocumentController::store
- * @see app/Http/Controllers/Admin/DocumentController.php:65
- * @route '/admin/upload-document'
- */
-    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\Admin\DocumentController::store
- * @see app/Http/Controllers/Admin/DocumentController.php:65
- * @route '/admin/upload-document'
- */
-        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
-/**
 * @see \App\Http\Controllers\Admin\DocumentController::destroy
  * @see app/Http/Controllers/Admin/DocumentController.php:103
  * @route '/admin/upload-document/{filename}'
@@ -316,7 +261,6 @@ destroy.delete = (args: { filename: string | number } | [filename: string | numb
 const uploadDocument = {
     index: Object.assign(index, index),
 download: Object.assign(download, download),
-store: Object.assign(store, store),
 destroy: Object.assign(destroy, destroy),
 }
 

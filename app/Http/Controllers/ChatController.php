@@ -31,6 +31,7 @@ class ChatController extends Controller
             $userId,
             [
                 'nama_mahasiswa' => $request->input('nama_mahasiswa'),
+                'npm' => $request->input('npm'),
                 'fakultas' => $request->input('fakultas'),
                 'prodi' => $request->input('prodi'),
             ]

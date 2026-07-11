@@ -56,7 +56,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\ChatController::storeFeedback
- * @see app/Http/Controllers/ChatController.php:49
+ * @see app/Http/Controllers/ChatController.php:52
  * @route '/chat/{chatLog}/feedback'
  */
 export const storeFeedback = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -71,7 +71,7 @@ storeFeedback.definition = {
 
 /**
 * @see \App\Http\Controllers\ChatController::storeFeedback
- * @see app/Http/Controllers/ChatController.php:49
+ * @see app/Http/Controllers/ChatController.php:52
  * @route '/chat/{chatLog}/feedback'
  */
 storeFeedback.url = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -104,7 +104,7 @@ storeFeedback.url = (args: { chatLog: number | { id: number } } | [chatLog: numb
 
 /**
 * @see \App\Http\Controllers\ChatController::storeFeedback
- * @see app/Http/Controllers/ChatController.php:49
+ * @see app/Http/Controllers/ChatController.php:52
  * @route '/chat/{chatLog}/feedback'
  */
 storeFeedback.patch = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -114,7 +114,7 @@ storeFeedback.patch = (args: { chatLog: number | { id: number } } | [chatLog: nu
 
     /**
 * @see \App\Http\Controllers\ChatController::storeFeedback
- * @see app/Http/Controllers/ChatController.php:49
+ * @see app/Http/Controllers/ChatController.php:52
  * @route '/chat/{chatLog}/feedback'
  */
     const storeFeedbackForm = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -129,7 +129,7 @@ storeFeedback.patch = (args: { chatLog: number | { id: number } } | [chatLog: nu
 
             /**
 * @see \App\Http\Controllers\ChatController::storeFeedback
- * @see app/Http/Controllers/ChatController.php:49
+ * @see app/Http/Controllers/ChatController.php:52
  * @route '/chat/{chatLog}/feedback'
  */
         storeFeedbackForm.patch = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

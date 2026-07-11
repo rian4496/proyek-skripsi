@@ -31,6 +31,7 @@ import {
 interface ChatLog {
     id: number;
     nama_mahasiswa: string | null;
+    npm: string | null;
     fakultas: string | null;
     prodi: string | null;
     user_message: string;
@@ -58,6 +59,7 @@ interface FeedbackTicket {
 interface SessionReviewItem {
     id: number;
     nama_responden: string | null;
+    npm: string | null;
     fakultas: string | null;
     prodi: string | null;
     rating: number;
@@ -854,7 +856,7 @@ export default function Dashboard({
                                             </div>
                                             {log.nama_mahasiswa ? (
                                                 <div className="mt-0.5 text-[10px] text-blue-600 dark:text-blue-400 font-medium leading-tight">
-                                                    👤 {log.nama_mahasiswa} ({log.fakultas ? log.fakultas.replace('Fakultas ', '') : 'Anonim'} - {log.prodi})
+                                                    👤 {log.nama_mahasiswa} {log.npm ? `[NPM: ${log.npm}]` : ''} ({log.fakultas ? log.fakultas.replace('Fakultas ', '') : 'Anonim'} - {log.prodi})
                                                 </div>
                                             ) : (
                                                 <div className="mt-0.5 text-[10px] text-slate-400 font-normal leading-tight">

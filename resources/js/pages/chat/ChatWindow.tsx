@@ -95,6 +95,7 @@ export default function ChatWindow() {
     // State untuk Popup Form Peserta Penguji
     const [showParticipantModal, setShowParticipantModal] = useState(false);
     const [participantName, setParticipantName] = useState('');
+    const [participantNpm, setParticipantNpm] = useState('');
     const [participantFaculty, setParticipantFaculty] = useState('Fakultas Teknologi Informasi');
     const [participantProdi, setParticipantProdi] = useState('');
 
@@ -111,6 +112,16 @@ export default function ChatWindow() {
         const storedInfo = sessionStorage.getItem('participant_info');
         if (!storedInfo) {
             setShowParticipantModal(true);
+        } else {
+            try {
+                const parsed = JSON.parse(storedInfo);
+                if (parsed.nama_mahasiswa) setParticipantName(parsed.nama_mahasiswa);
+                if (parsed.npm) setParticipantNpm(parsed.npm);
+                if (parsed.fakultas) setParticipantFaculty(parsed.fakultas);
+                if (parsed.prodi) setParticipantProdi(parsed.prodi);
+            } catch (e) {
+                console.error('Failed to parse participant_info', e);
+            }
         }
     }, []);
 
@@ -180,10 +191,11 @@ export default function ChatWindow() {
 
     const submitParticipant = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!participantName.trim() || !participantProdi.trim()) return;
+        if (!participantName.trim() || !participantNpm.trim() || !participantProdi.trim()) return;
 
         sessionStorage.setItem('participant_info', JSON.stringify({
             nama_mahasiswa: participantName.trim(),
+            npm: participantNpm.trim(),
             fakultas: participantFaculty,
             prodi: participantProdi.trim(),
         }));
@@ -268,6 +280,7 @@ export default function ChatWindow() {
             {
                 message: messageText,
                 nama_mahasiswa: participant?.nama_mahasiswa,
+                npm: participant?.npm,
                 fakultas: participant?.fakultas,
                 prodi: participant?.prodi
             },
@@ -553,6 +566,18 @@ export default function ChatWindow() {
                                         className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white transition-all"
                                         value={participantName}
                                         onChange={e => setParticipantName(e.target.value)}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">NPM (Nomor Pokok Mahasiswa)</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        placeholder="Contoh: 22630001"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white transition-all"
+                                        value={participantNpm}
+                                        onChange={e => setParticipantNpm(e.target.value)}
                                     />
                                 </div>
 

@@ -80,10 +80,10 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 10,
             ],
             [
-                'keywords' => ['jam kerja bak', 'jam buka bak', 'operasional bak', 'bak buka jam berapa'],
-                'response' => 'Bagian Administrasi Akademik (BAK) yang berada di **Lantai 1 Gedung Rektorat Baru UNISKA MAB (Kampus Handil Bakti)** buka setiap Senin–Sabtu pukul 09:00–14:00 WITA.',
+                'keywords' => ['jam kerja bak', 'jam buka bak', 'operasional bak', 'bak buka jam berapa', 'jadwal pelayanan bak', 'jadwal pengambilan ijazah', 'jam istirahat bak', 'apakah saya bisa datang ke bak', 'datang ke bak di jam', 'bisa ke bak jam', 'ambil ijazah jam berapa', 'kapan bisa ambil ijazah', 'jam pelayanan bak'],
+                'response' => "**Jadwal Pelayanan Biro Administrasi Akademik (BAK) & Pengambilan Ijazah UNISKA MAB:**\n\n• **Senin – Kamis:** 09.00 – 14.00 WITA\n• **Jum'at:** 09.00 – 11.30 WITA\n• **Sabtu:** 09.00 – 13.00 WITA\n\n⏸️ **Jam Istirahat:** 12.00 – 13.00 WITA *(pelayanan ditutup sementara)*\n🚫 **Tanggal merah dan hari besar nasional LIBUR.**\n\n💡 **Catatan Khusus Kedatangan Pukul 13.00 (Jam 1 Siang):**\n- **Senin – Kamis:** Bisa dilayani setelah jam istirahat selesai pukul 13.00 hingga tutup pukul 14.00 WITA.\n- **Jum'at & Sabtu:** **TIDAK BISA / TUTUP** (Jumat tutup pukul 11.30 WITA, dan Sabtu tutup pukul 13.00 WITA).\n\n📍 **Lokasi:** Lantai 1 Gedung Rektorat Baru UNISKA MAB (Kampus III Handil Bakti).\n📱 **Instagram Resmi BAK:** @bak_uniskabjm.id",
                 'category' => 'administrasi',
-                'priority' => 8,
+                'priority' => 10,
             ],
             [
                 'keywords' => ['halo', 'hai', 'hi', 'hello', 'assalamualaikum', 'selamat pagi', 'selamat siang'],

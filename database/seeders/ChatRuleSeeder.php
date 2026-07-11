@@ -74,8 +74,14 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 10,
             ],
             [
+                'keywords' => ['dimana ruang bak', 'dimana ruangan bak', 'ruang bak dimana', 'ruangan bak dimana', 'letak ruang bak', 'lokasi ruangan bak', 'gedung rektor uniska', 'gedung rektorat uniska', 'lokasi gedung rektorat', 'dimana gedung rektor uniska', 'pembagian lantai gedung rektorat', 'lantai gedung rektorat uniska', 'ruang bak di gedung apa'],
+                'response' => "Ruang Bagian Administrasi Akademik (BAK / BAAP) berada di **Lantai 1 Gedung Rektorat Baru UNISKA MAB** yang berlokasi di **Kampus III Handil Bakti** (Jl. Trans Kalimantan, Komplek Perumahan Agrabudi, Berangas Timur, Kec. Alalak, Kab. Barito Kuala).\n\nBerikut adalah informasi lengkap pembagian pelayanan dan fasilitas di setiap lantai **Gedung Rektorat Baru UNISKA MAB (4 Lantai)**:\n\n• **Lantai 1 (Pusat Layanan Umum & Operasional):**\n  Biro Administrasi Akademik & Perencanaan (BAAP / BAK), Biro Keuangan & Kepegawaian (Loket Keuangan), Biro Kemahasiswaan & Alumni, Biro Humas, Biro Kerja Sama Internasional, Biro Keislaman, Loket KTM, Laboratorium Komputer, serta Ruang Guru Besar.\n\n• **Lantai 2 (Pusat Manajemen & Pimpinan):**\n  Kantor Rektor dan Wakil Rektor, Ruang Pimpinan Yayasan, Lembaga Penjaminan Mutu (LPM), Lembaga Penelitian & Pengabdian Kepada Masyarakat (LPPM), UPT TIK, serta UPT Publikasi & Pengelolaan Jurnal.\n\n• **Lantai 3 (Kegiatan Akademik & Fakultas):**\n  Ruang perkuliahan untuk Program Pascasarjana, Fakultas Pertanian (FAPERTA), dan Fakultas Kesehatan Masyarakat (FKM).\n\n• **Lantai 4 (Auditorium Utama):**\n  Aula/Auditorium besar modern berkapasitas sekitar 1.500 orang untuk agenda besar universitas seperti Wisuda dan PKKMB.\n\n**Jam Operasional BAK:** Senin–Sabtu pukul 09:00–14:00 WITA.",
+                'category' => 'administrasi',
+                'priority' => 10,
+            ],
+            [
                 'keywords' => ['jam kerja bak', 'jam buka bak', 'operasional bak', 'bak buka jam berapa'],
-                'response' => 'Bagian Administrasi Akademik (BAK) buka setiap Senin–Sabtu pukul 09:00–14:00 WITA.',
+                'response' => 'Bagian Administrasi Akademik (BAK) yang berada di **Lantai 1 Gedung Rektorat Baru UNISKA MAB (Kampus Handil Bakti)** buka setiap Senin–Sabtu pukul 09:00–14:00 WITA.',
                 'category' => 'administrasi',
                 'priority' => 8,
             ],

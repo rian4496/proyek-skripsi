@@ -1,14 +1,11 @@
 # ==============================================================================
-# Dockerfile untuk Deploy Laravel + React (Inertia.js) di Railway
-# dengan MySQL 8.4 (caching_sha2_password support via mysqlnd)
-#
+# Dockerfile - Laravel + React + MySQL 8.4 (mysqlnd/caching_sha2_password)
 # Skripsi: Hybrid Chatbot Pelayanan Akademik UNISKA MAB
 # ==============================================================================
 
-# --- Stage 1: Build stage (PHP + Node.js) ---
-FROM php:8.4-cli AS builder
+FROM php:8.4-cli
 
-# Install system dependencies + Node.js
+# Install system dependencies + Node.js 22
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libjpeg-dev \
@@ -23,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions (EKSPLISIT mysqlnd untuk MySQL 8.4 caching_sha2_password)
+# Install PHP extensions (EKSPLISIT mysqlnd untuk MySQL 8.4)
 RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
@@ -55,48 +52,15 @@ RUN npm ci
 # Copy full source code
 COPY . .
 
-# Generate autoload & build frontend (wayfinder butuh PHP + Node bersamaan)
+# Build frontend + autoload
 RUN composer dump-autoload --optimize
 RUN npm run build
 
-# --- Stage 2: Final production image (ringan) ---
-FROM php:8.4-cli
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpng16-16t64 \
-    libjpeg62-turbo \
-    libfreetype6 \
-    libzip4t64 \
-    libxml2 \
-    libcurl4t64 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions (sama seperti builder)
-RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        gd \
-        zip \
-        xml \
-        bcmath \
-        curl \
-        mbstring
-
-# Konfigurasi PHP untuk MySQL 8.4
-RUN echo "mysqlnd.sha256_server_public_key=" > /usr/local/etc/php/conf.d/mysql-auth.ini \
-    && echo "pdo_mysql.default_socket=" >> /usr/local/etc/php/conf.d/mysql-auth.ini
-
-WORKDIR /app
-
-# Copy everything from builder
-COPY --from=builder /app /app
-
-# Ensure directories exist with correct permissions
+# Ensure directories exist
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache database \
     && chmod -R 775 storage bootstrap/cache database
 
-# Start command
+# Start
 CMD php artisan migrate --force \
     && php artisan db:seed --class=ChatRuleSeeder --force \
     && php artisan db:seed --class=AdminSeeder --force \

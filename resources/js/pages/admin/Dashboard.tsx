@@ -153,7 +153,7 @@ export default function Dashboard({
         const interval = setInterval(() => {
             setIsRefreshingNow(true);
             router.reload({
-                only: ['chatLogs', 'tickets', 'session_reviews', 'stats', 'daily_stats', 'session_review_stats'],
+                only: ['stats', 'csat_stats', 'daily_trend', 'top_questions', 'ai_recommendations', 'recent_logs', 'tickets', 'session_reviews', 'session_review_stats'],
                 preserveScroll: true,
                 preserveState: true,
                 onFinish: () => setIsRefreshingNow(false),

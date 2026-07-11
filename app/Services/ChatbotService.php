@@ -527,42 +527,47 @@ class ChatbotService
     private function logConversation(?int $userId, string $originalMessage, array $result, array $participantData = []): ?int
     {
         try {
+            // Validasi FK user_id agar tidak melanggar constraint jika ID dari cookie lama tidak ada di tabel users
+            if ($userId !== null && !\App\Models\User::where('id', $userId)->exists()) {
+                $userId = null;
+            }
+
             $columns = \Illuminate\Support\Facades\Schema::getColumnListing('chat_logs');
             $data = [
-                'user_message' => $originalMessage,
-                'bot_response' => $result['response'] ?? '',
-                'source' => $result['source'] ?? 'rule',
+                'user_message' => substr($originalMessage, 0, 1000),
+                'bot_response' => substr($result['response'] ?? '', 0, 5000),
+                'source' => in_array(($result['source'] ?? 'rule'), ['rule', 'ai']) ? ($result['source'] ?? 'rule') : 'rule',
             ];
 
             if (in_array('user_id', $columns)) $data['user_id'] = $userId;
-            if (in_array('nama_mahasiswa', $columns)) $data['nama_mahasiswa'] = $participantData['nama_mahasiswa'] ?? null;
-            if (in_array('fakultas', $columns)) $data['fakultas'] = $participantData['fakultas'] ?? null;
-            if (in_array('prodi', $columns)) $data['prodi'] = $participantData['prodi'] ?? null;
-            if (in_array('matched_rule_id', $columns)) $data['matched_rule_id'] = $result['matched_rule_id'] ?? null;
-            if (in_array('similarity_score', $columns)) $data['similarity_score'] = is_numeric($result['similarity_score'] ?? null) ? (float) $result['similarity_score'] : null;
-            if (in_array('latency_ms', $columns)) $data['latency_ms'] = is_numeric($result['latency_ms'] ?? null) ? (int) $result['latency_ms'] : null;
-            if (in_array('ai_engine', $columns)) $data['ai_engine'] = $result['ai_engine'] ?? null;
+            if (in_array('nama_mahasiswa', $columns) && !empty($participantData['nama_mahasiswa'])) $data['nama_mahasiswa'] = substr(trim($participantData['nama_mahasiswa']), 0, 100);
+            if (in_array('fakultas', $columns) && !empty($participantData['fakultas'])) $data['fakultas'] = substr(trim($participantData['fakultas']), 0, 100);
+            if (in_array('prodi', $columns) && !empty($participantData['prodi'])) $data['prodi'] = substr(trim($participantData['prodi']), 0, 100);
+            if (in_array('matched_rule_id', $columns) && !empty($result['matched_rule_id'])) $data['matched_rule_id'] = (int) $result['matched_rule_id'];
+            if (in_array('similarity_score', $columns) && is_numeric($result['similarity_score'] ?? null)) $data['similarity_score'] = (float) $result['similarity_score'];
+            if (in_array('latency_ms', $columns) && is_numeric($result['latency_ms'] ?? null)) $data['latency_ms'] = (int) $result['latency_ms'];
+            if (in_array('ai_engine', $columns) && !empty($result['ai_engine'])) $data['ai_engine'] = substr($result['ai_engine'], 0, 50);
 
             $log = ChatLog::create($data);
+            \Illuminate\Support\Facades\Log::info("ChatbotService: Sukses menyimpan log ID {$log->id} via koneksi DB: " . \Illuminate\Support\Facades\DB::getDefaultConnection());
             return $log->id;
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal menyimpan log chat (mencoba fallback core)', [
-                'error' => $e->getMessage(),
-            ]);
+            \Illuminate\Support\Facades\Log::error('ChatbotService: Gagal menyimpan log utama: ' . $e->getMessage());
 
             try {
                 // Reset/reconnect koneksi database jika transaksi PostgreSQL sebelumnya aborted (25P02)
                 \Illuminate\Support\Facades\DB::reconnect();
 
                 $logCore = ChatLog::create([
-                    'user_id' => $userId,
-                    'user_message' => $originalMessage,
-                    'bot_response' => $result['response'] ?? '',
-                    'source' => $result['source'] ?? 'rule',
+                    'user_id' => null,
+                    'user_message' => substr($originalMessage, 0, 1000),
+                    'bot_response' => substr($result['response'] ?? '', 0, 5000),
+                    'source' => in_array(($result['source'] ?? 'rule'), ['rule', 'ai']) ? ($result['source'] ?? 'rule') : 'rule',
                 ]);
+                \Illuminate\Support\Facades\Log::info("ChatbotService: Sukses menyimpan log core ID {$logCore->id} via koneksi DB: " . \Illuminate\Support\Facades\DB::getDefaultConnection());
                 return $logCore->id;
             } catch (\Throwable $eFinal) {
-                \Illuminate\Support\Facades\Log::error('Gagal final menyimpan log chat core', ['error' => $eFinal->getMessage()]);
+                \Illuminate\Support\Facades\Log::error('ChatbotService: Gagal final menyimpan log core: ' . $eFinal->getMessage());
                 return null;
             }
         }

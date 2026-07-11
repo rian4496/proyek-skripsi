@@ -26,8 +26,8 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 10,
             ],
             [
-                'keywords' => ['cara isi krs', 'link sia uniska', 'alamat web sia', 'website sia', 'pengisian krs online', 'alur pengisian krs', 'alur krs', 'langkah pengisian krs', 'cara pengisian krs', 'cara krs', 'bagaimana alur pengisian krs'],
-                'response' => "Pengisian Kartu Rencana Studi (KRS) dilakukan secara online melalui portal SIA UNISKA di https://sia.uniska-bjm.ac.id.\n\n**Alur & Langkah Pengisian KRS:**\n1. Login menggunakan NPM dan Password SIA.\n2. Pilih menu \"Akademik\" > \"Pengisian KRS\".\n3. Pilih mata kuliah sesuai penawaran semester atau konsultasikan dengan Dosen Penasihat Akademik (PA).\n4. Simpan KRS dan tunggu verifikasi/persetujuan Dosen PA.",
+                'keywords' => ['cara isi krs', 'link sia uniska', 'alamat web sia', 'website sia', 'pengisian krs online', 'alur pengisian krs', 'bagaimana alur pengisian krs', 'tahapan pengisian krs', 'prosedur pengisian krs', 'alur krs', 'jadwal pengisian krs', 'pengisian krs', 'jadwal krs'],
+                'response' => "Pengisian Kartu Rencana Studi (KRS) dilakukan secara online melalui portal SIA UNISKA di https://sia.uniska-bjm.ac.id.\n\n**Alur & Langkah Pengisian KRS:**\n1. Login menggunakan NPM dan Password SIA.\n2. Pilih menu \"Akademik\" > \"Pengisian KRS\".\n3. Pilih mata kuliah sesuai penawaran semester atau konsultasikan terlebih dahulu dengan Dosen Penasihat Akademik (PA).\n4. Simpan KRS dan tunggu verifikasi/persetujuan Dosen PA.\n\n*Catatan: Pastikan kewajiban pembayaran SPP/UKT variabel semester aktif telah diselesaikan agar menu pengisian KRS dapat diakses.*",
                 'category' => 'akademik',
                 'priority' => 10,
             ],

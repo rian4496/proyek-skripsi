@@ -68,6 +68,12 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 10,
             ],
             [
+                'keywords' => ['dimana letak gedung kampus uniska mab', 'alamat kampus uniska', 'lokasi kampus uniska', 'gedung kampus uniska', 'dimana kampus uniska', 'lokasi uniska', 'alamat uniska', 'letak kampus uniska', 'dimana letak kampus uniska', 'kampus uniska dimana'],
+                'response' => "Kampus Universitas Islam Kalimantan Muhammad Arsyad Al Banjari (UNISKA MAB) tersebar di beberapa lokasi utama untuk melayani kegiatan perkuliahan dan administrasi:\n\n1. **Kampus Banjarmasin (Pusat/Utama - Adhyaksa):**\n   Jl. Adhyaksa No. 2, Kayu Tangi, Banjarmasin Utara, Kota Banjarmasin (berada persis di depan kantor LLDIKTI Wilayah XI Kalimantan).\n\n2. **Kampus Handil Bakti (Barito Kuala):**\n   Kawasan Handil Bakti, Kec. Alalak, Kabupaten Barito Kuala (termasuk Gedung Rektorat baru dan fasilitas fakultas terpadu).\n\n3. **Kampus Banjarbaru:**\n   Jl. Salak No. 44, Guntung Paikat, Kec. Banjarbaru Selatan, Kota Banjarbaru.\n\n4. **Kampus Gambut (Cabang/Tambahan):**\n   Area Terminal Tipe A Gambut Barakat, Jl. Ahmad Yani KM 17, Gambut, Kabupaten Banjar.\n\nUntuk informasi lebih detail mengenai pembagian program studi yang tersedia di masing-masing lokasi kampus, Anda dapat mengakses situs resmi UNISKA MAB di https://uniska-bjm.ac.id.",
+                'category' => 'umum',
+                'priority' => 10,
+            ],
+            [
                 'keywords' => ['jam kerja bak', 'jam buka bak', 'operasional bak', 'bak buka jam berapa'],
                 'response' => 'Bagian Administrasi Akademik (BAK) buka setiap Senin–Sabtu pukul 09:00–14:00 WITA.',
                 'category' => 'administrasi',

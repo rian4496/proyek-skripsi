@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\Log;
 class OllamaService
 {
     private string $webhookUrl;
-    private int $connectTimeout = 4;   // detik, untuk cek koneksi tunnel/FastAPI
-    private int $requestTimeout = 60;  // detik, maksimal waktu tunggu sebelum fallback otomatis ke Gemini Cloud API
+    private int $connectTimeout = 3;   // detik, untuk cek koneksi tunnel/FastAPI
+    private int $requestTimeout = 8;   // detik, maksimal waktu tunggu sebelum fallback otomatis ke Gemini Cloud API agar terhindar dari 500 Gateway Timeout Railway
 
     /**
      * Pola respons Ollama yang mengindikasikan data tidak ditemukan
@@ -76,10 +76,11 @@ class OllamaService
         }
 
         try {
-            // Perpanjang batas waktu PHP karena model LLM lokal butuh waktu lama
-            set_time_limit(300);
+            // Perpanjang batas waktu PHP untuk lingkungan lokal, tetapi Http client dibatasi 8s untuk keamanan Railway
+            set_time_limit(60);
 
-            $response = Http::timeout($this->requestTimeout)
+            $response = Http::connectTimeout($this->connectTimeout)
+                ->timeout($this->requestTimeout)
                 ->withHeaders([
                     'Bypass-Tunnel-Reminder' => 'true',
                     'bypass-tunnel-reminder' => 'true',

@@ -99,7 +99,7 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 8,
             ],
             [
-                'keywords' => ['link kalender akademik', 'tautan kalender akademik', 'url kalender akademik', 'kalender akademik', 'jadwal kalender akademik'],
+                'keywords' => ['link kalender akademik', 'tautan kalender akademik', 'url kalender akademik', 'kalender akademik', 'jadwal kalender akademik', 'kalender 2026', 'kalender 2025', 'kalender', 'jadwal kalender', 'kalender perkuliahan', 'kalender libur', 'kalender uniska', 'kapan kuliah mulai', 'kapan libur semester'],
                 'response' => "Kalender Akademik UNISKA MAB Tahun Ajaran 2025/2026 mencakup jadwal perkuliahan, pembayaran UKT, pengisian KRS, ujian (UTS/UAS), dan yudisium/wisuda. Informasi lengkap dapat dilihat pada tautan resmi: https://uniska-bjm.ac.id/?p=8599\n\n![Kalender Akademik UNISKA MAB 2025/2026](/assets/img/kalender/kalender_akademik_2025_2026.jpeg)",
                 'category' => 'akademik',
                 'priority' => 10,

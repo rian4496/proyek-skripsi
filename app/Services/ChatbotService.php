@@ -148,23 +148,46 @@ class ChatbotService
         // --- Tahap 2: AI Fallback (Gemini Cloud ATAU Ollama/FastAPI RAG Lokal) ---
         $activeEngine = $this->getActiveEngine();
 
-        if ($activeEngine === 'ollama') {
-            // === Engine Lokal: FastAPI RAG Backend → Ollama Qwen 2.5 ===
-            // Session ID berdasarkan identitas peserta agar konteks percakapan terjaga per-mahasiswa
-            $sessionId = !empty($participantData['nama_mahasiswa'])
-                ? md5($participantData['nama_mahasiswa'] . ($participantData['prodi'] ?? ''))
-                : 'anon-' . session()->getId();
+        try {
+            if ($activeEngine === 'ollama') {
+                // === Engine Lokal: FastAPI RAG Backend → Ollama Qwen 2.5 ===
+                $sessionId = !empty($participantData['nama_mahasiswa'])
+                    ? md5($participantData['nama_mahasiswa'] . ($participantData['prodi'] ?? ''))
+                    : 'anon-' . session()->getId();
 
-            $ollamaResult = $this->ollamaService->generateResponse($message, $sessionId);
+                $ollamaResult = $this->ollamaService->generateResponse($message, $sessionId);
 
-            // === AUTO-FALLBACK SEAMLESS KE GEMINI CLOUD API JIKA OLLAMA/TUNNEL TIMEOUT/GAGAL ===
-            if (!$ollamaResult['is_rag_found'] && (
-                str_contains(strtolower($ollamaResult['response']), 'tidak dapat dihubungi') ||
-                str_contains(strtolower($ollamaResult['response']), 'curl error') ||
-                str_contains(strtolower($ollamaResult['response']), 'timeout') ||
-                empty(trim($ollamaResult['response']))
-            )) {
-                Log::warning("ChatbotService: Ollama/Tunnel lambat/offline, auto-switching ke Gemini Cloud API agar tidak stuck.");
+                // === AUTO-FALLBACK SEAMLESS KE GEMINI CLOUD API JIKA OLLAMA/TUNNEL TIMEOUT/GAGAL ===
+                if (!$ollamaResult['is_rag_found'] && (
+                    str_contains(strtolower($ollamaResult['response']), 'tidak dapat dihubungi') ||
+                    str_contains(strtolower($ollamaResult['response']), 'curl error') ||
+                    str_contains(strtolower($ollamaResult['response']), 'timeout') ||
+                    empty(trim($ollamaResult['response']))
+                )) {
+                    Log::warning("ChatbotService: Ollama/Tunnel lambat/offline, auto-switching ke Gemini Cloud API agar tidak stuck.");
+                    $aiResponse = $this->geminiService->generateResponse($message);
+                    $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+
+                    $result = $this->buildResult(
+                        $aiResponse,
+                        'ai',
+                        aiEngine: 'gemini',
+                        isRagFound: true,
+                        latencyMs: $latencyMs,
+                    );
+                } else {
+                    $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
+
+                    $result = $this->buildResult(
+                        $ollamaResult['response'],
+                        'ai',
+                        aiEngine: 'ollama',
+                        isRagFound: $ollamaResult['is_rag_found'],
+                        latencyMs: $latencyMs,
+                    );
+                }
+            } else {
+                // === Engine Cloud: Google Gemini API ===
                 $aiResponse = $this->geminiService->generateResponse($message);
                 $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
 
@@ -172,29 +195,17 @@ class ChatbotService
                     $aiResponse,
                     'ai',
                     aiEngine: 'gemini',
-                    isRagFound: true,
-                    latencyMs: $latencyMs,
-                );
-            } else {
-                $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
-
-                $result = $this->buildResult(
-                    $ollamaResult['response'],
-                    'ai',
-                    aiEngine: 'ollama',
-                    isRagFound: $ollamaResult['is_rag_found'],
                     latencyMs: $latencyMs,
                 );
             }
-        } else {
-            // === Engine Cloud: Google Gemini API ===
-            $aiResponse = $this->geminiService->generateResponse($message);
+        } catch (\Throwable $e) {
+            Log::error('ChatbotService: AI Fallback Fatal Exception/Timeout', ['error' => $e->getMessage()]);
             $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
-
             $result = $this->buildResult(
-                $aiResponse,
+                "Mohon maaf, koneksi ke server AI saat ini sedang mengalami keterlambatan/timeout. Namun untuk informasi resmi pelayanan akademik UNISKA MAB, Anda dapat langsung mengetik kata kunci utama seperti **'KRS'**, **'Yudisium'**, **'Kalender'**, **'BAK'**, atau **'Rektor'** untuk mendapatkan panduan cepat.",
                 'ai',
-                aiEngine: 'gemini',
+                aiEngine: $activeEngine,
+                isRagFound: false,
                 latencyMs: $latencyMs,
             );
         }

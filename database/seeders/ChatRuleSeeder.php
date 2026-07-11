@@ -27,7 +27,7 @@ class ChatRuleSeeder extends Seeder
             ],
             [
                 'keywords' => ['cara isi krs', 'link sia uniska', 'alamat web sia', 'website sia', 'pengisian krs online', 'alur pengisian krs', 'bagaimana alur pengisian krs', 'tahapan pengisian krs', 'prosedur pengisian krs', 'alur krs', 'jadwal pengisian krs', 'pengisian krs', 'jadwal krs'],
-                'response' => "Pengisian Kartu Rencana Studi (KRS) dilakukan secara online melalui portal SIA UNISKA di https://sia.uniska-bjm.ac.id.\n\n**Alur & Langkah Pengisian KRS:**\n1. Login menggunakan NPM dan Password SIA.\n2. Pilih menu \"Akademik\" > \"Pengisian KRS\".\n3. Pilih mata kuliah sesuai penawaran semester atau konsultasikan terlebih dahulu dengan Dosen Penasihat Akademik (PA).\n4. Simpan KRS dan tunggu verifikasi/persetujuan Dosen PA.\n\n*Catatan: Pastikan kewajiban pembayaran SPP/UKT variabel semester aktif telah diselesaikan agar menu pengisian KRS dapat diakses.*",
+                'response' => "Pengisian Kartu Rencana Studi (KRS) dilakukan secara online melalui portal SIA UNISKA di https://sia.uniska-bjm.ac.id.\n\n**Alur & Langkah Pengisian KRS:**\n1. Login menggunakan NPM dan Password SIA.\n2. Pilih menu \"Akademik\" > \"Pengisian KRS\".\n3. Pilih mata kuliah sesuai penawaran semester atau konsultasikan terlebih dahulu dengan Dosen Penasihat Akademik (PA).\n4. Simpan KRS dan tunggu verifikasi/persetujuan Dosen PA.\n\n![Panduan Alur Pengisian KRS Online](/assets/img/sia/urutan-4.jpeg)\n\n*Catatan: Pastikan kewajiban pembayaran SPP/UKT variabel semester aktif telah diselesaikan agar menu pengisian KRS dapat diakses.*",
                 'category' => 'akademik',
                 'priority' => 10,
             ],
@@ -50,16 +50,22 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 10,
             ],
             [
+                'keywords' => ['syarat yudisium', 'daftar yudisium', 'alur yudisium', 'info yudisium', 'persyaratan yudisium', 'kapan yudisium'],
+                'response' => "Pendaftaran dan pelaksanaan Yudisium UNISKA MAB dilakukan sesuai dengan Standar Operasional Prosedur (SOP) fakultas masing-masing.\n\n**Syarat & Alur Umum Yudisium:**\n1. Telah dinyatakan lulus ujian skripsi (sidang komprehensif).\n2. Mengumpulkan lembar pengesahan skripsi yang sudah ditandatangani lengkap (Pembimbing, Penguji, dan Dekan).\n3. Mengupload naskah skripsi final dan jurnal ke repository perpustakaan.\n4. Melakukan pendaftaran online dan verifikasi berkas di loket BAK / Fakultas.\n\n![Panduan SOP & Alur Yudisium UNISKA MAB](/assets/img/yudisium/sop-a.jpeg)",
+                'category' => 'akademik',
+                'priority' => 10,
+            ],
+            [
                 'keywords' => ['perpustakaan', 'jam buka perpustakaan', 'jadwal operasional perpus', 'perpus uniska'],
                 'response' => 'Perpustakaan Pusat UNISKA MAB berlokasi di Kampus Adhyaksa dan buka setiap Senin–Jumat pukul 08.00–16.00 WITA serta Sabtu pukul 08.00–13.00 WITA. Untuk peminjaman buku fisik maupun akses e-library / skripsi digital, mahasiswa wajib membawa Kartu Tanda Mahasiswa (KTM) yang terdaftar sebagai anggota.',
                 'category' => 'umum',
                 'priority' => 8,
             ],
             [
-                'keywords' => ['link kalender akademik', 'tautan kalender akademik', 'url kalender akademik'],
-                'response' => 'Untuk informasi kalender akademik dapat dilihat di https://uniska-bjm.ac.id/?p=8599',
+                'keywords' => ['link kalender akademik', 'tautan kalender akademik', 'url kalender akademik', 'kalender akademik', 'jadwal kalender akademik'],
+                'response' => "Kalender Akademik UNISKA MAB Tahun Ajaran 2025/2026 mencakup jadwal perkuliahan, pembayaran UKT, pengisian KRS, ujian (UTS/UAS), dan yudisium/wisuda. Informasi lengkap dapat dilihat pada tautan resmi: https://uniska-bjm.ac.id/?p=8599\n\n![Kalender Akademik UNISKA MAB 2025/2026](/assets/img/kalender/kalender_akademik_2025_2026.jpeg)",
                 'category' => 'akademik',
-                'priority' => 8,
+                'priority' => 10,
             ],
             [
                 'keywords' => ['rektor uniska', 'siapa rektor uniska', 'siapa rektor uniska saat ini', 'pimpinan uniska', 'wakil rektor uniska', 'siapa rektor'],

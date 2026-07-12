@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\Log;
 class OllamaService
 {
     private string $webhookUrl;
-    private int $connectTimeout = 3;   // detik, untuk cek koneksi tunnel/FastAPI
-    private int $requestTimeout = 8;   // detik, maksimal waktu tunggu sebelum fallback otomatis ke Gemini Cloud API agar terhindar dari 500 Gateway Timeout Railway
+    private int $connectTimeout = 6;   // detik, untuk cek koneksi tunnel/FastAPI
+    private int $requestTimeout = 45;  // detik, memberi waktu cukup untuk LLM lokal Ollama Qwen 2.5 merespons RAG (rata-rata 10-15s)
 
     /**
      * Pola respons Ollama yang mengindikasikan data tidak ditemukan

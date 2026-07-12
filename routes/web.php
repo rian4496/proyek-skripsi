@@ -47,6 +47,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/system-logs/clear', [App\Http\Controllers\Admin\SystemLogController::class, 'clear'])->name('system-logs.clear');
     Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
     Route::get('/participants/export-csv', [ParticipantController::class, 'exportCsv'])->name('participants.export-csv');
+    Route::get('/participants/print', [ParticipantController::class, 'printParticipants'])->name('participants.print');
     Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
 });
 

@@ -13,7 +13,8 @@ import {
     CheckCircle2,
     ArrowLeft,
     Clock,
-    School
+    School,
+    Printer
 } from 'lucide-react';
 
 interface ParticipantItem {
@@ -127,10 +128,20 @@ export default function Participants({
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <a
+                            href={`/admin/participants/print?fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-50 px-3.5 py-2 text-xs font-bold text-blue-700 shadow-sm transition-all hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                            title="Cetak Laporan Rekapitulasi Master Data Peserta (PDF/Print)"
+                        >
+                            <Printer className="size-4" />
+                            <span>Cetak Laporan</span>
+                        </a>
                         <a
                             href={`/admin/participants/export-csv?fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
-                            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                         >
                             <Download className="size-4" />
                             <span>Export Rekap CSV (Bab IV)</span>

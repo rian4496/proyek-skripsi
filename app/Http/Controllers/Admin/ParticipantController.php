@@ -22,9 +22,12 @@ class ParticipantController extends Controller
     {
         $request->validate([
             'nama_mahasiswa' => ['required', 'string', 'max:100'],
-            'npm' => ['required', 'string', 'max:50'],
+            'npm' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
             'fakultas' => ['nullable', 'string', 'max:100'],
             'prodi' => ['nullable', 'string', 'max:100'],
+        ], [
+            'npm.required' => 'NPM wajib diisi.',
+            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 2210010497).',
         ]);
 
         $peserta = PesertaUjiCoba::firstOrNew(['npm' => trim($request->input('npm'))]);

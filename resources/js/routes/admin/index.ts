@@ -8,7 +8,7 @@ import systemLogs from './system-logs'
 import participants from './participants'
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
- * @see app/Http/Controllers/Admin/DashboardController.php:25
+ * @see app/Http/Controllers/Admin/DashboardController.php:85
  * @route '/admin/dashboard'
  */
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -23,7 +23,7 @@ dashboard.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
- * @see app/Http/Controllers/Admin/DashboardController.php:25
+ * @see app/Http/Controllers/Admin/DashboardController.php:85
  * @route '/admin/dashboard'
  */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -32,7 +32,7 @@ dashboard.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
- * @see app/Http/Controllers/Admin/DashboardController.php:25
+ * @see app/Http/Controllers/Admin/DashboardController.php:85
  * @route '/admin/dashboard'
  */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -41,7 +41,7 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
- * @see app/Http/Controllers/Admin/DashboardController.php:25
+ * @see app/Http/Controllers/Admin/DashboardController.php:85
  * @route '/admin/dashboard'
  */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -51,7 +51,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
- * @see app/Http/Controllers/Admin/DashboardController.php:25
+ * @see app/Http/Controllers/Admin/DashboardController.php:85
  * @route '/admin/dashboard'
  */
     const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -61,7 +61,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
- * @see app/Http/Controllers/Admin/DashboardController.php:25
+ * @see app/Http/Controllers/Admin/DashboardController.php:85
  * @route '/admin/dashboard'
  */
         dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -70,7 +70,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
- * @see app/Http/Controllers/Admin/DashboardController.php:25
+ * @see app/Http/Controllers/Admin/DashboardController.php:85
  * @route '/admin/dashboard'
  */
         dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -86,7 +86,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     dashboard.form = dashboardForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:161
+ * @see app/Http/Controllers/Admin/DashboardController.php:205
  * @route '/admin/export-csv'
  */
 export const exportCsv = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -101,7 +101,7 @@ exportCsv.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:161
+ * @see app/Http/Controllers/Admin/DashboardController.php:205
  * @route '/admin/export-csv'
  */
 exportCsv.url = (options?: RouteQueryOptions) => {
@@ -110,7 +110,7 @@ exportCsv.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:161
+ * @see app/Http/Controllers/Admin/DashboardController.php:205
  * @route '/admin/export-csv'
  */
 exportCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -119,7 +119,7 @@ exportCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:161
+ * @see app/Http/Controllers/Admin/DashboardController.php:205
  * @route '/admin/export-csv'
  */
 exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -129,7 +129,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:161
+ * @see app/Http/Controllers/Admin/DashboardController.php:205
  * @route '/admin/export-csv'
  */
     const exportCsvForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -139,7 +139,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:161
+ * @see app/Http/Controllers/Admin/DashboardController.php:205
  * @route '/admin/export-csv'
  */
         exportCsvForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -148,7 +148,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:161
+ * @see app/Http/Controllers/Admin/DashboardController.php:205
  * @route '/admin/export-csv'
  */
         exportCsvForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

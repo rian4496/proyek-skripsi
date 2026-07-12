@@ -73,6 +73,11 @@ class ChatLog extends Model
     }
 
     /**
+     * @var list<string>
+     */
+    protected $appends = ['topic_category'];
+
+    /**
      * Scope: filter log yang dijawab oleh rule-based.
      *
      * @param  Builder<ChatLog>  $query
@@ -92,5 +97,59 @@ class ChatLog extends Model
     public function scopeFromAi(Builder $query): Builder
     {
         return $query->where('source', 'ai');
+    }
+
+    /**
+     * Accessor: mengembalikan kategori topik akademis dari pesan user.
+     */
+    public function getTopicCategoryAttribute(): string
+    {
+        return self::classifyTopic($this->user_message);
+    }
+
+    /**
+     * Helper statis untuk mengelompokkan pesan berdasarkan kamus kata kunci kampus UNISKA MAB.
+     */
+    public static function classifyTopic(?string $message): string
+    {
+        if (empty($message)) {
+            return 'Umum & Lain-lain';
+        }
+
+        $text = mb_strtolower($message);
+
+        // Kategori 1: Yudisium, Skripsi & Wisuda
+        $keywordsYudisium = ['yudisium', 'skripsi', 'wisuda', 'proposal', 'seminar', 'pembimbing', 'sidang', 'berkas', 'jurnal', 'publikasi', 'bebas tanggungan', 'toga', 'ijazah', 'transkrip'];
+        foreach ($keywordsYudisium as $kw) {
+            if (str_contains($text, $kw)) {
+                return 'Yudisium, Skripsi & Wisuda';
+            }
+        }
+
+        // Kategori 2: Kalender Akademik & Jadwal
+        $keywordsKalender = ['kalender', 'jadwal', 'kuliah', 'uas', 'uts', 'semester', 'libur', 'masuk', 'jam kerja', 'baak', 'kapan', 'tanggal', 'pelayanan', 'buka', 'tutup'];
+        foreach ($keywordsKalender as $kw) {
+            if (str_contains($text, $kw)) {
+                return 'Kalender Akademik & Jadwal';
+            }
+        }
+
+        // Kategori 3: KRS, UKT & Administrasi
+        $keywordsKrs = ['krs', 'krsan', 'sks', 'ukt', 'pembayaran', 'spp', 'cuti', 'aktif kembali', 'dosen wali', 'siakad', 'registrasi', 'daftar ulang', 'denda', 'tagihan', 'khs', 'nilai', 'ipk'];
+        foreach ($keywordsKrs as $kw) {
+            if (str_contains($text, $kw)) {
+                return 'KRS, UKT & Administrasi';
+            }
+        }
+
+        // Kategori 4: Beasiswa & Layanan Kampus
+        $keywordsBeasiswa = ['beasiswa', 'kip', 'baznas', 'perpustakaan', 'lokasi', 'gedung', 'fasilitas', 'laboratorium', 'lab', 'wifi', 'masjid', 'ukm'];
+        foreach ($keywordsBeasiswa as $kw) {
+            if (str_contains($text, $kw)) {
+                return 'Beasiswa & Layanan Kampus';
+            }
+        }
+
+        return 'Umum & Lain-lain';
     }
 }

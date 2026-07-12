@@ -193,6 +193,11 @@ export default function ChatWindow() {
         e.preventDefault();
         if (!participantName.trim() || !participantNpm.trim() || !participantProdi.trim()) return;
 
+        if (!/^\d{10}$/.test(participantNpm.trim())) {
+            alert('⚠️ Validasi Pengisian NPM:\nNPM harus terdiri dari tepat 10 digit angka sesuai format UNISKA MAB (contoh yang benar: 2210010497).');
+            return;
+        }
+
         const info = {
             nama_mahasiswa: participantName.trim(),
             npm: participantNpm.trim(),
@@ -217,8 +222,22 @@ export default function ChatWindow() {
         laporan: '',
     });
 
+    const openTicketModal = () => {
+        ticketForm.setData({
+            ...ticketForm.data,
+            nama_pelapor: participant?.nama_mahasiswa || participantName || '',
+            npm: participant?.npm || participantNpm || '',
+        });
+        setIsTicketModalOpen(true);
+    };
+
     const submitTicket = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim())) {
+            alert('⚠️ Validasi Pengisian NPM:\nNPM pada tiket harus terdiri dari tepat 10 digit angka (contoh yang benar: 2210010497).');
+            return;
+        }
 
         ticketForm.post('/feedback', {
             preserveScroll: true,
@@ -441,7 +460,7 @@ export default function ChatWindow() {
                         {/* ═══ Tombol Hubungi Admin (Selalu Muncul) ═══ */}
                         <div className="mt-6 border-t border-slate-100 pt-4 text-center dark:border-slate-800">
                             <button
-                                onClick={() => setIsTicketModalOpen(true)}
+                                onClick={openTicketModal}
                                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md active:scale-95"
                             >
                                 <HelpCircle className="size-4" />
@@ -492,6 +511,30 @@ export default function ChatWindow() {
                                         value={ticketForm.data.nama_pelapor}
                                         onChange={e => ticketForm.setData('nama_pelapor', e.target.value)}
                                     />
+                                </div>
+                                <div>
+                                    <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">NPM (Nomor Pokok Mahasiswa)</label>
+                                    <input
+                                        type="text"
+                                        maxLength={10}
+                                        placeholder="Contoh: 2210010497 (10 digit angka)"
+                                        className={`w-full rounded-lg border ${
+                                            ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim())
+                                                ? 'border-amber-500 bg-amber-50/40 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-amber-500 dark:bg-amber-950/30'
+                                                : 'border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+                                        } px-3 py-2 text-sm focus:outline-none dark:bg-slate-700 dark:text-white transition-all`}
+                                        value={ticketForm.data.npm}
+                                        onChange={e => ticketForm.setData('npm', e.target.value.replace(/\D/g, ''))}
+                                    />
+                                    {ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim()) ? (
+                                        <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                                            <span>⚠️</span> NPM harus tepat 10 digit angka (saat ini {ticketForm.data.npm.trim().length} digit). Contoh benar: 2210010497
+                                        </p>
+                                    ) : (
+                                        <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                                            * Wajib 10 digit angka sesuai format SIA UNISKA MAB.
+                                        </p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Kategori Masalah</label>
@@ -582,11 +625,25 @@ export default function ChatWindow() {
                                     <input
                                         type="text"
                                         required
-                                        placeholder="Contoh: 22630001"
-                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white transition-all"
+                                        maxLength={10}
+                                        placeholder="Contoh: 2210010497 (10 digit angka)"
+                                        className={`w-full rounded-xl border ${
+                                            participantNpm && !/^\d{10}$/.test(participantNpm.trim())
+                                                ? 'border-amber-500 bg-amber-50/40 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-amber-500 dark:bg-amber-950/30'
+                                                : 'border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                                        } px-3.5 py-2.5 text-sm focus:outline-none dark:text-white transition-all`}
                                         value={participantNpm}
-                                        onChange={e => setParticipantNpm(e.target.value)}
+                                        onChange={e => setParticipantNpm(e.target.value.replace(/\D/g, ''))}
                                     />
+                                    {participantNpm && !/^\d{10}$/.test(participantNpm.trim()) ? (
+                                        <p className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 animate-in fade-in">
+                                            <span>⚠️</span> NPM harus terdiri dari tepat 10 digit angka (saat ini {participantNpm.trim().length} digit). Contoh benar: 2210010497
+                                        </p>
+                                    ) : (
+                                        <p className="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+                                            * Wajib 10 digit angka sesuai format KTM / SIA UNISKA MAB.
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div>

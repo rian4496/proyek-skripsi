@@ -32,7 +32,7 @@ class SendMessageRequest extends FormRequest
         return [
             'message' => ['required', 'string', 'max:1000'],
             'nama_mahasiswa' => ['nullable', 'string', 'max:100'],
-            'npm' => ['nullable', 'string', 'max:50'],
+            'npm' => ['nullable', 'string', 'regex:/^[0-9]{10}$/'],
             'fakultas' => ['nullable', 'string', 'max:100'],
             'prodi' => ['nullable', 'string', 'max:100'],
         ];
@@ -48,6 +48,7 @@ class SendMessageRequest extends FormRequest
         return [
             'message.required' => 'Pesan tidak boleh kosong.',
             'message.max' => 'Pesan terlalu panjang (maksimal 1000 karakter).',
+            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 2210010497).',
         ];
     }
 }

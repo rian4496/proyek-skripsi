@@ -11,9 +11,11 @@ class FeedbackController extends Controller
     {
         $validated = $request->validate([
             'nama_pelapor' => 'required|string|max:100',
-            'npm' => 'nullable|string|max:20',
+            'npm' => 'nullable|string|regex:/^[0-9]{10}$/',
             'kategori_masalah' => 'required|string|max:100',
             'laporan' => 'required|string',
+        ], [
+            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 2210010497).',
         ]);
 
         $validated['npm'] = !empty($validated['npm']) ? substr(trim($validated['npm']), 0, 20) : '-';

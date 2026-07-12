@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ChatLog;
 use App\Models\ChatRule;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**

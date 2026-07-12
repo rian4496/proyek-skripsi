@@ -578,7 +578,7 @@ class DashboardController extends Controller
                     <td class="text-center">' . $dbAns . ' (' . $dbPctCat . '%)</td>
                     <td class="text-center">' . $aiAns . ' (' . $aiPctCat . '%)</td>
                     <td class="text-center">' . $avgSimCat . '</td>
-                    <td class="text-center" style="color: #047857; font-weight: bold;">⏱️ ' . $avgLatText . '</td>
+                    <td class="text-center">' . $avgLatText . '</td>
                 </tr>';
             }
             $summaryTableHtml .= '</tbody></table><div style="page-break-after: always;"></div>';
@@ -643,7 +643,7 @@ class DashboardController extends Controller
                         <td class="text-center">' . htmlspecialchars($fakProdiText) . '</td>
                         <td>' . htmlspecialchars($pesanText) . '</td>
                         <td style="font-size: 9.5pt;">' . htmlspecialchars($botRespTrimmed) . '</td>
-                        <td class="text-center">' . $sumberBadge . '<br><small>Skor: <strong>' . $skorText . '</strong><br><span style="color: #047857; font-weight: bold;">⏱️ ' . htmlspecialchars($latText) . '</span></small></td>
+                        <td class="text-center">' . $sumberBadge . '<br><small>Skor: <strong>' . $skorText . '</strong><br>Latency: ' . htmlspecialchars($latText) . '</small></td>
                     </tr>';
                 }
                 $detailSectionsHtml .= '</tbody></table><br><br>';

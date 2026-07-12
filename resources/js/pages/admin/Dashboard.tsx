@@ -1013,7 +1013,7 @@ export default function Dashboard({
                         </h3>
                         <div className="flex items-center gap-2">
                             <a
-                                href="/tickets/print"
+                                href="/admin/tickets/print"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 shadow-sm transition-all hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
@@ -1023,7 +1023,7 @@ export default function Dashboard({
                                 <span>Cetak Laporan</span>
                             </a>
                             <a
-                                href="/tickets/export-csv"
+                                href="/admin/tickets/export-csv"
                                 className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 shadow-sm transition-all hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                                 title="Download Rekap CSV Tiket Keluhan Masuk"
                             >
@@ -1177,7 +1177,7 @@ export default function Dashboard({
                             </div>
                             <div className="flex items-center gap-2">
                                 <a
-                                    href="/session-reviews/print"
+                                    href="/admin/session-reviews/print"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 shadow-sm transition-all hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
@@ -1187,7 +1187,7 @@ export default function Dashboard({
                                     <span>Cetak Laporan</span>
                                 </a>
                                 <a
-                                    href="/session-reviews/export-csv"
+                                    href="/admin/session-reviews/export-csv"
                                     className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 shadow-sm transition-all hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                                     title="Download Rekap CSV Evaluasi CSAT Responden"
                                 >

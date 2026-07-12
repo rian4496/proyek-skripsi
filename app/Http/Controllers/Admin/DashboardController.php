@@ -165,19 +165,23 @@ class DashboardController extends Controller
         return response()->streamDownload(function () use ($request) {
             $handle = fopen('php://output', 'w');
 
+            // BOM UTF-8 agar Excel Indonesia mengenali encoding dengan benar
+            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+
             // Header CSV
             fputcsv($handle, [
                 'No',
                 'Waktu',
                 'Nama Mahasiswa',
+                'NPM',
                 'Fakultas',
-                'Prodi',
-                'Pesan Mahasiswa',
-                'Respons Bot',
-                'Sumber (rule/ai)',
+                'Program Studi',
+                'Pertanyaan Mahasiswa',
+                'Respons Bot (Ringkas)',
+                'Sumber Algoritma',
                 'AI Engine',
                 'Skor Kemiripan (%)',
-                'Feedback (helpful)',
+                'Feedback',
             ]);
 
             $applyFilters = function ($query) use ($request) {
@@ -199,25 +203,41 @@ class DashboardController extends Controller
                 return $query;
             };
 
+            // Helper: bersihkan teks agar rapi di cell Excel (hapus newline berlebih)
+            $cleanText = function (string $text, int $maxLength = 0): string {
+                // Ganti newline dan tab dengan spasi tunggal
+                $text = preg_replace('/[\r\n\t]+/', ' ', $text);
+                // Hapus spasi berlebihan
+                $text = preg_replace('/\s{2,}/', ' ', trim($text));
+                // Potong jika terlalu panjang
+                if ($maxLength > 0 && mb_strlen($text) > $maxLength) {
+                    $text = mb_substr($text, 0, $maxLength) . '...';
+                }
+                return $text;
+            };
+
             // Data — chunked agar efisien memori
             $no = 0;
-            $applyFilters(ChatLog::orderBy('created_at', 'asc'))->chunk(200, function ($logs) use ($handle, &$no) {
+            $applyFilters(ChatLog::orderBy('created_at', 'asc'))->chunk(200, function ($logs) use ($handle, &$no, $cleanText) {
                 foreach ($logs as $log) {
                     $no++;
                     $feedback = $log->is_helpful === null ? 'Belum dinilai'
-                        : ($log->is_helpful ? 'Helpful (👍)' : 'Not Helpful (👎)');
+                        : ($log->is_helpful ? 'Helpful' : 'Not Helpful');
+
+                    $sumber = $log->source === 'rule' ? 'Database (Levenshtein)' : 'AI Fallback';
 
                     fputcsv($handle, [
                         $no,
                         $log->created_at->format('d/m/Y H:i:s'),
                         $log->nama_mahasiswa ?? 'Anonim',
+                        $log->npm ?? '-',
                         $log->fakultas ?? '-',
                         $log->prodi ?? '-',
-                        $log->user_message,
-                        $log->bot_response,
-                        $log->source,
+                        $cleanText($log->user_message, 200),
+                        $cleanText($log->bot_response, 300),
+                        $sumber,
                         $log->ai_engine ?? '-',
-                        $log->similarity_score ?? '-',
+                        $log->similarity_score ? round($log->similarity_score, 2) : '-',
                         $feedback,
                     ]);
                 }
@@ -259,12 +279,16 @@ class DashboardController extends Controller
                 ->chunk(200, function ($tickets) use ($handle, &$no) {
                     foreach ($tickets as $ticket) {
                         $no++;
+                        // Bersihkan teks dari newline agar rapi di Excel
+                        $isiLaporan = preg_replace('/[\r\n\t]+/', ' ', $ticket->isi_laporan ?? '-');
+                        $isiLaporan = preg_replace('/\s{2,}/', ' ', trim($isiLaporan));
+
                         fputcsv($handle, [
                             $no,
                             $ticket->created_at->format('d/m/Y H:i:s'),
                             $ticket->nama_pelapor ?? 'Anonim',
                             $ticket->kategori_masalah ?? 'Umum',
-                            $ticket->isi_laporan,
+                            $isiLaporan,
                             $ticket->sentiment_label ?? 'Netral',
                             $ticket->sentiment_score ? ($ticket->sentiment_score . '%') : '-',
                             $ticket->status ?? 'Baru'

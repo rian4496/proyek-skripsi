@@ -189,17 +189,25 @@ export default function ChatWindow() {
         window.location.href = '/chat';
     };
 
-    const submitParticipant = (e: React.FormEvent) => {
+    const submitParticipant = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!participantName.trim() || !participantNpm.trim() || !participantProdi.trim()) return;
 
-        sessionStorage.setItem('participant_info', JSON.stringify({
+        const info = {
             nama_mahasiswa: participantName.trim(),
             npm: participantNpm.trim(),
             fakultas: participantFaculty,
             prodi: participantProdi.trim(),
-        }));
+        };
+
+        sessionStorage.setItem('participant_info', JSON.stringify(info));
         setShowParticipantModal(false);
+
+        try {
+            await axios.post('/participants', info);
+        } catch (err) {
+            console.error('Gagal mencatat peserta ke master table:', err);
+        }
     };
 
     const ticketForm = useForm({

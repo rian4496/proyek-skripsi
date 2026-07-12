@@ -25,6 +25,7 @@ import {
     TrendingUp,
     Terminal,
     Upload,
+    Users,
     X,
 } from 'lucide-react';
 
@@ -379,6 +380,13 @@ export default function Dashboard({
                         >
                             <Terminal className="mr-1.5 size-3.5 text-purple-600 dark:text-purple-400" />
                             System Logs
+                        </Link>
+                        <Link
+                            href="/admin/participants"
+                            className="inline-flex items-center rounded-lg border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm transition-colors hover:bg-indigo-100 dark:border-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
+                        >
+                            <Users className="mr-1.5 size-3.5 text-indigo-600 dark:text-indigo-400" />
+                            Daftar Peserta Uji Coba
                         </Link>
                         {/* Tombol Live Refresh / Polling Toggle */}
                         <button

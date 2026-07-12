@@ -20,8 +20,10 @@ Route::patch('/chat/{chatLog}/feedback', [ChatController::class, 'storeFeedback'
 
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\SessionReviewController;
+use App\Http\Controllers\Admin\ParticipantController;
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 Route::post('/session-reviews', [SessionReviewController::class, 'store'])->name('session-reviews.store');
+Route::post('/participants', [ParticipantController::class, 'store'])->name('participants.store');
 
 // Rute khusus Panel Admin (Analytics & CRUD)
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
@@ -39,6 +41,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/upload-document/{filename}', [App\Http\Controllers\Admin\DocumentController::class, 'destroy'])->name('upload-document.destroy');
     Route::get('/system-logs', [App\Http\Controllers\Admin\SystemLogController::class, 'index'])->name('system-logs.index');
     Route::delete('/system-logs/clear', [App\Http\Controllers\Admin\SystemLogController::class, 'clear'])->name('system-logs.clear');
+    Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
+    Route::get('/participants/export-csv', [ParticipantController::class, 'exportCsv'])->name('participants.export-csv');
+    Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
 });
 
 require __DIR__.'/settings.php';

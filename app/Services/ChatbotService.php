@@ -562,6 +562,22 @@ class ChatbotService
 
             $log = ChatLog::create($data);
             \Illuminate\Support\Facades\Log::info("ChatbotService: Sukses menyimpan log ID {$log->id} via koneksi DB: " . \Illuminate\Support\Facades\DB::getDefaultConnection());
+
+            // Sync ke master tabel peserta_uji_coba (Skripsi Bab IV Responden)
+            if (!empty($participantData['npm']) && !empty($participantData['nama_mahasiswa'])) {
+                try {
+                    $peserta = \App\Models\PesertaUjiCoba::firstOrNew(['npm' => trim($participantData['npm'])]);
+                    $peserta->nama_mahasiswa = substr(trim($participantData['nama_mahasiswa']), 0, 100);
+                    if (!empty($participantData['fakultas'])) $peserta->fakultas = substr(trim($participantData['fakultas']), 0, 100);
+                    if (!empty($participantData['prodi'])) $peserta->prodi = substr(trim($participantData['prodi']), 0, 100);
+                    $peserta->total_queries = ($peserta->exists ? $peserta->total_queries + 1 : 1);
+                    $peserta->last_active_at = now();
+                    $peserta->save();
+                } catch (\Throwable $ePeserta) {
+                    \Illuminate\Support\Facades\Log::warning('ChatbotService: Gagal update master peserta: ' . $ePeserta->getMessage());
+                }
+            }
+
             return $log->id;
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('ChatbotService: Gagal menyimpan log utama: ' . $e->getMessage());

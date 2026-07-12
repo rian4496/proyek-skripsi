@@ -5,6 +5,7 @@ import sessionReviews from './session-reviews'
 import chatRules from './chat-rules'
 import uploadDocument from './upload-document'
 import systemLogs from './system-logs'
+import participants from './participants'
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::dashboard
  * @see app/Http/Controllers/Admin/DashboardController.php:25
@@ -170,6 +171,7 @@ sessionReviews: Object.assign(sessionReviews, sessionReviews),
 chatRules: Object.assign(chatRules, chatRules),
 uploadDocument: Object.assign(uploadDocument, uploadDocument),
 systemLogs: Object.assign(systemLogs, systemLogs),
+participants: Object.assign(participants, participants),
 }
 
 export default admin

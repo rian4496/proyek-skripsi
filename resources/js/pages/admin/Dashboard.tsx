@@ -388,19 +388,6 @@ export default function Dashboard({
                             <Users className="mr-1.5 size-3.5 text-indigo-600 dark:text-indigo-400" />
                             Daftar Peserta Uji Coba
                         </Link>
-                        {/* Tombol Live Refresh / Polling Toggle */}
-                        <button
-                            onClick={() => setIsLiveRefresh(!isLiveRefresh)}
-                            className={`inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all ${
-                                isLiveRefresh
-                                    ? 'border-green-400 bg-green-50 text-green-700 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/30 dark:text-green-300'
-                                    : 'border-slate-300 bg-slate-100 text-slate-500 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                            }`}
-                            title="Aktifkan/Nonaktifkan pembaruan data real-time otomatis setiap 5 detik"
-                        >
-                            <span className={`mr-1.5 size-2 rounded-full ${isLiveRefresh ? (isRefreshingNow ? 'bg-amber-500 animate-ping' : 'bg-green-500 animate-pulse') : 'bg-slate-400'}`} />
-                            {isLiveRefresh ? (isRefreshingNow ? 'Memperbarui...' : 'Live Update (5s)') : 'Live Update (Off)'}
-                        </button>
                     </div>
                 </div>
 
@@ -767,56 +754,34 @@ export default function Dashboard({
 
                         {/* Filter Buttons & Clear Action */}
                         <div className="flex flex-wrap items-center gap-2 self-start xl:self-center">
-                            <div className="flex flex-wrap items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800">
-                                <button
-                                    onClick={() => handleLogFilterChange('all')}
-                                    className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'all'
-                                        ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white'
-                                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                                        }`}
+                            {/* Tombol Live Refresh / Polling Toggle */}
+                            <button
+                                onClick={() => setIsLiveRefresh(!isLiveRefresh)}
+                                className={`inline-flex items-center rounded-xl border px-3 py-1.5 text-xs font-bold shadow-sm transition-all ${
+                                    isLiveRefresh
+                                        ? 'border-green-400 bg-green-50 text-green-700 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/30 dark:text-green-300'
+                                        : 'border-slate-300 bg-slate-100 text-slate-500 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
+                                }`}
+                                title="Aktifkan/Nonaktifkan pembaruan data real-time otomatis setiap 5 detik"
+                            >
+                                <span className={`mr-1.5 size-2 rounded-full ${isLiveRefresh ? (isRefreshingNow ? 'bg-amber-500 animate-ping' : 'bg-green-500 animate-pulse') : 'bg-slate-400'}`} />
+                                {isLiveRefresh ? (isRefreshingNow ? 'Memperbarui...' : 'Live Update (5s)') : 'Live Update (Off)'}
+                            </button>
+
+                            {/* Dropdown Filter Algoritma & Sumber */}
+                            <div className="flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                <Filter className="size-3.5 text-blue-500 shrink-0" />
+                                <select
+                                    value={logFilter}
+                                    onChange={(e) => handleLogFilterChange(e.target.value as any)}
+                                    className="border-0 bg-transparent py-0 pr-5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-0 dark:bg-transparent dark:text-white cursor-pointer"
                                 >
-                                    Semua ({recent_logs.length})
-                                </button>
-                                <button
-                                    onClick={() => handleLogFilterChange('rule')}
-                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'rule'
-                                        ? 'bg-emerald-500 text-white shadow-sm'
-                                        : 'text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400'
-                                        }`}
-                                >
-                                    <span className="size-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
-                                    [DB] Levenshtein ({recent_logs.filter(l => l.source === 'rule').length})
-                                </button>
-                                <button
-                                    onClick={() => handleLogFilterChange('ollama')}
-                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'ollama'
-                                        ? 'bg-orange-500 text-white shadow-sm'
-                                        : 'text-slate-600 hover:text-orange-600 dark:text-slate-400 dark:hover:text-orange-400'
-                                        }`}
-                                >
-                                    <span className="size-1.5 rounded-full bg-orange-500 dark:bg-orange-400"></span>
-                                    [AI] Ollama ({recent_logs.filter(l => l.source === 'ai' && l.ai_engine === 'ollama').length})
-                                </button>
-                                <button
-                                    onClick={() => handleLogFilterChange('gemini')}
-                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'gemini'
-                                        ? 'bg-purple-500 text-white shadow-sm'
-                                        : 'text-slate-600 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400'
-                                        }`}
-                                >
-                                    <span className="size-1.5 rounded-full bg-purple-500 dark:bg-purple-400"></span>
-                                    [AI] Gemini ({recent_logs.filter(l => l.source === 'ai' && l.ai_engine !== 'ollama').length})
-                                </button>
-                                <button
-                                    onClick={() => handleLogFilterChange('flagged')}
-                                    className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${logFilter === 'flagged'
-                                        ? 'bg-red-500 text-white shadow-sm'
-                                        : 'text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400'
-                                        }`}
-                                >
-                                    <ThumbsDown className="size-2.5" />
-                                    👎 Review ({recent_logs.filter(l => l.is_helpful === false).length})
-                                </button>
+                                    <option value="all" className="dark:bg-slate-800">Semua ({recent_logs.length})</option>
+                                    <option value="rule" className="dark:bg-slate-800">[DB] Levenshtein ({recent_logs.filter(l => l.source === 'rule').length})</option>
+                                    <option value="ollama" className="dark:bg-slate-800">[AI] Ollama ({recent_logs.filter(l => l.source === 'ai' && l.ai_engine === 'ollama').length})</option>
+                                    <option value="gemini" className="dark:bg-slate-800">[AI] Gemini ({recent_logs.filter(l => l.source === 'ai' && l.ai_engine !== 'ollama').length})</option>
+                                    <option value="flagged" className="dark:bg-slate-800">👎 Review ({recent_logs.filter(l => l.is_helpful === false).length})</option>
+                                </select>
                             </div>
                             {recent_logs.length > 0 && (
                                 <button

@@ -257,14 +257,14 @@ class DashboardController extends Controller
 
                     fputcsv($handle, [
                         $no,
-                        $log->created_at->format('d/m/Y H:i:s'),
+                        $log->created_at ? $log->created_at->format('d/m/Y H:i:s') : '-',
                         $log->nama_mahasiswa ?? 'Anonim',
                         $log->npm ?? '-',
                         $log->fakultas ?? '-',
                         $log->prodi ?? '-',
                         $topik,
-                        $cleanText($log->user_message, 200),
-                        $cleanText($log->bot_response, 300),
+                        $cleanText((string) ($log->user_message ?? ''), 200),
+                        $cleanText((string) ($log->bot_response ?? ''), 300),
                         $sumber,
                         $log->ai_engine ?? '-',
                         $log->similarity_score ? round($log->similarity_score, 2) : '-',
@@ -480,8 +480,15 @@ class DashboardController extends Controller
      */
     public function printChatLogs(Request $request)
     {
+        if (function_exists('ini_set')) {
+            @ini_set('memory_limit', '512M');
+        }
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(300);
+        }
+
         $applyFilters = fn ($query) => $this->applyFiltersQuery($query, $request);
-        $logs = $applyFilters(ChatLog::orderBy('created_at', 'desc'))->get();
+        $logs = $applyFilters(ChatLog::orderBy('created_at', 'desc'))->limit(3000)->get();
         $tanggalCetak = now()->locale('id')->translatedFormat('d F Y');
         $selectedTopic = $request->input('topic', 'all');
 
@@ -501,7 +508,7 @@ class DashboardController extends Controller
         ];
 
         foreach ($logs as $log) {
-            $cat = ChatLog::classifyTopic($log->user_message);
+            $cat = ChatLog::classifyTopic((string) ($log->user_message ?? ''));
             if (!isset($categories[$cat])) {
                 $categories[$cat] = [];
             }
@@ -509,7 +516,7 @@ class DashboardController extends Controller
         }
 
         $judulKop = ($selectedTopic !== 'all' && isset($categories[$selectedTopic]))
-            ? 'KATEGORI TOPIK: ' . mb_strtoupper($selectedTopic)
+            ? 'KATEGORI TOPIK: ' . mb_strtoupper((string) $selectedTopic)
             : 'REKAPITULASI BERKELOMPOK SELURUH KONTEKS TOPIK';
 
         // Bangun ringkasan statistik (Halaman 1 jika 'all')
@@ -541,8 +548,8 @@ class DashboardController extends Controller
                 $simSum = 0;
                 $simCount = 0;
                 foreach ($catLogs as $cl) {
-                    if ($cl->source === 'rule' && $cl->similarity_score) {
-                        $simSum += $cl->similarity_score;
+                    if ($cl->source === 'rule' && $cl->similarity_score !== null && $cl->similarity_score !== '') {
+                        $simSum += (float) $cl->similarity_score;
                         $simCount++;
                     }
                 }
@@ -550,7 +557,7 @@ class DashboardController extends Controller
 
                 $summaryTableHtml .= '<tr>
                     <td class="text-center">' . $idx++ . '</td>
-                    <td><strong>' . htmlspecialchars($catName) . '</strong></td>
+                    <td><strong>' . htmlspecialchars((string) $catName) . '</strong></td>
                     <td class="text-center">' . $count . ' kali</td>
                     <td class="text-center">' . $porsi . '%</td>
                     <td class="text-center">' . $dbAns . ' (' . $dbPctCat . '%)</td>
@@ -578,7 +585,7 @@ class DashboardController extends Controller
                 }
 
                 $huruf = $hurufBab[$babIndex++] ?? 'X';
-                $detailSectionsHtml .= '<div class="judul-bab">' . $huruf . '. RINCIAN RIWAYAT INTERAKSI — TOPOLOGY: ' . mb_strtoupper($catName) . ' (' . count($catLogs) . ' Kueri)</div>
+                $detailSectionsHtml .= '<div class="judul-bab">' . $huruf . '. RINCIAN RIWAYAT INTERAKSI — TOPOLOGY: ' . mb_strtoupper((string) $catName) . ' (' . count($catLogs) . ' Kueri)</div>
                 <table>
                     <thead>
                         <tr>
@@ -595,18 +602,27 @@ class DashboardController extends Controller
 
                 $no = 1;
                 foreach ($catLogs as $l) {
-                    $sumberBadge = $l->source === 'rule' 
+                    $sumberBadge = ($l->source === 'rule') 
                         ? '<span style="color: #15803d; font-weight: bold;">[DB] Levenshtein</span>' 
-                        : '<span style="color: #6b21a8; font-weight: bold;">[AI] ' . htmlspecialchars(ucfirst($l->ai_engine ?? 'Ollama')) . '</span>';
-                    $skorText = $l->similarity_score ? round($l->similarity_score, 1) . '%' : '-';
+                        : '<span style="color: #6b21a8; font-weight: bold;">[AI] ' . htmlspecialchars(ucfirst((string) ($l->ai_engine ?? 'Ollama'))) . '</span>';
+                    
+                    $skorText = ($l->similarity_score !== null && $l->similarity_score !== '') ? round((float) $l->similarity_score, 1) . '%' : '-';
+                    $waktuText = $l->created_at ? $l->created_at->format('d/m/Y H:i') : '-';
+                    $namaText = (string) ($l->nama_mahasiswa ?? 'Anonim');
+                    $npmText = (string) ($l->npm ?? '-');
+                    $fakProdiText = (string) (($l->fakultas ?? '-') . ' / ' . ($l->prodi ?? '-'));
+                    $pesanText = (string) ($l->user_message ?? '-');
+                    
+                    $botRespClean = preg_replace('/[\r\n\t]+/', ' ', (string) ($l->bot_response ?? ''));
+                    $botRespTrimmed = mb_strimwidth($botRespClean ?? '', 0, 200, '...');
 
                     $detailSectionsHtml .= '<tr>
                         <td class="text-center">' . $no++ . '</td>
-                        <td class="text-center">' . $l->created_at->format('d/m/Y H:i') . '</td>
-                        <td><strong>' . htmlspecialchars($l->nama_mahasiswa ?? 'Anonim') . '</strong><br><small style="color:#555;">NPM: ' . htmlspecialchars($l->npm ?? '-') . '</small></td>
-                        <td class="text-center">' . htmlspecialchars(($l->fakultas ?? '-') . ' / ' . ($l->prodi ?? '-')) . '</td>
-                        <td>' . htmlspecialchars($l->user_message) . '</td>
-                        <td style="font-size: 9.5pt;">' . htmlspecialchars(mb_strimwidth(preg_replace('/[\r\n\t]+/', ' ', $l->bot_response ?? ''), 0, 200, '...')) . '</td>
+                        <td class="text-center">' . htmlspecialchars($waktuText) . '</td>
+                        <td><strong>' . htmlspecialchars($namaText) . '</strong><br><small style="color:#555;">NPM: ' . htmlspecialchars($npmText) . '</small></td>
+                        <td class="text-center">' . htmlspecialchars($fakProdiText) . '</td>
+                        <td>' . htmlspecialchars($pesanText) . '</td>
+                        <td style="font-size: 9.5pt;">' . htmlspecialchars($botRespTrimmed) . '</td>
                         <td class="text-center">' . $sumberBadge . '<br><small>Skor: <strong>' . $skorText . '</strong></small></td>
                     </tr>';
                 }

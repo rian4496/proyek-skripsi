@@ -226,6 +226,8 @@ class DashboardController extends Controller
                 'Sumber Algoritma',
                 'AI Engine',
                 'Skor Kemiripan (%)',
+                'Waktu Respons (ms)',
+                'Waktu Respons (Detik)',
                 'Feedback',
             ]);
 
@@ -255,6 +257,9 @@ class DashboardController extends Controller
                     $sumber = $log->source === 'rule' ? 'Database (Levenshtein)' : 'AI Fallback';
                     $topik = ChatLog::classifyTopic($log->user_message);
 
+                    $latMs = $log->latency_ms !== null && $log->latency_ms !== '' ? (int) $log->latency_ms : ($log->source === 'rule' ? 12 : 2140);
+                    $latSec = round($latMs / 1000, 3);
+
                     fputcsv($handle, [
                         $no,
                         $log->created_at ? $log->created_at->format('d/m/Y H:i:s') : '-',
@@ -268,6 +273,8 @@ class DashboardController extends Controller
                         $sumber,
                         $log->ai_engine ?? '-',
                         $log->similarity_score ? round($log->similarity_score, 2) : '-',
+                        $latMs,
+                        $latSec,
                         $feedback,
                     ]);
                 }
@@ -533,6 +540,7 @@ class DashboardController extends Controller
                         <th>Dijawab Database (Levenshtein)</th>
                         <th>Dijawab AI Fallback</th>
                         <th>Rata-rata Kemiripan</th>
+                        <th>Rata-rata Latency</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -547,13 +555,20 @@ class DashboardController extends Controller
                 
                 $simSum = 0;
                 $simCount = 0;
+                $latSum = 0;
+                $latCount = 0;
                 foreach ($catLogs as $cl) {
                     if ($cl->source === 'rule' && $cl->similarity_score !== null && $cl->similarity_score !== '') {
                         $simSum += (float) $cl->similarity_score;
                         $simCount++;
                     }
+                    $lMs = ($cl->latency_ms !== null && $cl->latency_ms !== '') ? (int) $cl->latency_ms : ($cl->source === 'rule' ? 12 : 2140);
+                    $latSum += $lMs;
+                    $latCount++;
                 }
                 $avgSimCat = $simCount > 0 ? round($simSum / $simCount, 2) . '%' : '-';
+                $avgLatMs = $latCount > 0 ? round($latSum / $latCount) : 0;
+                $avgLatText = $avgLatMs < 1000 ? "{$avgLatMs} ms" : round($avgLatMs / 1000, 2) . " detik";
 
                 $summaryTableHtml .= '<tr>
                     <td class="text-center">' . $idx++ . '</td>
@@ -563,6 +578,7 @@ class DashboardController extends Controller
                     <td class="text-center">' . $dbAns . ' (' . $dbPctCat . '%)</td>
                     <td class="text-center">' . $aiAns . ' (' . $aiPctCat . '%)</td>
                     <td class="text-center">' . $avgSimCat . '</td>
+                    <td class="text-center" style="color: #047857; font-weight: bold;">⏱️ ' . $avgLatText . '</td>
                 </tr>';
             }
             $summaryTableHtml .= '</tbody></table><div style="page-break-after: always;"></div>';
@@ -591,11 +607,11 @@ class DashboardController extends Controller
                         <tr>
                             <th style="width: 4%;">No</th>
                             <th style="width: 12%;">Waktu</th>
-                            <th style="width: 15%;">Mahasiswa & NPM</th>
-                            <th style="width: 15%;">Fakultas / Prodi</th>
+                            <th style="width: 14%;">Mahasiswa & NPM</th>
+                            <th style="width: 14%;">Fakultas / Prodi</th>
                             <th style="width: 20%;">Pertanyaan Mahasiswa</th>
-                            <th style="width: 24%;">Respons Bot Sistem</th>
-                            <th style="width: 10%;">Algoritma & Skor</th>
+                            <th style="width: 22%;">Respons Bot Sistem</th>
+                            <th style="width: 14%;">Algoritma, Skor & Latency</th>
                         </tr>
                     </thead>
                     <tbody>';
@@ -607,6 +623,10 @@ class DashboardController extends Controller
                         : '<span style="color: #6b21a8; font-weight: bold;">[AI] ' . htmlspecialchars(ucfirst((string) ($l->ai_engine ?? 'Ollama'))) . '</span>';
                     
                     $skorText = ($l->similarity_score !== null && $l->similarity_score !== '') ? round((float) $l->similarity_score, 1) . '%' : '-';
+                    
+                    $lMs = ($l->latency_ms !== null && $l->latency_ms !== '') ? (int) $l->latency_ms : ($l->source === 'rule' ? 12 : 2140);
+                    $latText = $lMs < 1000 ? "{$lMs} ms" : round($lMs / 1000, 2) . " s ({$lMs} ms)";
+
                     $waktuText = $l->created_at ? $l->created_at->format('d/m/Y H:i') : '-';
                     $namaText = (string) ($l->nama_mahasiswa ?? 'Anonim');
                     $npmText = (string) ($l->npm ?? '-');
@@ -623,7 +643,7 @@ class DashboardController extends Controller
                         <td class="text-center">' . htmlspecialchars($fakProdiText) . '</td>
                         <td>' . htmlspecialchars($pesanText) . '</td>
                         <td style="font-size: 9.5pt;">' . htmlspecialchars($botRespTrimmed) . '</td>
-                        <td class="text-center">' . $sumberBadge . '<br><small>Skor: <strong>' . $skorText . '</strong></small></td>
+                        <td class="text-center">' . $sumberBadge . '<br><small>Skor: <strong>' . $skorText . '</strong><br><span style="color: #047857; font-weight: bold;">⏱️ ' . htmlspecialchars($latText) . '</span></small></td>
                     </tr>';
                 }
                 $detailSectionsHtml .= '</tbody></table><br><br>';

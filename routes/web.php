@@ -31,8 +31,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/export-csv', [DashboardController::class, 'exportCsv'])->name('export-csv');
     Route::delete('/chat-logs/clear', [DashboardController::class, 'destroyAll'])->name('chat-logs.destroy-all');
     Route::delete('/chat-logs/{chatLog}', [DashboardController::class, 'destroy'])->name('chat-logs.destroy');
+    Route::get('/tickets/export-csv', [DashboardController::class, 'exportTicketsCsv'])->name('tickets.export-csv');
+    Route::get('/tickets/print', [DashboardController::class, 'printTickets'])->name('tickets.print');
     Route::delete('/tickets/clear', [DashboardController::class, 'destroyAllTickets'])->name('tickets.destroy-all');
     Route::delete('/tickets/{feedback}', [DashboardController::class, 'destroyTicket'])->name('tickets.destroy');
+    Route::get('/session-reviews/export-csv', [DashboardController::class, 'exportSessionReviewsCsv'])->name('session-reviews.export-csv');
+    Route::get('/session-reviews/print', [DashboardController::class, 'printSessionReviews'])->name('session-reviews.print');
     Route::delete('/session-reviews/clear', [SessionReviewController::class, 'destroyAll'])->name('session-reviews.destroy-all');
     Route::delete('/session-reviews/{sessionReview}', [SessionReviewController::class, 'destroy'])->name('session-reviews.destroy');
     Route::resource('chat-rules', ChatRuleController::class)->except(['show']);

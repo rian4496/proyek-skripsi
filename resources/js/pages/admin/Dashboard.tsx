@@ -27,6 +27,8 @@ import {
     Upload,
     Users,
     X,
+    Printer,
+    FileSpreadsheet,
 } from 'lucide-react';
 
 interface ChatLog {
@@ -1004,21 +1006,41 @@ export default function Dashboard({
 
                 {/* ═══ Help Tickets Table ═══ */}
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                    <div className="flex items-center justify-between border-b border-slate-200 p-3.5 dark:border-slate-700">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 p-3.5 dark:border-slate-700">
                         <h3 className="flex items-center gap-2 text-base font-bold">
                             <MessageSquare className="size-4 text-blue-500" />
                             Tiket Keluhan Masuk
                         </h3>
-                        {tickets && tickets.length > 0 && (
-                            <button
-                                onClick={handleClearAllTickets}
-                                className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
-                                title="Kosongkan Semua Tiket Keluhan"
+                        <div className="flex items-center gap-2">
+                            <a
+                                href="/tickets/print"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 shadow-sm transition-all hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                title="Cetak Laporan Tiket Keluhan Masuk (PDF/Print)"
                             >
-                                <Trash2 className="size-3.5" />
-                                <span>Kosongkan ({tickets.length})</span>
-                            </button>
-                        )}
+                                <Printer className="size-3.5" />
+                                <span>Cetak Laporan</span>
+                            </a>
+                            <a
+                                href="/tickets/export-csv"
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 shadow-sm transition-all hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+                                title="Download Rekap CSV Tiket Keluhan Masuk"
+                            >
+                                <FileSpreadsheet className="size-3.5" />
+                                <span>Export CSV</span>
+                            </a>
+                            {tickets && tickets.length > 0 && (
+                                <button
+                                    onClick={handleClearAllTickets}
+                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
+                                    title="Kosongkan Semua Tiket Keluhan"
+                                >
+                                    <Trash2 className="size-3.5" />
+                                    <span>Kosongkan ({tickets.length})</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -1141,7 +1163,7 @@ export default function Dashboard({
                                 Rekam jejak rating 1-5 bintang dari responden yang mengklik &quot;Akhiri Sesi&quot;.
                             </p>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-3">
                             <div className="flex items-center gap-2">
                                 <Star className="size-5 text-amber-500 fill-amber-500" />
                                 <div>
@@ -1153,16 +1175,36 @@ export default function Dashboard({
                                     </span>
                                 </div>
                             </div>
-                            {session_reviews && session_reviews.length > 0 && (
-                                <button
-                                    onClick={handleClearAllReviews}
-                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
-                                    title="Kosongkan Semua Ulasan Sesi"
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href="/session-reviews/print"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-50 px-3 py-1.5 text-[11px] font-bold text-blue-700 shadow-sm transition-all hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                    title="Cetak Laporan Evaluasi CSAT Responden (PDF/Print)"
                                 >
-                                    <Trash2 className="size-3.5" />
-                                    <span>Kosongkan ({session_reviews.length})</span>
-                                </button>
-                            )}
+                                    <Printer className="size-3.5" />
+                                    <span>Cetak Laporan</span>
+                                </a>
+                                <a
+                                    href="/session-reviews/export-csv"
+                                    className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 shadow-sm transition-all hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+                                    title="Download Rekap CSV Evaluasi CSAT Responden"
+                                >
+                                    <FileSpreadsheet className="size-3.5" />
+                                    <span>Export CSV</span>
+                                </a>
+                                {session_reviews && session_reviews.length > 0 && (
+                                    <button
+                                        onClick={handleClearAllReviews}
+                                        className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
+                                        title="Kosongkan Semua Ulasan Sesi"
+                                    >
+                                        <Trash2 className="size-3.5" />
+                                        <span>Kosongkan ({session_reviews.length})</span>
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 

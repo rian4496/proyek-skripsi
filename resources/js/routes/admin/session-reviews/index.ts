@@ -1,5 +1,161 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
+* @see \App\Http\Controllers\Admin\DashboardController::exportCsv
+ * @see app/Http/Controllers/Admin/DashboardController.php:381
+ * @route '/admin/session-reviews/export-csv'
+ */
+export const exportCsv = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: exportCsv.url(options),
+    method: 'get',
+})
+
+exportCsv.definition = {
+    methods: ["get","head"],
+    url: '/admin/session-reviews/export-csv',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::exportCsv
+ * @see app/Http/Controllers/Admin/DashboardController.php:381
+ * @route '/admin/session-reviews/export-csv'
+ */
+exportCsv.url = (options?: RouteQueryOptions) => {
+    return exportCsv.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::exportCsv
+ * @see app/Http/Controllers/Admin/DashboardController.php:381
+ * @route '/admin/session-reviews/export-csv'
+ */
+exportCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: exportCsv.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::exportCsv
+ * @see app/Http/Controllers/Admin/DashboardController.php:381
+ * @route '/admin/session-reviews/export-csv'
+ */
+exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: exportCsv.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Admin\DashboardController::exportCsv
+ * @see app/Http/Controllers/Admin/DashboardController.php:381
+ * @route '/admin/session-reviews/export-csv'
+ */
+    const exportCsvForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: exportCsv.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Admin\DashboardController::exportCsv
+ * @see app/Http/Controllers/Admin/DashboardController.php:381
+ * @route '/admin/session-reviews/export-csv'
+ */
+        exportCsvForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: exportCsv.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Admin\DashboardController::exportCsv
+ * @see app/Http/Controllers/Admin/DashboardController.php:381
+ * @route '/admin/session-reviews/export-csv'
+ */
+        exportCsvForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: exportCsv.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    exportCsv.form = exportCsvForm
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::print
+ * @see app/Http/Controllers/Admin/DashboardController.php:427
+ * @route '/admin/session-reviews/print'
+ */
+export const print = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: print.url(options),
+    method: 'get',
+})
+
+print.definition = {
+    methods: ["get","head"],
+    url: '/admin/session-reviews/print',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::print
+ * @see app/Http/Controllers/Admin/DashboardController.php:427
+ * @route '/admin/session-reviews/print'
+ */
+print.url = (options?: RouteQueryOptions) => {
+    return print.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::print
+ * @see app/Http/Controllers/Admin/DashboardController.php:427
+ * @route '/admin/session-reviews/print'
+ */
+print.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: print.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Admin\DashboardController::print
+ * @see app/Http/Controllers/Admin/DashboardController.php:427
+ * @route '/admin/session-reviews/print'
+ */
+print.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: print.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Admin\DashboardController::print
+ * @see app/Http/Controllers/Admin/DashboardController.php:427
+ * @route '/admin/session-reviews/print'
+ */
+    const printForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: print.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Admin\DashboardController::print
+ * @see app/Http/Controllers/Admin/DashboardController.php:427
+ * @route '/admin/session-reviews/print'
+ */
+        printForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: print.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Admin\DashboardController::print
+ * @see app/Http/Controllers/Admin/DashboardController.php:427
+ * @route '/admin/session-reviews/print'
+ */
+        printForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: print.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    print.form = printForm
+/**
 * @see \App\Http\Controllers\SessionReviewController::destroyAll
  * @see app/Http/Controllers/SessionReviewController.php:41
  * @route '/admin/session-reviews/clear'
@@ -154,7 +310,9 @@ destroy.delete = (args: { sessionReview: number | { id: number } } | [sessionRev
     
     destroy.form = destroyForm
 const sessionReviews = {
-    destroyAll: Object.assign(destroyAll, destroyAll),
+    exportCsv: Object.assign(exportCsv, exportCsv),
+print: Object.assign(print, print),
+destroyAll: Object.assign(destroyAll, destroyAll),
 destroy: Object.assign(destroy, destroy),
 }
 

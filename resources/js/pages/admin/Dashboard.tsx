@@ -112,6 +112,7 @@ interface DashboardProps {
         date_range: string;
         fakultas: string;
         prodi: string;
+        topic?: string;
     };
     options?: {
         fakultas_list: string[];
@@ -141,6 +142,7 @@ export default function Dashboard({
     const [dateRange, setDateRange] = useState(filters?.date_range || 'all');
     const [selectedFakultas, setSelectedFakultas] = useState(filters?.fakultas || 'all');
     const [selectedProdi, setSelectedProdi] = useState(filters?.prodi || 'all');
+    const [selectedTopic, setSelectedTopic] = useState(filters?.topic || 'all');
     const [deleteTargetId, setDeleteTargetId] = useState<number | 'clear_all' | null>(null);
     const [deleteTicketTargetId, setDeleteTicketTargetId] = useState<number | 'clear_all' | null>(null);
     const [deleteReviewTargetId, setDeleteReviewTargetId] = useState<number | 'clear_all' | null>(null);
@@ -168,10 +170,10 @@ export default function Dashboard({
         return () => clearInterval(interval);
     }, [isLiveRefresh]);
 
-    const handleFilterChange = (newDateRange: string, newFakultas: string, newProdi: string) => {
+    const handleFilterChange = (newDateRange: string, newFakultas: string, newProdi: string, newTopic: string) => {
         router.get(
             '/admin/dashboard',
-            { date_range: newDateRange, fakultas: newFakultas, prodi: newProdi },
+            { date_range: newDateRange, fakultas: newFakultas, prodi: newProdi, topic: newTopic },
             { preserveState: true, preserveScroll: true }
         );
     };
@@ -356,11 +358,21 @@ export default function Dashboard({
                     <div className="mt-3 flex flex-wrap gap-2 md:ml-4 md:mt-0">
                         {/* Tombol Export CSV dengan parameter filter yang aktif */}
                         <a
-                            href={`/admin/export-csv?date_range=${dateRange}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
+                            href={`/admin/export-csv?date_range=${dateRange}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}&topic=${encodeURIComponent(selectedTopic)}`}
                             className="inline-flex items-center rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm transition-colors hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                         >
                             <Download className="mr-1.5 size-3.5" />
                             Export Report CSV
+                        </a>
+                        <a
+                            href={`/admin/chat-logs/print?topic=${encodeURIComponent(selectedTopic)}&date_range=${encodeURIComponent(dateRange)}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center rounded-lg border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                            title="Cetak Laporan Percakapan Berkelompok Berdasarkan Topik Konteks (Bab IV)"
+                        >
+                            <Printer className="mr-1.5 size-3.5" />
+                            Cetak Laporan Topik (PDF)
                         </a>
                         <Link
                             href="/admin/upload-document"
@@ -408,7 +420,7 @@ export default function Dashboard({
                                 value={dateRange}
                                 onChange={(e) => {
                                     setDateRange(e.target.value);
-                                    handleFilterChange(e.target.value, selectedFakultas, selectedProdi);
+                                    handleFilterChange(e.target.value, selectedFakultas, selectedProdi, selectedTopic);
                                 }}
                                 className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
                             >
@@ -419,12 +431,30 @@ export default function Dashboard({
                             </select>
                         </div>
 
+                        {/* Filter Topik / Konteks */}
+                        <select
+                            value={selectedTopic}
+                            onChange={(e) => {
+                                setSelectedTopic(e.target.value);
+                                handleFilterChange(dateRange, selectedFakultas, selectedProdi, e.target.value);
+                            }}
+                            className="rounded-lg border border-blue-300 bg-blue-50/50 px-2.5 py-1 text-xs font-bold text-blue-800 focus:border-blue-500 focus:outline-none dark:border-blue-700 dark:bg-blue-950/50 dark:text-blue-300 max-w-[200px] truncate"
+                            title="Filter Berdasarkan Kategori Topik Konteks Layanan Akademik"
+                        >
+                            <option value="all">📁 Semua Topik Konteks</option>
+                            <option value="Yudisium, Skripsi & Wisuda">🎓 Yudisium, Skripsi & Wisuda</option>
+                            <option value="Kalender Akademik & Jadwal">📅 Kalender Akademik & Jadwal</option>
+                            <option value="KRS, UKT & Administrasi">📝 KRS, UKT & Administrasi</option>
+                            <option value="Beasiswa & Layanan Kampus">🏛️ Beasiswa & Layanan Kampus</option>
+                            <option value="Umum & Lain-lain">💬 Umum & Lain-lain</option>
+                        </select>
+
                         {/* Filter Fakultas */}
                         <select
                             value={selectedFakultas}
                             onChange={(e) => {
                                 setSelectedFakultas(e.target.value);
-                                handleFilterChange(dateRange, e.target.value, selectedProdi);
+                                handleFilterChange(dateRange, e.target.value, selectedProdi, selectedTopic);
                             }}
                             className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
                         >
@@ -439,7 +469,7 @@ export default function Dashboard({
                             value={selectedProdi}
                             onChange={(e) => {
                                 setSelectedProdi(e.target.value);
-                                handleFilterChange(dateRange, selectedFakultas, e.target.value);
+                                handleFilterChange(dateRange, selectedFakultas, e.target.value, selectedTopic);
                             }}
                             className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
                         >
@@ -785,6 +815,16 @@ export default function Dashboard({
                                     <option value="flagged" className="dark:bg-slate-800">👎 Review ({recent_logs.filter(l => l.is_helpful === false).length})</option>
                                 </select>
                             </div>
+                            <a
+                                href={`/admin/chat-logs/print?topic=${encodeURIComponent(selectedTopic)}&date_range=${encodeURIComponent(dateRange)}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 shadow-sm transition-all hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                                title="Cetak Laporan Percakapan Berkelompok Berdasarkan Topik Konteks (Bab IV)"
+                            >
+                                <Printer className="size-3.5" />
+                                <span>Cetak Topik ({selectedTopic === 'all' ? 'Semua Bab IV' : selectedTopic.split(',')[0]})</span>
+                            </a>
                             {recent_logs.length > 0 && (
                                 <button
                                     onClick={handleClearAllLogs}

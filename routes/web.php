@@ -29,6 +29,7 @@ Route::post('/participants', [ParticipantController::class, 'store'])->name('par
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/export-csv', [DashboardController::class, 'exportCsv'])->name('export-csv');
+    Route::get('/chat-logs/print', [DashboardController::class, 'printChatLogs'])->name('chat-logs.print');
     Route::delete('/chat-logs/clear', [DashboardController::class, 'destroyAll'])->name('chat-logs.destroy-all');
     Route::delete('/chat-logs/{chatLog}', [DashboardController::class, 'destroy'])->name('chat-logs.destroy');
     Route::get('/tickets/export-csv', [DashboardController::class, 'exportTicketsCsv'])->name('tickets.export-csv');

@@ -22,26 +22,69 @@ class DashboardController extends Controller
     /**
      * Halaman utama Dashboard Analytics (GET /admin/dashboard).
      */
+    private function applyFiltersQuery($query, Request $request)
+    {
+        if ($request->filled('date_range') && $request->input('date_range') !== 'all') {
+            if ($request->input('date_range') === 'today') {
+                $query->whereDate('created_at', now()->toDateString());
+            } elseif ($request->input('date_range') === '7days') {
+                $query->where('created_at', '>=', now()->subDays(7));
+            } elseif ($request->input('date_range') === '30days') {
+                $query->where('created_at', '>=', now()->subDays(30));
+            }
+        }
+        if ($request->filled('fakultas') && $request->input('fakultas') !== 'all') {
+            $query->where('fakultas', $request->input('fakultas'));
+        }
+        if ($request->filled('prodi') && $request->input('prodi') !== 'all') {
+            $query->where('prodi', $request->input('prodi'));
+        }
+        if ($request->filled('topic') && $request->input('topic') !== 'all') {
+            $topic = $request->input('topic');
+            if ($topic === 'Yudisium, Skripsi & Wisuda') {
+                $query->where(function ($q) {
+                    foreach (['yudisium', 'skripsi', 'wisuda', 'proposal', 'seminar', 'pembimbing', 'sidang', 'berkas', 'jurnal', 'publikasi', 'bebas tanggungan', 'toga', 'ijazah', 'transkrip'] as $kw) {
+                        $q->orWhere('user_message', 'like', "%{$kw}%");
+                    }
+                });
+            } elseif ($topic === 'Kalender Akademik & Jadwal') {
+                $query->where(function ($q) {
+                    foreach (['kalender', 'jadwal', 'kuliah', 'uas', 'uts', 'semester', 'libur', 'masuk', 'jam kerja', 'baak', 'kapan', 'tanggal', 'pelayanan', 'buka', 'tutup'] as $kw) {
+                        $q->orWhere('user_message', 'like', "%{$kw}%");
+                    }
+                });
+            } elseif ($topic === 'KRS, UKT & Administrasi') {
+                $query->where(function ($q) {
+                    foreach (['krs', 'krsan', 'sks', 'ukt', 'pembayaran', 'spp', 'cuti', 'aktif kembali', 'dosen wali', 'siakad', 'registrasi', 'daftar ulang', 'denda', 'tagihan', 'khs', 'nilai', 'ipk'] as $kw) {
+                        $q->orWhere('user_message', 'like', "%{$kw}%");
+                    }
+                });
+            } elseif ($topic === 'Beasiswa & Layanan Kampus') {
+                $query->where(function ($q) {
+                    foreach (['beasiswa', 'kip', 'baznas', 'perpustakaan', 'lokasi', 'gedung', 'fasilitas', 'laboratorium', 'lab', 'wifi', 'masjid', 'ukm'] as $kw) {
+                        $q->orWhere('user_message', 'like', "%{$kw}%");
+                    }
+                });
+            } elseif ($topic === 'Umum & Lain-lain') {
+                $allKw = array_merge(
+                    ['yudisium', 'skripsi', 'wisuda', 'proposal', 'seminar', 'pembimbing', 'sidang', 'berkas', 'jurnal', 'publikasi', 'bebas tanggungan', 'toga', 'ijazah', 'transkrip'],
+                    ['kalender', 'jadwal', 'kuliah', 'uas', 'uts', 'semester', 'libur', 'masuk', 'jam kerja', 'baak', 'kapan', 'tanggal', 'pelayanan', 'buka', 'tutup'],
+                    ['krs', 'krsan', 'sks', 'ukt', 'pembayaran', 'spp', 'cuti', 'aktif kembali', 'dosen wali', 'siakad', 'registrasi', 'daftar ulang', 'denda', 'tagihan', 'khs', 'nilai', 'ipk'],
+                    ['beasiswa', 'kip', 'baznas', 'perpustakaan', 'lokasi', 'gedung', 'fasilitas', 'laboratorium', 'lab', 'wifi', 'masjid', 'ukm']
+                );
+                $query->where(function ($q) use ($allKw) {
+                    foreach ($allKw as $kw) {
+                        $q->where('user_message', 'not like', "%{$kw}%");
+                    }
+                });
+            }
+        }
+        return $query;
+    }
+
     public function index(Request $request): Response
     {
-        $applyFilters = function ($query) use ($request) {
-            if ($request->filled('date_range') && $request->input('date_range') !== 'all') {
-                if ($request->input('date_range') === 'today') {
-                    $query->whereDate('created_at', now()->toDateString());
-                } elseif ($request->input('date_range') === '7days') {
-                    $query->where('created_at', '>=', now()->subDays(7));
-                } elseif ($request->input('date_range') === '30days') {
-                    $query->where('created_at', '>=', now()->subDays(30));
-                }
-            }
-            if ($request->filled('fakultas') && $request->input('fakultas') !== 'all') {
-                $query->where('fakultas', $request->input('fakultas'));
-            }
-            if ($request->filled('prodi') && $request->input('prodi') !== 'all') {
-                $query->where('prodi', $request->input('prodi'));
-            }
-            return $query;
-        };
+        $applyFilters = fn ($query) => $this->applyFiltersQuery($query, $request);
 
         $totalChats = $applyFilters(ChatLog::query())->count();
 
@@ -147,6 +190,7 @@ class DashboardController extends Controller
                 'date_range' => $request->input('date_range', 'all'),
                 'fakultas' => $request->input('fakultas', 'all'),
                 'prodi' => $request->input('prodi', 'all'),
+                'topic' => $request->input('topic', 'all'),
             ],
             'options' => [
                 'fakultas_list' => $fakultasList,
@@ -176,6 +220,7 @@ class DashboardController extends Controller
                 'NPM',
                 'Fakultas',
                 'Program Studi',
+                'Topik / Konteks',
                 'Pertanyaan Mahasiswa',
                 'Respons Bot (Ringkas)',
                 'Sumber Algoritma',
@@ -184,24 +229,7 @@ class DashboardController extends Controller
                 'Feedback',
             ]);
 
-            $applyFilters = function ($query) use ($request) {
-                if ($request->filled('date_range') && $request->input('date_range') !== 'all') {
-                    if ($request->input('date_range') === 'today') {
-                        $query->whereDate('created_at', now()->toDateString());
-                    } elseif ($request->input('date_range') === '7days') {
-                        $query->where('created_at', '>=', now()->subDays(7));
-                    } elseif ($request->input('date_range') === '30days') {
-                        $query->where('created_at', '>=', now()->subDays(30));
-                    }
-                }
-                if ($request->filled('fakultas') && $request->input('fakultas') !== 'all') {
-                    $query->where('fakultas', $request->input('fakultas'));
-                }
-                if ($request->filled('prodi') && $request->input('prodi') !== 'all') {
-                    $query->where('prodi', $request->input('prodi'));
-                }
-                return $query;
-            };
+            $applyFilters = fn ($query) => $this->applyFiltersQuery($query, $request);
 
             // Helper: bersihkan teks agar rapi di cell Excel (hapus newline berlebih)
             $cleanText = function (string $text, int $maxLength = 0): string {
@@ -225,6 +253,7 @@ class DashboardController extends Controller
                         : ($log->is_helpful ? 'Helpful' : 'Not Helpful');
 
                     $sumber = $log->source === 'rule' ? 'Database (Levenshtein)' : 'AI Fallback';
+                    $topik = ChatLog::classifyTopic($log->user_message);
 
                     fputcsv($handle, [
                         $no,
@@ -233,6 +262,7 @@ class DashboardController extends Controller
                         $log->npm ?? '-',
                         $log->fakultas ?? '-',
                         $log->prodi ?? '-',
+                        $topik,
                         $cleanText($log->user_message, 200),
                         $cleanText($log->bot_response, 300),
                         $sumber,
@@ -443,6 +473,213 @@ class DashboardController extends Controller
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * Halaman Cetak (Print / PDF) Riwayat Percakapan Chatbot Berdasarkan Topik Konteks (GET /admin/chat-logs/print).
+     */
+    public function printChatLogs(Request $request)
+    {
+        $applyFilters = fn ($query) => $this->applyFiltersQuery($query, $request);
+        $logs = $applyFilters(ChatLog::orderBy('created_at', 'desc'))->get();
+        $tanggalCetak = now()->locale('id')->translatedFormat('d F Y');
+        $selectedTopic = $request->input('topic', 'all');
+
+        $totalLogs = $logs->count();
+        $ruleCount = $logs->where('source', 'rule')->count();
+        $aiCount = $logs->where('source', 'ai')->count();
+        $rulePct = $totalLogs > 0 ? round(($ruleCount / $totalLogs) * 100, 1) : 0;
+        $aiPct = $totalLogs > 0 ? round(($aiCount / $totalLogs) * 100, 1) : 0;
+
+        // Kelompokkan per topik
+        $categories = [
+            'Yudisium, Skripsi & Wisuda' => [],
+            'Kalender Akademik & Jadwal' => [],
+            'KRS, UKT & Administrasi' => [],
+            'Beasiswa & Layanan Kampus' => [],
+            'Umum & Lain-lain' => [],
+        ];
+
+        foreach ($logs as $log) {
+            $cat = ChatLog::classifyTopic($log->user_message);
+            if (!isset($categories[$cat])) {
+                $categories[$cat] = [];
+            }
+            $categories[$cat][] = $log;
+        }
+
+        $judulKop = ($selectedTopic !== 'all' && isset($categories[$selectedTopic]))
+            ? 'KATEGORI TOPIK: ' . mb_strtoupper($selectedTopic)
+            : 'REKAPITULASI BERKELOMPOK SELURUH KONTEKS TOPIK';
+
+        // Bangun ringkasan statistik (Halaman 1 jika 'all')
+        $summaryTableHtml = '';
+        if ($selectedTopic === 'all') {
+            $summaryTableHtml .= '<div class="judul-bab">A. RINGKASAN DISTRIBUSI TOPIK PERCAKAPAN (BAB IV)</div>
+            <table class="table-summary">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Kategori Konteks Topik Layanan</th>
+                        <th>Jumlah Kueri</th>
+                        <th>Porsi (%)</th>
+                        <th>Dijawab Database (Levenshtein)</th>
+                        <th>Dijawab AI Fallback</th>
+                        <th>Rata-rata Kemiripan</th>
+                    </tr>
+                </thead>
+                <tbody>';
+            $idx = 1;
+            foreach ($categories as $catName => $catLogs) {
+                $count = count($catLogs);
+                $porsi = $totalLogs > 0 ? round(($count / $totalLogs) * 100, 1) : 0;
+                $dbAns = count(array_filter($catLogs, fn($l) => $l->source === 'rule'));
+                $aiAns = count(array_filter($catLogs, fn($l) => $l->source === 'ai'));
+                $dbPctCat = $count > 0 ? round(($dbAns / $count) * 100, 1) : 0;
+                $aiPctCat = $count > 0 ? round(($aiAns / $count) * 100, 1) : 0;
+                
+                $simSum = 0;
+                $simCount = 0;
+                foreach ($catLogs as $cl) {
+                    if ($cl->source === 'rule' && $cl->similarity_score) {
+                        $simSum += $cl->similarity_score;
+                        $simCount++;
+                    }
+                }
+                $avgSimCat = $simCount > 0 ? round($simSum / $simCount, 2) . '%' : '-';
+
+                $summaryTableHtml .= '<tr>
+                    <td class="text-center">' . $idx++ . '</td>
+                    <td><strong>' . htmlspecialchars($catName) . '</strong></td>
+                    <td class="text-center">' . $count . ' kali</td>
+                    <td class="text-center">' . $porsi . '%</td>
+                    <td class="text-center">' . $dbAns . ' (' . $dbPctCat . '%)</td>
+                    <td class="text-center">' . $aiAns . ' (' . $aiPctCat . '%)</td>
+                    <td class="text-center">' . $avgSimCat . '</td>
+                </tr>';
+            }
+            $summaryTableHtml .= '</tbody></table><div style="page-break-after: always;"></div>';
+        }
+
+        // Bangun tabel rincian (jika all maka print per-bab, jika spesifik maka hanya bab tersebut)
+        $detailSectionsHtml = '';
+        if ($logs->isEmpty()) {
+            $detailSectionsHtml = '<div style="padding: 30px; text-align: center; font-style: italic; border: 1px dashed #ccc;">Belum ada data percakapan untuk kriteria topik yang dipilih.</div>';
+        } else {
+            $hurufBab = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+            $babIndex = $selectedTopic === 'all' ? 1 : 0; // Jika all, bab 0 adalah Ringkasan (A), jadi rincian mulai dari B
+
+            foreach ($categories as $catName => $catLogs) {
+                if ($selectedTopic !== 'all' && $selectedTopic !== $catName) {
+                    continue;
+                }
+                if (count($catLogs) === 0 && $selectedTopic === 'all') {
+                    continue; // Skip kategori yang kosong pada laporan master all
+                }
+
+                $huruf = $hurufBab[$babIndex++] ?? 'X';
+                $detailSectionsHtml .= '<div class="judul-bab">' . $huruf . '. RINCIAN RIWAYAT INTERAKSI — TOPOLOGY: ' . mb_strtoupper($catName) . ' (' . count($catLogs) . ' Kueri)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 4%;">No</th>
+                            <th style="width: 12%;">Waktu</th>
+                            <th style="width: 15%;">Mahasiswa & NPM</th>
+                            <th style="width: 15%;">Fakultas / Prodi</th>
+                            <th style="width: 20%;">Pertanyaan Mahasiswa</th>
+                            <th style="width: 24%;">Respons Bot Sistem</th>
+                            <th style="width: 10%;">Algoritma & Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+                $no = 1;
+                foreach ($catLogs as $l) {
+                    $sumberBadge = $l->source === 'rule' 
+                        ? '<span style="color: #15803d; font-weight: bold;">[DB] Levenshtein</span>' 
+                        : '<span style="color: #6b21a8; font-weight: bold;">[AI] ' . htmlspecialchars(ucfirst($l->ai_engine ?? 'Ollama')) . '</span>';
+                    $skorText = $l->similarity_score ? round($l->similarity_score, 1) . '%' : '-';
+
+                    $detailSectionsHtml .= '<tr>
+                        <td class="text-center">' . $no++ . '</td>
+                        <td class="text-center">' . $l->created_at->format('d/m/Y H:i') . '</td>
+                        <td><strong>' . htmlspecialchars($l->nama_mahasiswa ?? 'Anonim') . '</strong><br><small style="color:#555;">NPM: ' . htmlspecialchars($l->npm ?? '-') . '</small></td>
+                        <td class="text-center">' . htmlspecialchars(($l->fakultas ?? '-') . ' / ' . ($l->prodi ?? '-')) . '</td>
+                        <td>' . htmlspecialchars($l->user_message) . '</td>
+                        <td style="font-size: 9.5pt;">' . htmlspecialchars(mb_strimwidth(preg_replace('/[\r\n\t]+/', ' ', $l->bot_response ?? ''), 0, 200, '...')) . '</td>
+                        <td class="text-center">' . $sumberBadge . '<br><small>Skor: <strong>' . $skorText . '</strong></small></td>
+                    </tr>';
+                }
+                $detailSectionsHtml .= '</tbody></table><br><br>';
+            }
+        }
+
+        $html = '<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cetak Laporan Konteks Topik Chatbot - UNISKA MAB</title>
+    <style>
+        @page { size: A4 landscape; margin: 1.5cm; }
+        body { font-family: "Times New Roman", Times, serif; color: #000; margin: 0; padding: 20px; line-height: 1.4; }
+        .kop-surat { text-align: center; border-bottom: 3px double #000; padding-bottom: 12px; margin-bottom: 20px; }
+        .kop-surat h1 { font-size: 16pt; font-weight: bold; margin: 0 0 4px 0; text-transform: uppercase; }
+        .kop-surat h2 { font-size: 14pt; font-weight: bold; margin: 0 0 4px 0; }
+        .kop-surat p { font-size: 10pt; margin: 0; font-style: italic; }
+        .judul-laporan { text-align: center; font-size: 13pt; font-weight: bold; text-decoration: underline; margin-bottom: 4px; text-transform: uppercase; }
+        .sub-judul { text-align: center; font-size: 11pt; margin-bottom: 15px; font-weight: bold; }
+        .stats-box { border: 1px solid #000; padding: 10px 15px; background: #f9f9f9; margin-bottom: 20px; font-size: 10.5pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .judul-bab { font-size: 11.5pt; font-weight: bold; margin-top: 15px; margin-bottom: 8px; text-transform: uppercase; background: #eef2ff; padding: 6px 10px; border-left: 4px solid #2563eb; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9.5pt; }
+        th, td { border: 1px solid #000; padding: 6px 8px; text-align: left; vertical-align: top; }
+        th { background-color: #f2f2f2 !important; font-weight: bold; text-align: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .table-summary th { background-color: #e2e8f0 !important; font-size: 10pt; }
+        .table-summary td { font-size: 10.5pt; padding: 8px 10px; }
+        .text-center { text-align: center; }
+        .footer-ttd { margin-top: 40px; float: right; width: 260px; text-align: center; font-size: 11pt; page-break-inside: avoid; }
+        .footer-ttd .space { height: 65px; }
+        .no-print { margin-bottom: 20px; text-align: right; }
+        @media print { .no-print { display: none; } body { padding: 0; } }
+        .btn-print { background: #2563eb; color: #fff; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-print:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button onclick="window.print()" class="btn-print">🖨️ Cetak / Simpan PDF Sekarang</button>
+    </div>
+    <div class="kop-surat">
+        <h1>UNIVERSITAS ISLAM KALIMANTAN MUHAMMAD ARSYAD AL BANJARI</h1>
+        <h2>BIRO ADMINISTRASI AKADEMIK DAN KEMAHASISWAAN (BAAK)</h2>
+        <p>Jl. Adhyaksa No. 2 Kayu Tangi, Banjarmasin, Kalimantan Selatan 70123 | Telp: (0511) 3304352</p>
+    </div>
+    <div class="judul-laporan">LAPORAN ANALISIS RIWAYAT INTERAKSI CHATBOT PELAYANAN AKADEMIK</div>
+    <div class="sub-judul">' . htmlspecialchars($judulKop) . '</div>
+
+    <div class="stats-box">
+        <strong>RINGKASAN METRIK INTERAKSI (' . ($selectedTopic === 'all' ? 'SEMUA TOPIK' : mb_strtoupper($selectedTopic)) . '):</strong><br>
+        • Total Sampel Percakapan Terfilter : <strong>' . $totalLogs . ' Kueri Mahasiswa</strong><br>
+        • Proporsi Jawaban Database (Levenshtein) : <strong>' . $ruleCount . ' Kueri (' . $rulePct . '%)</strong><br>
+        • Proporsi Jawaban AI Fallback (Ollama/Gemini) : <strong>' . $aiCount . ' Kueri (' . $aiPct . '%)</strong>
+    </div>
+
+    ' . $summaryTableHtml . '
+    ' . $detailSectionsHtml . '
+
+    <div class="footer-ttd">
+        <p>Banjarmasin, ' . $tanggalCetak . '<br>Mengetahui,<br><strong>Tim Pengembang / Peneliti</strong></p>
+        <div class="space"></div>
+        <p><u>___________________________</u><br>NIDN / NPM.</p>
+    </div>
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => { window.print(); }, 500);
+        });
+    </script>
+</body>
+</html>';
+
+        return response($html);
     }
 
     /**

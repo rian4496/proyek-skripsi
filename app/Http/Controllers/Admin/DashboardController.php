@@ -430,10 +430,10 @@ class DashboardController extends Controller
                         fputcsv($handle, [
                             $no,
                             '#' . $review->id,
-                            $review->nama_mahasiswa ?? 'Responden Anonim',
+                            $review->nama_responden ?? 'Responden Anonim',
                             ($review->fakultas ?? '-') . ' / ' . ($review->prodi ?? '-'),
                             $review->rating . ' Bintang',
-                            $review->feedback_comment ?? 'Tidak ada komentar',
+                            $review->komentar ?? 'Tidak ada komentar',
                             $review->created_at->format('d/m/Y H:i:s')
                         ]);
                     }
@@ -465,10 +465,10 @@ class DashboardController extends Controller
                 $rowsHtml .= '<tr>
                     <td class="text-center">' . $no++ . '</td>
                     <td class="text-center">' . $r->created_at->format('d/m/Y H:i') . ' WIB</td>
-                    <td><strong>' . htmlspecialchars($r->nama_mahasiswa ?? 'Responden Anonim') . '</strong></td>
+                    <td><strong>' . htmlspecialchars($r->nama_responden ?? 'Responden Anonim') . '</strong></td>
                     <td class="text-center">' . htmlspecialchars(($r->fakultas ?? '-') . ' / ' . ($r->prodi ?? '-')) . '</td>
                     <td class="text-center" style="color: #d97706; font-weight: bold;">' . $r->rating . ' / 5.0 (' . $bintang . ')</td>
-                    <td>' . nl2br(htmlspecialchars($r->feedback_comment ?? 'Tidak ada komentar')) . '</td>
+                    <td>' . nl2br(htmlspecialchars($r->komentar ?? 'Tidak ada komentar')) . '</td>
                 </tr>';
             }
         }

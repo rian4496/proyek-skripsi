@@ -194,7 +194,7 @@ export default function ChatWindow() {
         if (!participantName.trim() || !participantNpm.trim() || !participantProdi.trim()) return;
 
         if (!/^\d{10}$/.test(participantNpm.trim())) {
-            alert('⚠️ Validasi Pengisian NPM:\nNPM harus terdiri dari tepat 10 digit angka sesuai format UNISKA MAB (contoh yang benar: 2210010497).');
+            alert('⚠️ Validasi Pengisian NPM:\nNPM harus terdiri dari tepat 10 digit angka sesuai format UNISKA MAB (contoh yang benar: 22100xxxxx).');
             return;
         }
 
@@ -235,7 +235,7 @@ export default function ChatWindow() {
         e.preventDefault();
 
         if (ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim())) {
-            alert('⚠️ Validasi Pengisian NPM:\nNPM pada tiket harus terdiri dari tepat 10 digit angka (contoh yang benar: 2210010497).');
+            alert('⚠️ Validasi Pengisian NPM:\nNPM pada tiket harus terdiri dari tepat 10 digit angka (contoh yang benar: 22100xxxxx).');
             return;
         }
 
@@ -517,7 +517,7 @@ export default function ChatWindow() {
                                     <input
                                         type="text"
                                         maxLength={10}
-                                        placeholder="Contoh: 2210010497 (10 digit angka)"
+                                        placeholder="Contoh: 22100xxxxx (10 digit angka)"
                                         className={`w-full rounded-lg border ${
                                             ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim())
                                                 ? 'border-amber-500 bg-amber-50/40 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-amber-500 dark:bg-amber-950/30'
@@ -528,7 +528,7 @@ export default function ChatWindow() {
                                     />
                                     {ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim()) ? (
                                         <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400">
-                                            <span>⚠️</span> NPM harus tepat 10 digit angka (saat ini {ticketForm.data.npm.trim().length} digit). Contoh benar: 2210010497
+                                            <span>⚠️</span> NPM harus tepat 10 digit angka (saat ini {ticketForm.data.npm.trim().length} digit). Contoh benar: 22100xxxxx
                                         </p>
                                     ) : (
                                         <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
@@ -626,7 +626,7 @@ export default function ChatWindow() {
                                         type="text"
                                         required
                                         maxLength={10}
-                                        placeholder="Contoh: 2210010497 (10 digit angka)"
+                                        placeholder="Contoh: 22100xxxxx (10 digit angka)"
                                         className={`w-full rounded-xl border ${
                                             participantNpm && !/^\d{10}$/.test(participantNpm.trim())
                                                 ? 'border-amber-500 bg-amber-50/40 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-amber-500 dark:bg-amber-950/30'
@@ -637,7 +637,7 @@ export default function ChatWindow() {
                                     />
                                     {participantNpm && !/^\d{10}$/.test(participantNpm.trim()) ? (
                                         <p className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 animate-in fade-in">
-                                            <span>⚠️</span> NPM harus terdiri dari tepat 10 digit angka (saat ini {participantNpm.trim().length} digit). Contoh benar: 2210010497
+                                            <span>⚠️</span> NPM harus terdiri dari tepat 10 digit angka (saat ini {participantNpm.trim().length} digit). Contoh benar: 22100xxxxx
                                         </p>
                                     ) : (
                                         <p className="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">

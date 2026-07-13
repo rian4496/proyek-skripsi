@@ -15,7 +15,7 @@ class FeedbackController extends Controller
             'kategori_masalah' => 'required|string|max:100',
             'laporan' => 'required|string',
         ], [
-            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 2210010497).',
+            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 22100xxxxx).',
         ]);
 
         $validated['npm'] = !empty($validated['npm']) ? substr(trim($validated['npm']), 0, 20) : '-';

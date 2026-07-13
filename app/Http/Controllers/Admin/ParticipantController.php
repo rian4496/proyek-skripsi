@@ -27,7 +27,7 @@ class ParticipantController extends Controller
             'prodi' => ['nullable', 'string', 'max:100'],
         ], [
             'npm.required' => 'NPM wajib diisi.',
-            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 2210010497).',
+            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 22100xxxxx).',
         ]);
 
         $peserta = PesertaUjiCoba::firstOrNew(['npm' => trim($request->input('npm'))]);

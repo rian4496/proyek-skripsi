@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::print
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 export const print = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ print.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::print
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 print.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ print.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::print
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 print.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ print.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::print
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 print.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ print.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::print
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
     const printForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ print.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::print
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
         printForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ print.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::print
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
         printForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ print.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     print.form = printForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
 export const destroyAll = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -94,7 +94,7 @@ destroyAll.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
 destroyAll.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ destroyAll.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
 destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -113,7 +113,7 @@ destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => 
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
     const destroyAllForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -128,7 +128,7 @@ destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => 
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
         destroyAllForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -144,7 +144,7 @@ destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => 
     destroyAll.form = destroyAllForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
 export const destroy = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -159,7 +159,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
 destroy.url = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -192,7 +192,7 @@ destroy.url = (args: { chatLog: number | { id: number } } | [chatLog: number | {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
 destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -202,7 +202,7 @@ destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number 
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
     const destroyForm = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -217,7 +217,7 @@ destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number 
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
         destroyForm.delete = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -157,7 +157,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     exportCsv.form = exportCsvForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printChatLogs
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 export const printChatLogs = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -172,7 +172,7 @@ printChatLogs.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printChatLogs
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 printChatLogs.url = (options?: RouteQueryOptions) => {
@@ -181,7 +181,7 @@ printChatLogs.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printChatLogs
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 printChatLogs.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -190,7 +190,7 @@ printChatLogs.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printChatLogs
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
 printChatLogs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -200,7 +200,7 @@ printChatLogs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::printChatLogs
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
     const printChatLogsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -210,7 +210,7 @@ printChatLogs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::printChatLogs
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
         printChatLogsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -219,7 +219,7 @@ printChatLogs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::printChatLogs
- * @see app/Http/Controllers/Admin/DashboardController.php:481
+ * @see app/Http/Controllers/Admin/DashboardController.php:488
  * @route '/admin/chat-logs/print'
  */
         printChatLogsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -235,7 +235,7 @@ printChatLogs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     printChatLogs.form = printChatLogsForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
 export const destroyAll = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -250,7 +250,7 @@ destroyAll.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
 destroyAll.url = (options?: RouteQueryOptions) => {
@@ -259,7 +259,7 @@ destroyAll.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
 destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -269,7 +269,7 @@ destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => 
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
     const destroyAllForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -284,7 +284,7 @@ destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => 
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAll
- * @see app/Http/Controllers/Admin/DashboardController.php:817
+ * @see app/Http/Controllers/Admin/DashboardController.php:837
  * @route '/admin/chat-logs/clear'
  */
         destroyAllForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -300,7 +300,7 @@ destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => 
     destroyAll.form = destroyAllForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
 export const destroy = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -315,7 +315,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
 destroy.url = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -348,7 +348,7 @@ destroy.url = (args: { chatLog: number | { id: number } } | [chatLog: number | {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
 destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -358,7 +358,7 @@ destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number 
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
     const destroyForm = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -373,7 +373,7 @@ destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number 
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroy
- * @see app/Http/Controllers/Admin/DashboardController.php:807
+ * @see app/Http/Controllers/Admin/DashboardController.php:827
  * @route '/admin/chat-logs/{chatLog}'
  */
         destroyForm.delete = (args: { chatLog: number | { id: number } } | [chatLog: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -389,7 +389,7 @@ destroy.delete = (args: { chatLog: number | { id: number } } | [chatLog: number 
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportTicketsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:285
+ * @see app/Http/Controllers/Admin/DashboardController.php:292
  * @route '/admin/tickets/export-csv'
  */
 export const exportTicketsCsv = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -404,7 +404,7 @@ exportTicketsCsv.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportTicketsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:285
+ * @see app/Http/Controllers/Admin/DashboardController.php:292
  * @route '/admin/tickets/export-csv'
  */
 exportTicketsCsv.url = (options?: RouteQueryOptions) => {
@@ -413,7 +413,7 @@ exportTicketsCsv.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportTicketsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:285
+ * @see app/Http/Controllers/Admin/DashboardController.php:292
  * @route '/admin/tickets/export-csv'
  */
 exportTicketsCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -422,7 +422,7 @@ exportTicketsCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => 
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportTicketsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:285
+ * @see app/Http/Controllers/Admin/DashboardController.php:292
  * @route '/admin/tickets/export-csv'
  */
 exportTicketsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -432,7 +432,7 @@ exportTicketsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportTicketsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:285
+ * @see app/Http/Controllers/Admin/DashboardController.php:292
  * @route '/admin/tickets/export-csv'
  */
     const exportTicketsCsvForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -442,7 +442,7 @@ exportTicketsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportTicketsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:285
+ * @see app/Http/Controllers/Admin/DashboardController.php:292
  * @route '/admin/tickets/export-csv'
  */
         exportTicketsCsvForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -451,7 +451,7 @@ exportTicketsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportTicketsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:285
+ * @see app/Http/Controllers/Admin/DashboardController.php:292
  * @route '/admin/tickets/export-csv'
  */
         exportTicketsCsvForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -467,7 +467,7 @@ exportTicketsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
     exportTicketsCsv.form = exportTicketsCsvForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:338
+ * @see app/Http/Controllers/Admin/DashboardController.php:345
  * @route '/admin/tickets/print'
  */
 export const printTickets = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -482,7 +482,7 @@ printTickets.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:338
+ * @see app/Http/Controllers/Admin/DashboardController.php:345
  * @route '/admin/tickets/print'
  */
 printTickets.url = (options?: RouteQueryOptions) => {
@@ -491,7 +491,7 @@ printTickets.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:338
+ * @see app/Http/Controllers/Admin/DashboardController.php:345
  * @route '/admin/tickets/print'
  */
 printTickets.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -500,7 +500,7 @@ printTickets.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:338
+ * @see app/Http/Controllers/Admin/DashboardController.php:345
  * @route '/admin/tickets/print'
  */
 printTickets.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -510,7 +510,7 @@ printTickets.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::printTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:338
+ * @see app/Http/Controllers/Admin/DashboardController.php:345
  * @route '/admin/tickets/print'
  */
     const printTicketsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -520,7 +520,7 @@ printTickets.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::printTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:338
+ * @see app/Http/Controllers/Admin/DashboardController.php:345
  * @route '/admin/tickets/print'
  */
         printTicketsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -529,7 +529,7 @@ printTickets.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::printTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:338
+ * @see app/Http/Controllers/Admin/DashboardController.php:345
  * @route '/admin/tickets/print'
  */
         printTicketsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -545,7 +545,7 @@ printTickets.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     printTickets.form = printTicketsForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:837
+ * @see app/Http/Controllers/Admin/DashboardController.php:857
  * @route '/admin/tickets/clear'
  */
 export const destroyAllTickets = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -560,7 +560,7 @@ destroyAllTickets.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:837
+ * @see app/Http/Controllers/Admin/DashboardController.php:857
  * @route '/admin/tickets/clear'
  */
 destroyAllTickets.url = (options?: RouteQueryOptions) => {
@@ -569,7 +569,7 @@ destroyAllTickets.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:837
+ * @see app/Http/Controllers/Admin/DashboardController.php:857
  * @route '/admin/tickets/clear'
  */
 destroyAllTickets.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -579,7 +579,7 @@ destroyAllTickets.delete = (options?: RouteQueryOptions): RouteDefinition<'delet
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:837
+ * @see app/Http/Controllers/Admin/DashboardController.php:857
  * @route '/admin/tickets/clear'
  */
     const destroyAllTicketsForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -594,7 +594,7 @@ destroyAllTickets.delete = (options?: RouteQueryOptions): RouteDefinition<'delet
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyAllTickets
- * @see app/Http/Controllers/Admin/DashboardController.php:837
+ * @see app/Http/Controllers/Admin/DashboardController.php:857
  * @route '/admin/tickets/clear'
  */
         destroyAllTicketsForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -610,10 +610,10 @@ destroyAllTickets.delete = (options?: RouteQueryOptions): RouteDefinition<'delet
     destroyAllTickets.form = destroyAllTicketsForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyTicket
- * @see app/Http/Controllers/Admin/DashboardController.php:827
+ * @see app/Http/Controllers/Admin/DashboardController.php:847
  * @route '/admin/tickets/{feedback}'
  */
-export const destroyTicket = (args: { feedback: number | { id_feedback: number } } | [feedback: number | { id_feedback: number } ] | number | { id_feedback: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroyTicket = (args: { feedback: string | number | { id_feedback: string | number } } | [feedback: string | number | { id_feedback: string | number } ] | string | number | { id_feedback: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroyTicket.url(args, options),
     method: 'delete',
 })
@@ -625,10 +625,10 @@ destroyTicket.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyTicket
- * @see app/Http/Controllers/Admin/DashboardController.php:827
+ * @see app/Http/Controllers/Admin/DashboardController.php:847
  * @route '/admin/tickets/{feedback}'
  */
-destroyTicket.url = (args: { feedback: number | { id_feedback: number } } | [feedback: number | { id_feedback: number } ] | number | { id_feedback: number }, options?: RouteQueryOptions) => {
+destroyTicket.url = (args: { feedback: string | number | { id_feedback: string | number } } | [feedback: string | number | { id_feedback: string | number } ] | string | number | { id_feedback: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { feedback: args }
     }
@@ -658,20 +658,20 @@ destroyTicket.url = (args: { feedback: number | { id_feedback: number } } | [fee
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyTicket
- * @see app/Http/Controllers/Admin/DashboardController.php:827
+ * @see app/Http/Controllers/Admin/DashboardController.php:847
  * @route '/admin/tickets/{feedback}'
  */
-destroyTicket.delete = (args: { feedback: number | { id_feedback: number } } | [feedback: number | { id_feedback: number } ] | number | { id_feedback: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroyTicket.delete = (args: { feedback: string | number | { id_feedback: string | number } } | [feedback: string | number | { id_feedback: string | number } ] | string | number | { id_feedback: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroyTicket.url(args, options),
     method: 'delete',
 })
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyTicket
- * @see app/Http/Controllers/Admin/DashboardController.php:827
+ * @see app/Http/Controllers/Admin/DashboardController.php:847
  * @route '/admin/tickets/{feedback}'
  */
-    const destroyTicketForm = (args: { feedback: number | { id_feedback: number } } | [feedback: number | { id_feedback: number } ] | number | { id_feedback: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const destroyTicketForm = (args: { feedback: string | number | { id_feedback: string | number } } | [feedback: string | number | { id_feedback: string | number } ] | string | number | { id_feedback: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: destroyTicket.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'DELETE',
@@ -683,10 +683,10 @@ destroyTicket.delete = (args: { feedback: number | { id_feedback: number } } | [
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::destroyTicket
- * @see app/Http/Controllers/Admin/DashboardController.php:827
+ * @see app/Http/Controllers/Admin/DashboardController.php:847
  * @route '/admin/tickets/{feedback}'
  */
-        destroyTicketForm.delete = (args: { feedback: number | { id_feedback: number } } | [feedback: number | { id_feedback: number } ] | number | { id_feedback: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        destroyTicketForm.delete = (args: { feedback: string | number | { id_feedback: string | number } } | [feedback: string | number | { id_feedback: string | number } ] | string | number | { id_feedback: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: destroyTicket.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'DELETE',
@@ -699,7 +699,7 @@ destroyTicket.delete = (args: { feedback: number | { id_feedback: number } } | [
     destroyTicket.form = destroyTicketForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportSessionReviewsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:435
+ * @see app/Http/Controllers/Admin/DashboardController.php:442
  * @route '/admin/session-reviews/export-csv'
  */
 export const exportSessionReviewsCsv = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -714,7 +714,7 @@ exportSessionReviewsCsv.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportSessionReviewsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:435
+ * @see app/Http/Controllers/Admin/DashboardController.php:442
  * @route '/admin/session-reviews/export-csv'
  */
 exportSessionReviewsCsv.url = (options?: RouteQueryOptions) => {
@@ -723,7 +723,7 @@ exportSessionReviewsCsv.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportSessionReviewsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:435
+ * @see app/Http/Controllers/Admin/DashboardController.php:442
  * @route '/admin/session-reviews/export-csv'
  */
 exportSessionReviewsCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -732,7 +732,7 @@ exportSessionReviewsCsv.get = (options?: RouteQueryOptions): RouteDefinition<'ge
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportSessionReviewsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:435
+ * @see app/Http/Controllers/Admin/DashboardController.php:442
  * @route '/admin/session-reviews/export-csv'
  */
 exportSessionReviewsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -742,7 +742,7 @@ exportSessionReviewsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'h
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportSessionReviewsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:435
+ * @see app/Http/Controllers/Admin/DashboardController.php:442
  * @route '/admin/session-reviews/export-csv'
  */
     const exportSessionReviewsCsvForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -752,7 +752,7 @@ exportSessionReviewsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'h
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportSessionReviewsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:435
+ * @see app/Http/Controllers/Admin/DashboardController.php:442
  * @route '/admin/session-reviews/export-csv'
  */
         exportSessionReviewsCsvForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -761,7 +761,7 @@ exportSessionReviewsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'h
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::exportSessionReviewsCsv
- * @see app/Http/Controllers/Admin/DashboardController.php:435
+ * @see app/Http/Controllers/Admin/DashboardController.php:442
  * @route '/admin/session-reviews/export-csv'
  */
         exportSessionReviewsCsvForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -777,7 +777,7 @@ exportSessionReviewsCsv.head = (options?: RouteQueryOptions): RouteDefinition<'h
     exportSessionReviewsCsv.form = exportSessionReviewsCsvForm
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printSessionReviews
- * @see app/Http/Controllers/Admin/DashboardController.php:704
+ * @see app/Http/Controllers/Admin/DashboardController.php:724
  * @route '/admin/session-reviews/print'
  */
 export const printSessionReviews = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -792,7 +792,7 @@ printSessionReviews.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printSessionReviews
- * @see app/Http/Controllers/Admin/DashboardController.php:704
+ * @see app/Http/Controllers/Admin/DashboardController.php:724
  * @route '/admin/session-reviews/print'
  */
 printSessionReviews.url = (options?: RouteQueryOptions) => {
@@ -801,7 +801,7 @@ printSessionReviews.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printSessionReviews
- * @see app/Http/Controllers/Admin/DashboardController.php:704
+ * @see app/Http/Controllers/Admin/DashboardController.php:724
  * @route '/admin/session-reviews/print'
  */
 printSessionReviews.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -810,7 +810,7 @@ printSessionReviews.get = (options?: RouteQueryOptions): RouteDefinition<'get'> 
 })
 /**
 * @see \App\Http\Controllers\Admin\DashboardController::printSessionReviews
- * @see app/Http/Controllers/Admin/DashboardController.php:704
+ * @see app/Http/Controllers/Admin/DashboardController.php:724
  * @route '/admin/session-reviews/print'
  */
 printSessionReviews.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -820,7 +820,7 @@ printSessionReviews.head = (options?: RouteQueryOptions): RouteDefinition<'head'
 
     /**
 * @see \App\Http\Controllers\Admin\DashboardController::printSessionReviews
- * @see app/Http/Controllers/Admin/DashboardController.php:704
+ * @see app/Http/Controllers/Admin/DashboardController.php:724
  * @route '/admin/session-reviews/print'
  */
     const printSessionReviewsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -830,7 +830,7 @@ printSessionReviews.head = (options?: RouteQueryOptions): RouteDefinition<'head'
 
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::printSessionReviews
- * @see app/Http/Controllers/Admin/DashboardController.php:704
+ * @see app/Http/Controllers/Admin/DashboardController.php:724
  * @route '/admin/session-reviews/print'
  */
         printSessionReviewsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -839,7 +839,7 @@ printSessionReviews.head = (options?: RouteQueryOptions): RouteDefinition<'head'
         })
             /**
 * @see \App\Http\Controllers\Admin\DashboardController::printSessionReviews
- * @see app/Http/Controllers/Admin/DashboardController.php:704
+ * @see app/Http/Controllers/Admin/DashboardController.php:724
  * @route '/admin/session-reviews/print'
  */
         printSessionReviewsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

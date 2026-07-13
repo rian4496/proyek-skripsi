@@ -124,7 +124,7 @@ destroyAll.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => 
  * @see app/Http/Controllers/SessionReviewController.php:31
  * @route '/admin/session-reviews/{sessionReview}'
  */
-export const destroy = (args: { sessionReview: number | { id: number } } | [sessionReview: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { sessionReview: string | number | { id: string | number } } | [sessionReview: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -139,7 +139,7 @@ destroy.definition = {
  * @see app/Http/Controllers/SessionReviewController.php:31
  * @route '/admin/session-reviews/{sessionReview}'
  */
-destroy.url = (args: { sessionReview: number | { id: number } } | [sessionReview: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { sessionReview: string | number | { id: string | number } } | [sessionReview: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { sessionReview: args }
     }
@@ -172,7 +172,7 @@ destroy.url = (args: { sessionReview: number | { id: number } } | [sessionReview
  * @see app/Http/Controllers/SessionReviewController.php:31
  * @route '/admin/session-reviews/{sessionReview}'
  */
-destroy.delete = (args: { sessionReview: number | { id: number } } | [sessionReview: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { sessionReview: string | number | { id: string | number } } | [sessionReview: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -182,7 +182,7 @@ destroy.delete = (args: { sessionReview: number | { id: number } } | [sessionRev
  * @see app/Http/Controllers/SessionReviewController.php:31
  * @route '/admin/session-reviews/{sessionReview}'
  */
-    const destroyForm = (args: { sessionReview: number | { id: number } } | [sessionReview: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const destroyForm = (args: { sessionReview: string | number | { id: string | number } } | [sessionReview: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: destroy.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'DELETE',
@@ -197,7 +197,7 @@ destroy.delete = (args: { sessionReview: number | { id: number } } | [sessionRev
  * @see app/Http/Controllers/SessionReviewController.php:31
  * @route '/admin/session-reviews/{sessionReview}'
  */
-        destroyForm.delete = (args: { sessionReview: number | { id: number } } | [sessionReview: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        destroyForm.delete = (args: { sessionReview: string | number | { id: string | number } } | [sessionReview: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: destroy.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'DELETE',

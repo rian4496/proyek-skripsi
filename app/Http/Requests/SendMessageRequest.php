@@ -48,7 +48,7 @@ class SendMessageRequest extends FormRequest
         return [
             'message.required' => 'Pesan tidak boleh kosong.',
             'message.max' => 'Pesan terlalu panjang (maksimal 1000 karakter).',
-            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 2210010497).',
+            'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 22100xxxxx).',
         ];
     }
 }

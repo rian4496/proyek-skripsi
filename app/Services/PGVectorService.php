@@ -209,13 +209,21 @@ class PGVectorService
             return null;
         }
 
+        // Tingkatkan batas memori agar mampu memproses file PDF presentasi/gambar besar
+        ini_set('memory_limit', '-1');
+
         if (str_ends_with(strtolower($filePath), '.pdf')) {
             if (class_exists(\Smalot\PdfParser\Parser::class)) {
                 try {
                     $parser = new \Smalot\PdfParser\Parser();
                     $pdf = $parser->parseFile($filePath);
-                    return $pdf->getText();
-                } catch (\Exception $e) {
+                    $text = $pdf->getText();
+                    unset($parser, $pdf);
+                    if (function_exists('gc_collect_cycles')) {
+                        gc_collect_cycles();
+                    }
+                    return $text;
+                } catch (\Throwable $e) {
                     Log::error("PGVectorService: Gagal parse PDF {$filePath}: " . $e->getMessage());
                     return null;
                 }

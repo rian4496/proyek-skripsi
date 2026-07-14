@@ -35,6 +35,9 @@ class IndexPGVectorCommand extends Command
      */
     public function handle(PGVectorService $pgvectorService): int
     {
+        // Alokasikan memori tak terbatas khusus saat proses ekstraksi & vektorisasi CLI
+        ini_set('memory_limit', '-1');
+
         $filename = $this->argument('filename');
         $isAll = $this->option('all') || strtolower((string) $filename) === 'all';
         $directory = base_path('rag-backend/data');

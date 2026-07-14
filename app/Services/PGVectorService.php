@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\DocumentChunk;
 use App\Models\SystemSetting;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -197,6 +198,34 @@ class PGVectorService
         }
 
         return $savedCount;
+    }
+
+    /**
+     * Ekstraksi teks bersih dari file dokumen (.txt atau .pdf).
+     */
+    public function extractTextFromFile(string $filePath): ?string
+    {
+        if (!File::exists($filePath)) {
+            return null;
+        }
+
+        if (str_ends_with(strtolower($filePath), '.pdf')) {
+            if (class_exists(\Smalot\PdfParser\Parser::class)) {
+                try {
+                    $parser = new \Smalot\PdfParser\Parser();
+                    $pdf = $parser->parseFile($filePath);
+                    return $pdf->getText();
+                } catch (\Exception $e) {
+                    Log::error("PGVectorService: Gagal parse PDF {$filePath}: " . $e->getMessage());
+                    return null;
+                }
+            } else {
+                Log::warning("PGVectorService: Smalot PdfParser belum terinstall, tidak dapat membaca file PDF.");
+                return null;
+            }
+        }
+
+        return File::get($filePath);
     }
 
     /**

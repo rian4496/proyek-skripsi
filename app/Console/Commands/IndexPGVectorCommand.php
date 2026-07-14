@@ -21,14 +21,14 @@ class IndexPGVectorCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'rag:index-pgvector {filename=pedoman_akademik_2025_2026.txt : Nama file di dalam folder rag-backend/data (atau ketik "all" untuk semua berkas)} {--all : Index seluruh file .txt di folder rag-backend/data}';
+    protected $signature = 'rag:index-pgvector {filename=pedoman_akademik_2025_2026.txt : Nama file (.txt/.pdf) di dalam folder rag-backend/data (atau ketik "all")} {--all : Index seluruh file .txt & .pdf di folder rag-backend/data}';
 
     /**
      * Deskripsi perintah console.
      *
      * @var string
      */
-    protected $description = 'Memotong teks dokumen akademik dan memproses vector embeddings ke tabel document_chunks';
+    protected $description = 'Memotong teks dokumen akademik (.txt & .pdf) dan memproses vector embeddings ke tabel document_chunks';
 
     /**
      * Eksekusi perintah console.
@@ -46,20 +46,29 @@ class IndexPGVectorCommand extends Command
 
         if ($isAll) {
             $files = File::files($directory);
-            $txtFiles = array_filter($files, fn ($f) => str_ends_with(strtolower($f->getFilename()), '.txt'));
+            $targetFiles = array_filter($files, fn ($f) => 
+                str_ends_with(strtolower($f->getFilename()), '.txt') || 
+                str_ends_with(strtolower($f->getFilename()), '.pdf')
+            );
 
-            if (empty($txtFiles)) {
-                $this->warn("⚠️ Tidak ada file berformat .txt di dalam folder {$directory}");
+            if (empty($targetFiles)) {
+                $this->warn("⚠️ Tidak ada file berformat .txt atau .pdf di dalam folder {$directory}");
                 return self::FAILURE;
             }
 
-            $this->info("🚀 Memulai indexing untuk " . count($txtFiles) . " file dokumen .txt di dalam rag-backend/data/...");
+            $this->info("🚀 Memulai indexing untuk " . count($targetFiles) . " file dokumen (.txt & .pdf) di dalam rag-backend/data/...");
             $totalSaved = 0;
 
-            foreach ($txtFiles as $file) {
+            foreach ($targetFiles as $file) {
                 $fname = $file->getFilename();
                 $this->line("➤ Memproses file: <info>{$fname}</info>");
-                $content = File::get($file->getPathname());
+                $content = $pgvectorService->extractTextFromFile($file->getPathname());
+                
+                if (empty(trim((string) $content))) {
+                    $this->warn("   ⚠️ Gagal mengekstrak teks / file kosong: {$fname}");
+                    continue;
+                }
+
                 $documentTitle = ucwords(str_replace(['_', '.txt', '.pdf'], [' ', '', ''], $fname));
 
                 $savedCount = $pgvectorService->indexTextDocument($content, $documentTitle);
@@ -79,8 +88,13 @@ class IndexPGVectorCommand extends Command
             return self::FAILURE;
         }
 
-        $this->info("Memuat dokumen: {$filename}...");
-        $content = File::get($filePath);
+        $this->info("Memuat dan mengekstrak dokumen: {$filename}...");
+        $content = $pgvectorService->extractTextFromFile($filePath);
+
+        if (empty(trim((string) $content))) {
+            $this->error("Gagal mengekstrak teks dari berkas: {$filename}. Pastikan format .txt/.pdf valid dan tidak diproteksi sandi.");
+            return self::FAILURE;
+        }
 
         $documentTitle = ucwords(str_replace(['_', '.txt', '.pdf'], [' ', '', ''], $filename));
         

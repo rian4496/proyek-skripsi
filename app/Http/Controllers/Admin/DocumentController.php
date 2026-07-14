@@ -85,13 +85,17 @@ class DocumentController extends Controller
         // Simpan file ke direktori rag-backend/data
         $file->move($directory, $filename);
 
-        // Otomatis trigger indexing di PGVector (PostgreSQL Railway) jika format .txt
+        // Otomatis trigger indexing di PGVector (PostgreSQL Railway) jika format .txt atau .pdf
         try {
-            if (str_ends_with(strtolower($filename), '.txt')) {
-                $content = File::get("{$directory}/{$filename}");
-                $docTitle = ucwords(str_replace(['_', '.txt', '.pdf'], [' ', '', ''], $filename));
-                app(\App\Services\PGVectorService::class)->indexTextDocument($content, $docTitle);
-                Log::info("PGVector auto-indexing selesai untuk dokumen: {$docTitle}");
+            $lower = strtolower($filename);
+            if (str_ends_with($lower, '.txt') || str_ends_with($lower, '.pdf')) {
+                $pgvector = app(\App\Services\PGVectorService::class);
+                $content = $pgvector->extractTextFromFile("{$directory}/{$filename}");
+                if (!empty($content)) {
+                    $docTitle = ucwords(str_replace(['_', '.txt', '.pdf'], [' ', '', ''], $filename));
+                    $pgvector->indexTextDocument($content, $docTitle);
+                    Log::info("PGVector auto-indexing selesai untuk dokumen: {$docTitle}");
+                }
             }
         } catch (\Exception $e) {
             Log::warning('Gagal auto-indexing PGVector: ' . $e->getMessage());

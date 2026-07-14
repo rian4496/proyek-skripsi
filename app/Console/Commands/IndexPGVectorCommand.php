@@ -21,7 +21,7 @@ class IndexPGVectorCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'rag:index-pgvector {filename=pedoman_akademik_2025_2026.txt : Nama file di dalam folder rag-backend/data}';
+    protected $signature = 'rag:index-pgvector {filename=pedoman_akademik_2025_2026.txt : Nama file di dalam folder rag-backend/data (atau ketik "all" untuk semua berkas)} {--all : Index seluruh file .txt di folder rag-backend/data}';
 
     /**
      * Deskripsi perintah console.
@@ -36,11 +36,46 @@ class IndexPGVectorCommand extends Command
     public function handle(PGVectorService $pgvectorService): int
     {
         $filename = $this->argument('filename');
-        $filePath = base_path("rag-backend/data/{$filename}");
+        $isAll = $this->option('all') || strtolower((string) $filename) === 'all';
+        $directory = base_path('rag-backend/data');
+
+        if (!File::exists($directory)) {
+            $this->error("Direktori tidak ditemukan di: {$directory}");
+            return self::FAILURE;
+        }
+
+        if ($isAll) {
+            $files = File::files($directory);
+            $txtFiles = array_filter($files, fn ($f) => str_ends_with(strtolower($f->getFilename()), '.txt'));
+
+            if (empty($txtFiles)) {
+                $this->warn("⚠️ Tidak ada file berformat .txt di dalam folder {$directory}");
+                return self::FAILURE;
+            }
+
+            $this->info("🚀 Memulai indexing untuk " . count($txtFiles) . " file dokumen .txt di dalam rag-backend/data/...");
+            $totalSaved = 0;
+
+            foreach ($txtFiles as $file) {
+                $fname = $file->getFilename();
+                $this->line("➤ Memproses file: <info>{$fname}</info>");
+                $content = File::get($file->getPathname());
+                $documentTitle = ucwords(str_replace(['_', '.txt', '.pdf'], [' ', '', ''], $fname));
+
+                $savedCount = $pgvectorService->indexTextDocument($content, $documentTitle);
+                $totalSaved += $savedCount;
+                $this->line("   ↳ Tersimpan {$savedCount} chunks untuk '{$documentTitle}'");
+            }
+
+            $this->info("✅ Selesai! Total {$totalSaved} potongan dokumen berhasil di-index ke tabel document_chunks PGVector!");
+            return self::SUCCESS;
+        }
+
+        $filePath = "{$directory}/{$filename}";
 
         if (!File::exists($filePath)) {
             $this->error("Berkas dokumen tidak ditemukan di: {$filePath}");
-            $this->line("Pastikan file berada di dalam folder rag-backend/data/");
+            $this->line("Pastikan file berada di dalam folder rag-backend/data/ atau gunakan opsi --all");
             return self::FAILURE;
         }
 

@@ -77,11 +77,12 @@ PROMPT;
      * dari Google Free Tier API, dengan jeda sesuai retryDelay dari server.
      *
      * @param  string  $message  Pesan input dari pengguna
+     * @param  string|null  $ragContext  Konteks referensi RAG dari PGVector (opsional)
      * @return string  Respons teks dari Gemini
      *
      * @throws \RuntimeException  Jika API key tidak dikonfigurasi
      */
-    public function generateResponse(string $message): string
+    public function generateResponse(string $message, ?string $ragContext = null): string
     {
         if (empty($this->apiKey)) {
             Log::warning('GeminiService: API key tidak dikonfigurasi.');
@@ -89,9 +90,14 @@ PROMPT;
             return 'Maaf, layanan AI sedang tidak tersedia. Silakan coba lagi nanti atau hubungi bagian akademik secara langsung.';
         }
 
+        $systemInstruction = self::SYSTEM_PROMPT;
+        if (!empty($ragContext)) {
+            $systemInstruction .= "\n\n=== KONTEKS REFERENSI PEDOMAN AKADEMIK (PGVECTOR RAG) ===\n" . $ragContext . "\n\nGunakan referensi dokumen akademik resmi di atas sebagai pedoman utama dalam memberikan jawaban kepada mahasiswa.";
+        }
+
         $payload = [
             'system_instruction' => [
-                'parts' => [['text' => self::SYSTEM_PROMPT]],
+                'parts' => [['text' => $systemInstruction]],
             ],
             'contents' => [
                 [

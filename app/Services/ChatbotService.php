@@ -71,6 +71,7 @@ class ChatbotService
     public function __construct(
         private readonly GeminiService $geminiService,
         private readonly OllamaService $ollamaService,
+        private readonly PGVectorService $pgvectorService,
     ) {}
 
     /**
@@ -146,10 +147,25 @@ class ChatbotService
             return $result;
         }
 
-        // --- Tahap 2: AI Fallback (Gemini Cloud ATAU Ollama/FastAPI RAG Lokal) ---
+        // --- Tahap 2: AI Fallback (PGVector Semantic Search -> Gemini Cloud ATAU Ollama/FastAPI RAG Lokal) ---
         $activeEngine = $this->getActiveEngine();
 
         try {
+            // Coba cari referensi RAG secara cloud-native dari PostgreSQL via pgvector terlebih dahulu
+            $pgvectorChunks = $this->pgvectorService->searchChunks($message, 3, 0.65);
+            $ragContextString = null;
+            $isPgvectorFound = false;
+
+            if (!empty($pgvectorChunks)) {
+                $isPgvectorFound = true;
+                $ragContextParts = [];
+                foreach ($pgvectorChunks as $i => $c) {
+                    $ragContextParts[] = "[Referensi #" . ($i + 1) . " - " . $c['title'] . " (Kemiripan: " . $c['score'] . "%)]:\n" . $c['text'];
+                }
+                $ragContextString = implode("\n\n", $ragContextParts);
+                Log::info('ChatbotService: PGVector menemukan ' . count($pgvectorChunks) . ' referensi relevan di PostgreSQL.');
+            }
+
             if ($activeEngine === 'ollama') {
                 // === Engine Lokal: FastAPI RAG Backend → Ollama Qwen 2.5 ===
                 $sessionId = !empty($participantData['nama_mahasiswa'])
@@ -166,14 +182,14 @@ class ChatbotService
                     empty(trim($ollamaResult['response']))
                 )) {
                     Log::warning("ChatbotService: Ollama/Tunnel lambat/offline, auto-switching ke Gemini Cloud API agar tidak stuck.");
-                    $aiResponse = $this->geminiService->generateResponse($message);
+                    $aiResponse = $this->geminiService->generateResponse($message, $ragContextString);
                     $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
 
                     $result = $this->buildResult(
                         $aiResponse,
                         'ai',
                         aiEngine: 'gemini',
-                        isRagFound: true,
+                        isRagFound: $isPgvectorFound || true,
                         latencyMs: $latencyMs,
                     );
                 } else {
@@ -183,19 +199,20 @@ class ChatbotService
                         $ollamaResult['response'],
                         'ai',
                         aiEngine: 'ollama',
-                        isRagFound: $ollamaResult['is_rag_found'],
+                        isRagFound: $isPgvectorFound || $ollamaResult['is_rag_found'],
                         latencyMs: $latencyMs,
                     );
                 }
             } else {
-                // === Engine Cloud: Google Gemini API ===
-                $aiResponse = $this->geminiService->generateResponse($message);
+                // === Engine Cloud: Google Gemini API (dengan PGVector Context jika tersedia) ===
+                $aiResponse = $this->geminiService->generateResponse($message, $ragContextString);
                 $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
 
                 $result = $this->buildResult(
                     $aiResponse,
                     'ai',
                     aiEngine: 'gemini',
+                    isRagFound: $isPgvectorFound,
                     latencyMs: $latencyMs,
                 );
             }

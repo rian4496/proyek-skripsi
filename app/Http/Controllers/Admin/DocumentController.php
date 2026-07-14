@@ -85,6 +85,18 @@ class DocumentController extends Controller
         // Simpan file ke direktori rag-backend/data
         $file->move($directory, $filename);
 
+        // Otomatis trigger indexing di PGVector (PostgreSQL Railway) jika format .txt
+        try {
+            if (str_ends_with(strtolower($filename), '.txt')) {
+                $content = File::get("{$directory}/{$filename}");
+                $docTitle = ucwords(str_replace(['_', '.txt', '.pdf'], [' ', '', ''], $filename));
+                app(\App\Services\PGVectorService::class)->indexTextDocument($content, $docTitle);
+                Log::info("PGVector auto-indexing selesai untuk dokumen: {$docTitle}");
+            }
+        } catch (\Exception $e) {
+            Log::warning('Gagal auto-indexing PGVector: ' . $e->getMessage());
+        }
+
         // Otomatis trigger re-indexing di FastAPI RAG backend (port 8001)
         try {
             Http::timeout(10)->get('http://127.0.0.1:8001/reload');
@@ -94,7 +106,7 @@ class DocumentController extends Controller
         }
 
         return redirect()->route('admin.upload-document.index')
-            ->with('success', 'Dokumen "' . $filename . '" berhasil diunggah dan otomatis di-index oleh RAG!');
+            ->with('success', 'Dokumen "' . $filename . '" berhasil diunggah dan otomatis di-index oleh RAG & PGVector!');
     }
 
     /**
@@ -109,6 +121,15 @@ class DocumentController extends Controller
         if (File::exists($filePath)) {
             File::delete($filePath);
 
+            // Hapus juga chunks di tabel document_chunks PGVector
+            try {
+                $docTitle = ucwords(str_replace(['_', '.txt', '.pdf'], [' ', '', ''], $filename));
+                \App\Models\DocumentChunk::where('document_title', $docTitle)->delete();
+                Log::info("PGVector chunks dihapus untuk: {$docTitle}");
+            } catch (\Exception $e) {
+                Log::warning('Gagal hapus chunks PGVector: ' . $e->getMessage());
+            }
+
             // Otomatis trigger re-indexing di FastAPI RAG backend (port 8001)
             try {
                 Http::timeout(10)->get('http://127.0.0.1:8001/reload');
@@ -118,7 +139,7 @@ class DocumentController extends Controller
             }
 
             return redirect()->route('admin.upload-document.index')
-                ->with('success', 'Dokumen "' . $filename . '" berhasil dihapus dari server dan index RAG diperbarui.');
+                ->with('success', 'Dokumen "' . $filename . '" berhasil dihapus dari server dan index RAG & PGVector diperbarui.');
         }
 
         return redirect()->route('admin.upload-document.index')

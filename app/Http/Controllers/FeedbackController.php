@@ -9,6 +9,11 @@ class FeedbackController extends Controller
 {
     public function store(Request $request, \App\Services\GeminiService $geminiService)
     {
+        // Bersihkan input NPM jika berupa tanda strip atau kosong agar lolos validasi nullable
+        if ($request->has('npm') && (trim((string)$request->npm) === '-' || trim((string)$request->npm) === '')) {
+            $request->merge(['npm' => null]);
+        }
+
         $validated = $request->validate([
             'nama_pelapor' => 'required|string|max:100',
             'npm' => 'nullable|string|regex:/^[0-9]{10}$/',

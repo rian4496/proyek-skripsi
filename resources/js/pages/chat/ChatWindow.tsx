@@ -125,26 +125,34 @@ export default function ChatWindow() {
         }
     }, []);
 
-    // Intersep Tombol Back Browser
+    // Intersep Tombol Back Browser (PopState)
     useEffect(() => {
-        // Push state awal untuk menangkap navigasi back pertama kali
-        window.history.pushState(null, '', window.location.href);
+        // Priming history state secara kuat agar navigasi back selalu tertangkap dan tidak keluar halaman
+        if (!showParticipantModal) {
+            window.history.pushState({ chatSessionActive: true }, '', window.location.href);
+        }
 
-        const handlePopState = () => {
-            // Ketika user menekan tombol back, browser akan mencoba mundur ke history sebelumnya.
-            // Kita push state kembali agar user tetap berada di halaman ini.
-            window.history.pushState(null, '', window.location.href);
+        const handlePopState = (e: PopStateEvent) => {
+            // Cegah browser atau Inertia memproses tombol back terlebih dahulu
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-            // Tampilkan popup konfirmasi akhiri sesi
-            setShowExitConfirmModal(true);
+            // Push kembali state agar history browser tidak mundur keluar dari halaman
+            window.history.pushState({ chatSessionActive: true }, '', window.location.href);
+
+            // Tampilkan popup konfirmasi akhiri sesi uji coba jika belum terbuka
+            if (!showParticipantModal && !showFeedbackModal && !showThankYouModal) {
+                setShowExitConfirmModal(true);
+            }
         };
 
-        window.addEventListener('popstate', handlePopState);
+        window.addEventListener('popstate', handlePopState, true);
 
         return () => {
-            window.removeEventListener('popstate', handlePopState);
+            window.removeEventListener('popstate', handlePopState, true);
         };
-    }, []);
+    }, [showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal, messages.length]);
 
     const handleConfirmExit = () => {
         setShowExitConfirmModal(false);
@@ -384,15 +392,6 @@ export default function ChatWindow() {
                                     <Moon className="size-4 text-slate-700" />
                                 )}
                             </button>
-                            <button
-                                onClick={() => setShowExitConfirmModal(true)}
-                                type="button"
-                                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow active:scale-95"
-                                title="Akhiri sesi uji coba & beri ulasan"
-                            >
-                                <Star className="size-3.5 fill-white" />
-                                <span>Akhiri Sesi</span>
-                            </button>
                             {messages.length > 1 && (
                                 <button
                                     onClick={handleClearChat}
@@ -466,19 +465,10 @@ export default function ChatWindow() {
                                 </div>
                             </div>
                         )}
-                        {/* ═══ Tombol Akhiri Sesi & Hubungi Admin (Selalu Muncul) ═══ */}
-                        <div className="mt-6 flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">
-                            <button
-                                onClick={() => setShowExitConfirmModal(true)}
-                                type="button"
-                                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md active:scale-95"
-                            >
-                                <Star className="size-4 fill-white" />
-                                Selesai Uji Coba & Beri Ulasan
-                            </button>
+                        {/* ═══ Tombol Hubungi Admin (Selalu Muncul) ═══ */}
+                        <div className="mt-6 border-t border-slate-100 pt-4 text-center dark:border-slate-800">
                             <button
                                 onClick={openTicketModal}
-                                type="button"
                                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md active:scale-95"
                             >
                                 <HelpCircle className="size-4" />

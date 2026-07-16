@@ -359,47 +359,47 @@ export default function Dashboard({
                         {/* Tombol Export CSV dengan parameter filter yang aktif */}
                         <a
                             href={`/admin/export-csv?date_range=${dateRange}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}&topic=${encodeURIComponent(selectedTopic)}`}
-                            className="inline-flex items-center rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm transition-colors hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
-                            <Download className="mr-1.5 size-3.5" />
+                            <Download className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
                             Export Report CSV
                         </a>
                         <a
                             href={`/admin/chat-logs/print?topic=${encodeURIComponent(selectedTopic)}&date_range=${encodeURIComponent(dateRange)}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center rounded-lg border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                             title="Cetak Laporan Percakapan Berkelompok Berdasarkan Topik Konteks (Bab IV)"
                         >
-                            <Printer className="mr-1.5 size-3.5" />
+                            <Printer className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
                             Cetak Laporan Topik (PDF)
                         </a>
                         <Link
                             href="/admin/upload-document"
-                            className="inline-flex items-center rounded-lg border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 shadow-sm transition-colors hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
-                            <Upload className="mr-1.5 size-3.5" />
+                            <Upload className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
                             Upload Data Dokumen
                         </Link>
                         <Link
                             href="/admin/chat-rules"
-                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
-                            <Database className="mr-1.5 size-3.5" />
+                            <Database className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
                             Kelola Chat Rules
                         </Link>
                         <Link
                             href="/admin/system-logs"
-                            className="inline-flex items-center rounded-lg border border-purple-300 bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700 shadow-sm transition-colors hover:bg-purple-100 dark:border-purple-700 dark:bg-purple-900/30 dark:text-purple-300 dark:hover:bg-purple-900/50"
+                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
-                            <Terminal className="mr-1.5 size-3.5 text-purple-600 dark:text-purple-400" />
+                            <Terminal className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
                             System Logs
                         </Link>
                         <Link
                             href="/admin/participants"
-                            className="inline-flex items-center rounded-lg border border-indigo-300 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 shadow-sm transition-colors hover:bg-indigo-100 dark:border-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
+                            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
-                            <Users className="mr-1.5 size-3.5 text-indigo-600 dark:text-indigo-400" />
+                            <Users className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
                             Daftar Peserta Uji Coba
                         </Link>
                     </div>
@@ -422,7 +422,7 @@ export default function Dashboard({
                                     setDateRange(e.target.value);
                                     handleFilterChange(e.target.value, selectedFakultas, selectedProdi, selectedTopic);
                                 }}
-                                className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+                                className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
                             >
                                 <option value="all">Semua Waktu</option>
                                 <option value="today">Hari Ini</option>
@@ -438,7 +438,7 @@ export default function Dashboard({
                                 setSelectedTopic(e.target.value);
                                 handleFilterChange(dateRange, selectedFakultas, selectedProdi, e.target.value);
                             }}
-                            className="rounded-lg border border-blue-300 bg-blue-50/50 px-2.5 py-1 text-xs font-bold text-blue-800 focus:border-blue-500 focus:outline-none dark:border-blue-700 dark:bg-blue-950/50 dark:text-blue-300 max-w-[200px] truncate"
+                            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[200px] truncate"
                             title="Filter Berdasarkan Kategori Topik Konteks Layanan Akademik"
                         >
                             <option value="all">📁 Semua Topik Konteks</option>
@@ -456,7 +456,7 @@ export default function Dashboard({
                                 setSelectedFakultas(e.target.value);
                                 handleFilterChange(dateRange, e.target.value, selectedProdi, selectedTopic);
                             }}
-                            className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
+                            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
                         >
                             <option value="all">Semua Fakultas</option>
                             {options?.fakultas_list?.map((fak, idx) => (
@@ -471,7 +471,7 @@ export default function Dashboard({
                                 setSelectedProdi(e.target.value);
                                 handleFilterChange(dateRange, selectedFakultas, e.target.value, selectedTopic);
                             }}
-                            className="rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
+                            className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 focus:border-blue-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 max-w-[180px] truncate"
                         >
                             <option value="all">Semua Program Studi</option>
                             {options?.prodi_list?.map((pro, idx) => (
@@ -732,7 +732,7 @@ export default function Dashboard({
                                             </div>
                                             <Link
                                                 href={`/admin/chat-rules/create?keyword=${encodeURIComponent(rec.user_message)}`}
-                                                className="flex-shrink-0 inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/30 px-2 py-0.5 text-[11px] font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors shadow-sm"
+                                                className="flex-shrink-0 inline-flex items-center rounded-lg border border-slate-300 bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-800 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 transition-colors shadow-sm"
                                             >
                                                 Buat Rule
                                             </Link>

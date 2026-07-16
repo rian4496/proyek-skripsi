@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Admin\DocumentController::download
- * @see app/Http/Controllers/Admin/DocumentController.php:131
+ * @see app/Http/Controllers/Admin/DocumentController.php:156
  * @route '/admin/upload-document/download/{filename}'
  */
 export const download = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ download.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DocumentController::download
- * @see app/Http/Controllers/Admin/DocumentController.php:131
+ * @see app/Http/Controllers/Admin/DocumentController.php:156
  * @route '/admin/upload-document/download/{filename}'
  */
 download.url = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -122,7 +122,7 @@ download.url = (args: { filename: string | number } | [filename: string | number
 
 /**
 * @see \App\Http\Controllers\Admin\DocumentController::download
- * @see app/Http/Controllers/Admin/DocumentController.php:131
+ * @see app/Http/Controllers/Admin/DocumentController.php:156
  * @route '/admin/upload-document/download/{filename}'
  */
 download.get = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -131,7 +131,7 @@ download.get = (args: { filename: string | number } | [filename: string | number
 })
 /**
 * @see \App\Http\Controllers\Admin\DocumentController::download
- * @see app/Http/Controllers/Admin/DocumentController.php:131
+ * @see app/Http/Controllers/Admin/DocumentController.php:156
  * @route '/admin/upload-document/download/{filename}'
  */
 download.head = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -141,7 +141,7 @@ download.head = (args: { filename: string | number } | [filename: string | numbe
 
     /**
 * @see \App\Http\Controllers\Admin\DocumentController::download
- * @see app/Http/Controllers/Admin/DocumentController.php:131
+ * @see app/Http/Controllers/Admin/DocumentController.php:156
  * @route '/admin/upload-document/download/{filename}'
  */
     const downloadForm = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -151,7 +151,7 @@ download.head = (args: { filename: string | number } | [filename: string | numbe
 
             /**
 * @see \App\Http\Controllers\Admin\DocumentController::download
- * @see app/Http/Controllers/Admin/DocumentController.php:131
+ * @see app/Http/Controllers/Admin/DocumentController.php:156
  * @route '/admin/upload-document/download/{filename}'
  */
         downloadForm.get = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -160,7 +160,7 @@ download.head = (args: { filename: string | number } | [filename: string | numbe
         })
             /**
 * @see \App\Http\Controllers\Admin\DocumentController::download
- * @see app/Http/Controllers/Admin/DocumentController.php:131
+ * @see app/Http/Controllers/Admin/DocumentController.php:156
  * @route '/admin/upload-document/download/{filename}'
  */
         downloadForm.head = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -176,7 +176,7 @@ download.head = (args: { filename: string | number } | [filename: string | numbe
     download.form = downloadForm
 /**
 * @see \App\Http\Controllers\Admin\DocumentController::destroy
- * @see app/Http/Controllers/Admin/DocumentController.php:103
+ * @see app/Http/Controllers/Admin/DocumentController.php:119
  * @route '/admin/upload-document/{filename}'
  */
 export const destroy = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -191,7 +191,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\DocumentController::destroy
- * @see app/Http/Controllers/Admin/DocumentController.php:103
+ * @see app/Http/Controllers/Admin/DocumentController.php:119
  * @route '/admin/upload-document/{filename}'
  */
 destroy.url = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -219,7 +219,7 @@ destroy.url = (args: { filename: string | number } | [filename: string | number 
 
 /**
 * @see \App\Http\Controllers\Admin\DocumentController::destroy
- * @see app/Http/Controllers/Admin/DocumentController.php:103
+ * @see app/Http/Controllers/Admin/DocumentController.php:119
  * @route '/admin/upload-document/{filename}'
  */
 destroy.delete = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -229,7 +229,7 @@ destroy.delete = (args: { filename: string | number } | [filename: string | numb
 
     /**
 * @see \App\Http\Controllers\Admin\DocumentController::destroy
- * @see app/Http/Controllers/Admin/DocumentController.php:103
+ * @see app/Http/Controllers/Admin/DocumentController.php:119
  * @route '/admin/upload-document/{filename}'
  */
     const destroyForm = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -244,7 +244,7 @@ destroy.delete = (args: { filename: string | number } | [filename: string | numb
 
             /**
 * @see \App\Http\Controllers\Admin\DocumentController::destroy
- * @see app/Http/Controllers/Admin/DocumentController.php:103
+ * @see app/Http/Controllers/Admin/DocumentController.php:119
  * @route '/admin/upload-document/{filename}'
  */
         destroyForm.delete = (args: { filename: string | number } | [filename: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

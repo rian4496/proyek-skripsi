@@ -384,6 +384,15 @@ export default function ChatWindow() {
                                     <Moon className="size-4 text-slate-700" />
                                 )}
                             </button>
+                            <button
+                                onClick={() => setShowExitConfirmModal(true)}
+                                type="button"
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow active:scale-95"
+                                title="Akhiri sesi uji coba & beri ulasan"
+                            >
+                                <Star className="size-3.5 fill-white" />
+                                <span>Akhiri Sesi</span>
+                            </button>
                             {messages.length > 1 && (
                                 <button
                                     onClick={handleClearChat}
@@ -457,10 +466,19 @@ export default function ChatWindow() {
                                 </div>
                             </div>
                         )}
-                        {/* ═══ Tombol Hubungi Admin (Selalu Muncul) ═══ */}
-                        <div className="mt-6 border-t border-slate-100 pt-4 text-center dark:border-slate-800">
+                        {/* ═══ Tombol Akhiri Sesi & Hubungi Admin (Selalu Muncul) ═══ */}
+                        <div className="mt-6 flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-4 dark:border-slate-800">
+                            <button
+                                onClick={() => setShowExitConfirmModal(true)}
+                                type="button"
+                                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md active:scale-95"
+                            >
+                                <Star className="size-4 fill-white" />
+                                Selesai Uji Coba & Beri Ulasan
+                            </button>
                             <button
                                 onClick={openTicketModal}
+                                type="button"
                                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md active:scale-95"
                             >
                                 <HelpCircle className="size-4" />
@@ -684,6 +702,35 @@ export default function ChatWindow() {
                                     Mulai Uji Coba Chatbot
                                 </button>
                             </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* ═══ Delete Chat Modal ═══ */}
+                {showDeleteModal && (
+                    <div className="fixed inset-0 z-55 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-md animate-in fade-in duration-200">
+                        <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-center animate-in zoom-in-95 duration-200">
+                            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/30 text-red-500 mb-4">
+                                <Trash2 className="size-6" />
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Hapus Obrolan?</h3>
+                            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                                Seluruh riwayat percakapan Anda saat ini akan dihapus dan Anda akan memulai obrolan baru dari awal.
+                            </p>
+                            <div className="mt-6 flex justify-center gap-3">
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="flex-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    onClick={confirmClearChat}
+                                    className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all"
+                                >
+                                    Hapus
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

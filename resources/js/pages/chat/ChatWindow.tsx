@@ -125,34 +125,44 @@ export default function ChatWindow() {
         }
     }, []);
 
-    // Intersep Tombol Back Bawaan HP & Browser (PopState & Hash Priming)
+    // Intersep Tombol Back Bawaan HP & Browser (PopState Double-Layer Buffer)
+    const stateRefs = useRef({ showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal });
     useEffect(() => {
-        // Priming history state berlapis dengan hash '#active' khusus untuk mobile/HP (Android & iPhone)
-        // agar tombol back fisik/swipe selalu memicu event popstate tanpa gagal
-        if (!showParticipantModal) {
-            if (window.location.hash !== '#active') {
-                window.history.pushState({ chatSessionActive: true }, '', window.location.pathname + window.location.search + '#active');
-            }
-        }
+        stateRefs.current = { showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal };
+    }, [showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal]);
 
+    useEffect(() => {
+        // Ketika peserta sudah masuk ke obrolan, kita buat 2 lapis history buffer khusus mobile (#chat -> #active)
+        // Ini adalah teknik pasti agar tombol back fisik/bawaan di HP (Android & iPhone) mutlak tertangkap 100%
+        if (!showParticipantModal && window.location.hash !== '#active') {
+            window.history.pushState({ buffer: true }, '', window.location.pathname + '#chat');
+            window.history.pushState({ active: true }, '', window.location.pathname + '#active');
+        }
+    }, [showParticipantModal, messages.length]);
+
+    useEffect(() => {
         const handlePopState = (e: PopStateEvent) => {
-            // Cegah browser HP atau Inertia memproses tombol back terlebih dahulu
+            // Cegah Inertia dan browser HP melakukan navigasi keluar
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
 
-            // Push kembali state/hash '#active' agar posisi history di HP tidak mundur keluar dari halaman
-            window.history.pushState({ chatSessionActive: true }, '', window.location.pathname + window.location.search + '#active');
+            const { showParticipantModal: isParticipant, showFeedbackModal: isFeedback, showThankYouModal: isThankYou, showExitConfirmModal: isExitConfirm } = stateRefs.current;
 
-            // Logika respons responsif terhadap tombol back bawaan HP:
-            if (!showParticipantModal && !showFeedbackModal && !showThankYouModal) {
-                if (showExitConfirmModal) {
-                    // Jika popup konfirmasi sudah terbuka dan user tekan back di HP, tutup popup (sama seperti pilih 'Tidak')
+            // Selalu pertahankan posisi di '#active' agar tombol back HP selanjutnya tetap bisa tertangkap
+            window.history.pushState({ active: true }, '', window.location.pathname + '#active');
+
+            if (!isParticipant && !isFeedback && !isThankYou) {
+                if (isExitConfirm) {
+                    // Jika popup konfirmasi sudah muncul dan user tekan back HP, tutup popup (batal keluar)
                     setShowExitConfirmModal(false);
                 } else {
-                    // Jika sedang asyik chat lalu tekan tombol back HP, langsung munculkan popup Akhiri Sesi!
+                    // Jika sedang obrolan dan tekan back HP, langsung munculkan popup Akhiri Sesi Uji Coba!
                     setShowExitConfirmModal(true);
                 }
+            } else if (isFeedback) {
+                // Jika sedang di form ulasan bintang dan tekan back HP, tutup ke chat
+                setShowFeedbackModal(false);
             }
         };
 
@@ -161,7 +171,7 @@ export default function ChatWindow() {
         return () => {
             window.removeEventListener('popstate', handlePopState, true);
         };
-    }, [showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal, messages.length]);
+    }, []);
 
     const handleConfirmExit = () => {
         setShowExitConfirmModal(false);
@@ -224,6 +234,12 @@ export default function ChatWindow() {
 
         sessionStorage.setItem('participant_info', JSON.stringify(info));
         setShowParticipantModal(false);
+
+        // Seketika kunci 2 lapis history (#chat -> #active) begitu tombol Mulai Uji Coba diklik di HP
+        if (window.location.hash !== '#active') {
+            window.history.pushState({ buffer: true }, '', window.location.pathname + '#chat');
+            window.history.pushState({ active: true }, '', window.location.pathname + '#active');
+        }
 
         try {
             await axios.post('/participants', info);
@@ -362,6 +378,10 @@ export default function ChatWindow() {
                 },
                 onFinish: () => {
                     setProcessing(false);
+                    // Pastikan hash '#active' selalu terkunci kembali setelah Inertia memproses request di HP
+                    if (window.location.hash !== '#active' && !stateRefs.current.showParticipantModal) {
+                        window.history.pushState({ active: true }, '', window.location.pathname + '#active');
+                    }
                 },
             },
         );

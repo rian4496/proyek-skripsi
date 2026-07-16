@@ -361,7 +361,7 @@ export default function Dashboard({
                             href={`/admin/export-csv?date_range=${dateRange}&fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}&topic=${encodeURIComponent(selectedTopic)}`}
                             className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
-                            <Download className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
+                            <FileSpreadsheet className="mr-1.5 size-3.5 fill-emerald-600 text-white dark:fill-emerald-500" />
                             Export Report CSV
                         </a>
                         <a
@@ -1067,7 +1067,7 @@ export default function Dashboard({
                                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                                 title="Download Rekap CSV Tiket Keluhan Masuk"
                             >
-                                <FileSpreadsheet className="size-3.5" />
+                                <FileSpreadsheet className="size-3.5 fill-emerald-600 text-white dark:fill-emerald-500" />
                                 <span>Export CSV</span>
                             </a>
                             {tickets && tickets.length > 0 && (
@@ -1231,7 +1231,7 @@ export default function Dashboard({
                                     className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                                     title="Download Rekap CSV Evaluasi CSAT Responden"
                                 >
-                                    <FileSpreadsheet className="size-3.5" />
+                                    <FileSpreadsheet className="size-3.5 fill-emerald-600 text-white dark:fill-emerald-500" />
                                     <span>Export CSV</span>
                                 </a>
                                 {session_reviews && session_reviews.length > 0 && (

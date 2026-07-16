@@ -14,7 +14,8 @@ import {
     ArrowLeft,
     Clock,
     School,
-    Printer
+    Printer,
+    FileSpreadsheet
 } from 'lucide-react';
 
 interface ParticipantItem {
@@ -143,7 +144,7 @@ export default function Participants({
                             href={`/admin/participants/export-csv?fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
                             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
-                            <Download className="size-4 text-slate-700 dark:text-slate-300" />
+                            <FileSpreadsheet className="size-4 fill-emerald-600 text-white dark:fill-emerald-500" />
                             <span>Export Rekap CSV (Bab IV)</span>
                         </a>
                     </div>

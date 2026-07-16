@@ -125,25 +125,34 @@ export default function ChatWindow() {
         }
     }, []);
 
-    // Intersep Tombol Back Browser (PopState)
+    // Intersep Tombol Back Bawaan HP & Browser (PopState & Hash Priming)
     useEffect(() => {
-        // Priming history state secara kuat agar navigasi back selalu tertangkap dan tidak keluar halaman
+        // Priming history state berlapis dengan hash '#active' khusus untuk mobile/HP (Android & iPhone)
+        // agar tombol back fisik/swipe selalu memicu event popstate tanpa gagal
         if (!showParticipantModal) {
-            window.history.pushState({ chatSessionActive: true }, '', window.location.href);
+            if (window.location.hash !== '#active') {
+                window.history.pushState({ chatSessionActive: true }, '', window.location.pathname + window.location.search + '#active');
+            }
         }
 
         const handlePopState = (e: PopStateEvent) => {
-            // Cegah browser atau Inertia memproses tombol back terlebih dahulu
+            // Cegah browser HP atau Inertia memproses tombol back terlebih dahulu
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
 
-            // Push kembali state agar history browser tidak mundur keluar dari halaman
-            window.history.pushState({ chatSessionActive: true }, '', window.location.href);
+            // Push kembali state/hash '#active' agar posisi history di HP tidak mundur keluar dari halaman
+            window.history.pushState({ chatSessionActive: true }, '', window.location.pathname + window.location.search + '#active');
 
-            // Tampilkan popup konfirmasi akhiri sesi uji coba jika belum terbuka
+            // Logika respons responsif terhadap tombol back bawaan HP:
             if (!showParticipantModal && !showFeedbackModal && !showThankYouModal) {
-                setShowExitConfirmModal(true);
+                if (showExitConfirmModal) {
+                    // Jika popup konfirmasi sudah terbuka dan user tekan back di HP, tutup popup (sama seperti pilih 'Tidak')
+                    setShowExitConfirmModal(false);
+                } else {
+                    // Jika sedang asyik chat lalu tekan tombol back HP, langsung munculkan popup Akhiri Sesi!
+                    setShowExitConfirmModal(true);
+                }
             }
         };
 

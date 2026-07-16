@@ -137,7 +137,7 @@ export default function Participants({
                             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                             title="Cetak Laporan Rekapitulasi Master Data Peserta (PDF/Print)"
                         >
-                            <Printer className="size-4 text-slate-700 dark:text-slate-300" />
+                            <Printer className="size-4 fill-slate-700 text-white dark:fill-slate-300 dark:text-slate-900" />
                             <span>Cetak Laporan</span>
                         </a>
                         <a

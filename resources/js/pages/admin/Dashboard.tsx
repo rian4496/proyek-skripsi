@@ -371,7 +371,7 @@ export default function Dashboard({
                             className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                             title="Cetak Laporan Percakapan Berkelompok Berdasarkan Topik Konteks (Bab IV)"
                         >
-                            <Printer className="mr-1.5 size-3.5 text-slate-700 dark:text-slate-300" />
+                            <Printer className="mr-1.5 size-3.5 fill-slate-700 text-white dark:fill-slate-300 dark:text-slate-900" />
                             Cetak Laporan Topik (PDF)
                         </a>
                         <Link
@@ -822,7 +822,7 @@ export default function Dashboard({
                                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                                 title="Cetak Laporan Percakapan Berkelompok Berdasarkan Topik Konteks (Bab IV)"
                             >
-                                <Printer className="size-3.5" />
+                                <Printer className="size-3.5 fill-slate-700 text-white dark:fill-slate-300 dark:text-slate-900" />
                                 <span>Cetak Topik ({selectedTopic === 'all' ? 'Semua Bab IV' : selectedTopic.split(',')[0]})</span>
                             </a>
                             {recent_logs.length > 0 && (
@@ -1059,7 +1059,7 @@ export default function Dashboard({
                                 className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                                 title="Cetak Laporan Tiket Keluhan Masuk (PDF/Print)"
                             >
-                                <Printer className="size-3.5" />
+                                <Printer className="size-3.5 fill-slate-700 text-white dark:fill-slate-300 dark:text-slate-900" />
                                 <span>Cetak Laporan</span>
                             </a>
                             <a
@@ -1223,7 +1223,7 @@ export default function Dashboard({
                                     className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                                     title="Cetak Laporan Evaluasi CSAT Responden (PDF/Print)"
                                 >
-                                    <Printer className="size-3.5" />
+                                    <Printer className="size-3.5 fill-slate-700 text-white dark:fill-slate-300 dark:text-slate-900" />
                                     <span>Cetak Laporan</span>
                                 </a>
                                 <a

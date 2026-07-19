@@ -224,9 +224,9 @@ export default function ChatWindow() {
             return;
         }
 
-        // Validasi 2: Deteksi NPM Valid (Persis 10 Digit Angka)
-        if (!/^\d{10}$/.test(trimmedNpm)) {
-            alert('⚠️ Peringatan Validasi NPM:\n\nMohon masukkan NPM Anda yang sebenarnya. NPM harus terdiri dari TEPAT 10 digit angka (contoh: 22100xxxxx).');
+        // Validasi 2: Deteksi NPM Valid (Berawalan 2, minimal 6 digit, maksimal 10 digit)
+        if (!/^2\d{5,9}$/.test(trimmedNpm)) {
+            alert('⚠️ Peringatan Validasi NPM:\n\nMohon masukkan NPM Anda. NPM harus berawalan angka "2" (angkatan 21, 22, 24, dst) dan terdiri dari 6-10 digit angka.');
             return;
         }
 
@@ -554,22 +554,22 @@ export default function ChatWindow() {
                                     <input
                                         type="text"
                                         maxLength={10}
-                                        placeholder="Contoh: 22100xxxxx (10 digit angka)"
+                                        placeholder="Contoh: 22100xxxxx (6-10 digit angka)"
                                         className={`w-full rounded-lg border ${
-                                            ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim())
+                                            ticketForm.data.npm && !/^2\d{5,9}$/.test(ticketForm.data.npm.trim())
                                                 ? 'border-amber-500 bg-amber-50/40 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-amber-500 dark:bg-amber-950/30'
                                                 : 'border-slate-300 dark:border-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
                                         } px-3 py-2 text-sm focus:outline-none dark:bg-slate-700 dark:text-white transition-all`}
                                         value={ticketForm.data.npm}
                                         onChange={e => ticketForm.setData('npm', e.target.value.replace(/\D/g, ''))}
                                     />
-                                    {ticketForm.data.npm && !/^\d{10}$/.test(ticketForm.data.npm.trim()) ? (
+                                    {ticketForm.data.npm && !/^2\d{5,9}$/.test(ticketForm.data.npm.trim()) ? (
                                         <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400">
-                                            <span>⚠️</span> NPM harus tepat 10 digit angka (saat ini {ticketForm.data.npm.trim().length} digit). Contoh benar: 22100xxxxx
+                                            <span>⚠️</span> NPM harus berawalan angka 2 dan panjang 6-10 digit.
                                         </p>
                                     ) : (
                                         <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
-                                            * Wajib 10 digit angka sesuai format SIA UNISKA MAB.
+                                            * Wajib angka (angkatan 21, 22, 24 dst).
                                         </p>
                                     )}
                                 </div>

@@ -208,10 +208,25 @@ export default function ChatWindow() {
 
     const submitParticipant = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!participantName.trim() || !participantNpm.trim() || !participantProdi.trim()) return;
+        const trimmedName = participantName.trim();
+        const trimmedNpm = participantNpm.trim();
+        const trimmedProdi = participantProdi.trim();
 
-        if (!/^\d{10}$/.test(participantNpm.trim())) {
-            alert('⚠️ Validasi Pengisian NPM:\nNPM harus terdiri dari tepat 10 digit angka sesuai format UNISKA MAB (contoh yang benar: 22100xxxxx).');
+        if (!trimmedName || !trimmedNpm || !trimmedProdi) return;
+
+        // Validasi 1: Deteksi Nama Spam/Bot/Samaran
+        const lowerName = trimmedName.toLowerCase();
+        const forbiddenWords = ['test', 'tester', 'testing', 'user', 'bot', 'anonim', 'anonymous', 'coba', 'admin', 'dummy', 'coba-coba', 'hacker'];
+        const isSpamName = forbiddenWords.some(word => lowerName.includes(word));
+        
+        if (isSpamName || trimmedName.length < 3) {
+            alert('⚠️ Peringatan Validasi Identitas:\n\nMohon gunakan NAMA ASLI Anda (bukan nama samaran, "test", atau "user"). Data uji coba ini sangat berharga untuk penelitian skripsi kami. Terima kasih! 🙏');
+            return;
+        }
+
+        // Validasi 2: Deteksi NPM Valid (Persis 10 Digit Angka)
+        if (!/^\d{10}$/.test(trimmedNpm)) {
+            alert('⚠️ Peringatan Validasi NPM:\n\nMohon masukkan NPM Anda yang sebenarnya. NPM harus terdiri dari TEPAT 10 digit angka (contoh: 22100xxxxx).');
             return;
         }
 

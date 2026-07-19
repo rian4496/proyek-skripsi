@@ -31,10 +31,26 @@ class SendMessageRequest extends FormRequest
     {
         return [
             'message' => ['required', 'string', 'max:1000'],
-            'nama_mahasiswa' => ['nullable', 'string', 'max:100'],
-            'npm' => ['nullable', 'string', 'regex:/^[0-9]{10}$/'],
-            'fakultas' => ['nullable', 'string', 'max:100'],
-            'prodi' => ['nullable', 'string', 'max:100'],
+            'nama_mahasiswa' => [
+                'required', 
+                'string', 
+                'min:3',
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    $lowerName = strtolower($value);
+                    $forbidden = ['test', 'tester', 'testing', 'user', 'bot', 'anonim', 'anonymous', 'coba', 'admin', 'dummy', 'hacker'];
+                    
+                    foreach ($forbidden as $word) {
+                        if (str_contains($lowerName, $word)) {
+                            $fail('Mohon gunakan nama asli Anda. Nama samaran, "test", atau "user" tidak diperbolehkan.');
+                            return;
+                        }
+                    }
+                }
+            ],
+            'npm' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
+            'fakultas' => ['required', 'string', 'max:100'],
+            'prodi' => ['required', 'string', 'max:100'],
         ];
     }
 
@@ -48,7 +64,12 @@ class SendMessageRequest extends FormRequest
         return [
             'message.required' => 'Pesan tidak boleh kosong.',
             'message.max' => 'Pesan terlalu panjang (maksimal 1000 karakter).',
+            'nama_mahasiswa.required' => 'Identitas nama mahasiswa wajib diisi untuk penelitian.',
+            'nama_mahasiswa.min' => 'Nama mahasiswa minimal 3 karakter.',
+            'npm.required' => 'Identitas NPM wajib diisi untuk penelitian.',
             'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 22100xxxxx).',
+            'fakultas.required' => 'Fakultas wajib dipilih.',
+            'prodi.required' => 'Program Studi wajib dipilih.',
         ];
     }
 }

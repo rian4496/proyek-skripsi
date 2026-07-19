@@ -48,7 +48,7 @@ class SendMessageRequest extends FormRequest
                     }
                 }
             ],
-            'npm' => ['required', 'string', 'regex:/^2[0-9]{5,9}$/'],
+            'npm' => ['required', 'string', 'regex:/^2[0-9]{9}$/'],
             'fakultas' => ['required', 'string', 'max:100'],
             'prodi' => ['required', 'string', 'max:100'],
         ];
@@ -67,7 +67,7 @@ class SendMessageRequest extends FormRequest
             'nama_mahasiswa.required' => 'Identitas nama mahasiswa wajib diisi untuk penelitian.',
             'nama_mahasiswa.min' => 'Nama mahasiswa minimal 3 karakter.',
             'npm.required' => 'Identitas NPM wajib diisi untuk penelitian.',
-            'npm.regex' => 'Pengisian NPM harus berawalan angka "2" dan terdiri dari 6-10 digit.',
+            'npm.regex' => 'NPM harus berawalan angka "2" dan terdiri dari TEPAT 10 digit (contoh: 2210010497).',
             'fakultas.required' => 'Fakultas wajib dipilih.',
             'prodi.required' => 'Program Studi wajib dipilih.',
         ];

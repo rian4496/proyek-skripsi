@@ -5,6 +5,16 @@ use Laravel\Fortify\Features;
 
 Route::redirect('/', '/chat')->name('home');
 
+Route::get('/check-db', function() {
+    return response()->json([
+        'peserta' => \App\Models\PesertaUjiCoba::count(),
+        'chat_logs_total' => \App\Models\ChatLog::count(),
+        'chat_logs_null_npm' => \App\Models\ChatLog::whereNull('npm')->count(),
+        'session_reviews' => \App\Models\SessionReview::count(),
+        'feedback' => \App\Models\Feedback::count(),
+    ]);
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 });

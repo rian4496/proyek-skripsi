@@ -29,6 +29,7 @@ import {
     X,
     Printer,
     FileSpreadsheet,
+    Mail,
 } from 'lucide-react';
 
 interface ChatLog {

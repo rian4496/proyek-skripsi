@@ -152,7 +152,7 @@ export default function Dashboard({
     const [currentReviewPage, setCurrentReviewPage] = useState(1);
     const reviewsPerPage = 10;
 
-    const [isLiveRefresh, setIsLiveRefresh] = useState(true);
+    const [isLiveRefresh, setIsLiveRefresh] = useState(false);
     const [isRefreshingNow, setIsRefreshingNow] = useState(false);
 
     useEffect(() => {
@@ -167,7 +167,7 @@ export default function Dashboard({
                 preserveState: true,
                 onFinish: () => setIsRefreshingNow(false),
             });
-        }, 5000); // Polling otomatis setiap 5 detik (Real-Time Live Update)
+        }, 15000); // Polling otomatis setiap 15 detik untuk mencegah overload DB
 
         return () => clearInterval(interval);
     }, [isLiveRefresh]);
@@ -819,7 +819,7 @@ export default function Dashboard({
                                 {isLiveRefresh && (
                                     <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-900/40 dark:text-green-300">
                                         <span className={`size-1.5 rounded-full ${isRefreshingNow ? 'bg-amber-500 animate-ping' : 'bg-green-500 animate-pulse'}`} />
-                                        {isRefreshingNow ? 'Memperbarui...' : 'Live 5s'}
+                                        {isRefreshingNow ? 'Memperbarui...' : 'Live 15s'}
                                     </span>
                                 )}
                             </h3>

@@ -12,6 +12,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Admin\ChatRuleController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BroadcastController;
 
 // Rute Chatbot publik
 Route::inertia('/chat', 'chat/ChatWindow')->name('chat');
@@ -28,6 +29,8 @@ Route::post('/participants', [ParticipantController::class, 'store'])->name('par
 // Rute khusus Panel Admin (Analytics & CRUD)
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/broadcast', [BroadcastController::class, 'index'])->name('broadcast.index');
+    Route::post('/broadcast', [BroadcastController::class, 'store'])->name('broadcast.store');
     Route::get('/export-csv', [DashboardController::class, 'exportCsv'])->name('export-csv');
     Route::get('/chat-logs/print', [DashboardController::class, 'printChatLogs'])->name('chat-logs.print');
     Route::delete('/chat-logs/clear', [DashboardController::class, 'destroyAll'])->name('chat-logs.destroy-all');

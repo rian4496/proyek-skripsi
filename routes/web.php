@@ -6,23 +6,13 @@ use Laravel\Fortify\Features;
 Route::redirect('/', '/chat')->name('home');
 
 Route::get('/cleanup-spam', function () {
-    $peserta = \App\Models\PesertaUjiCoba::all();
-    $deletedCount = 0;
+    $validNames = ['sendi', 'ahmad yasser', 'm. rian gunadi', 'm rian gunadi'];
     
-    foreach ($peserta as $p) {
-        $name = strtolower(trim($p->nama_mahasiswa));
-        $npm = trim($p->npm);
+    $deletedCount = \App\Models\PesertaUjiCoba::whereNotIn(\Illuminate\Support\Facades\DB::raw('LOWER(nama_mahasiswa)'), $validNames)
+        ->where('npm', 'not like', '22%')
+        ->delete();
         
-        $isValidName = in_array($name, ['sendi', 'ahmad yasser', 'm. rian gunadi', 'm rian gunadi']);
-        $isValidNpm = str_starts_with($npm, '22');
-        
-        if (!$isValidName && !$isValidNpm) {
-            $p->delete();
-            $deletedCount++;
-        }
-    }
-    
-    return "Berhasil menghapus {$deletedCount} data spam/bot. Silakan hapus rute ini setelah selesai.";
+    return "Berhasil menghapus {$deletedCount} data spam/bot dengan Cepat! Silakan periksa dasbor Admin dan hapus rute ini setelah selesai.";
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

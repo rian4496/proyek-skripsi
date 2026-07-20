@@ -128,7 +128,7 @@ class ParticipantController extends Controller
     {
         $participant->delete();
 
-        return redirect()->back()->with('message', 'Data peserta berhasil dihapus.');
+        return redirect()->back(303)->with('message', 'Data peserta berhasil dihapus.');
     }
 
     /**

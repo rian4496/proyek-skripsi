@@ -142,11 +142,11 @@ class DocumentController extends Controller
                 Log::warning('Gagal trigger reload FastAPI RAG: ' . $e->getMessage());
             }
 
-            return redirect()->route('admin.upload-document.index')
+            return redirect()->route('admin.upload-document.index', [], 303)
                 ->with('success', 'Dokumen "' . $filename . '" berhasil dihapus dari server dan index RAG & PGVector diperbarui.');
         }
 
-        return redirect()->route('admin.upload-document.index')
+        return redirect()->route('admin.upload-document.index', [], 303)
             ->with('error', 'Dokumen tidak ditemukan.');
     }
 

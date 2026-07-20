@@ -828,7 +828,7 @@ class DashboardController extends Controller
     {
         $chatLog->delete();
 
-        return redirect()->back()->with('success', 'Log percakapan berhasil dihapus.');
+        return redirect()->back(303)->with('success', 'Log percakapan berhasil dihapus.');
     }
 
     /**
@@ -838,7 +838,7 @@ class DashboardController extends Controller
     {
         ChatLog::truncate();
 
-        return redirect()->back()->with('success', 'Seluruh riwayat log percakapan berhasil dikosongkan.');
+        return redirect()->back(303)->with('success', 'Seluruh riwayat log percakapan berhasil dikosongkan.');
     }
 
     /**
@@ -848,7 +848,7 @@ class DashboardController extends Controller
     {
         $feedback->delete();
 
-        return redirect()->back()->with('success', 'Tiket keluhan berhasil dihapus.');
+        return redirect()->back(303)->with('success', 'Tiket keluhan berhasil dihapus.');
     }
 
     /**
@@ -858,6 +858,6 @@ class DashboardController extends Controller
     {
         \App\Models\Feedback::truncate();
 
-        return redirect()->back()->with('success', 'Seluruh data tiket keluhan berhasil dikosongkan.');
+        return redirect()->back(303)->with('success', 'Seluruh data tiket keluhan berhasil dikosongkan.');
     }
 }

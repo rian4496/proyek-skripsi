@@ -111,6 +111,6 @@ class SystemLogController extends Controller
             Log::info('SystemLogController: File log dibersihkan oleh admin.');
         }
 
-        return redirect()->back()->with('success', 'System log berhasil dikosongkan.');
+        return redirect()->back(303)->with('success', 'System log berhasil dikosongkan.');
     }
 }

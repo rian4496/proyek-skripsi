@@ -32,7 +32,7 @@ class SessionReviewController extends Controller
     {
         $sessionReview->delete();
 
-        return redirect()->back();
+        return redirect()->back(303);
     }
 
     /**
@@ -42,6 +42,6 @@ class SessionReviewController extends Controller
     {
         SessionReview::truncate();
 
-        return redirect()->back();
+        return redirect()->back(303);
     }
 }

@@ -115,12 +115,11 @@ class ChatRuleController extends Controller
     /**
      * Hapus permanen ChatRule.
      */
-    public function destroy(ChatRule $chatRule): RedirectResponse
+    public function destroy(ChatRule $chatRule)
     {
         $chatRule->delete();
 
-        return redirect()->route('admin.chat-rules.index')
-            ->with('success', 'Rule berhasil dihapus!');
+        return redirect()->route('admin.chat-rules.index', [], 303)->with('success', 'Aturan chat berhasil dihapus.');
     }
 
     /**

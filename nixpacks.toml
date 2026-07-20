@@ -8,4 +8,4 @@ cmds = ["composer install --no-dev --optimize-autoloader", "npm install --includ
 cmds = ["npm run build"]
 
 [start]
-cmd = "php artisan migrate --force && php artisan db:seed --class=ChatRuleSeeder --force && php artisan db:seed --class=AdminSeeder --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "export PHP_CLI_SERVER_WORKERS=10 && php artisan migrate --force && php artisan db:seed --class=ChatRuleSeeder --force && php artisan db:seed --class=AdminSeeder --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=$PORT"

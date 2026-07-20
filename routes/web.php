@@ -5,6 +5,21 @@ use Laravel\Fortify\Features;
 
 Route::redirect('/', '/chat')->name('home');
 
+Route::get('/cleanup-spam', function () {
+    $validNames = ['sendi', 'ahmad yasser', 'm. rian gunadi', 'm rian gunadi'];
+    
+    $p = \App\Models\PesertaUjiCoba::whereNotIn(\Illuminate\Support\Facades\DB::raw('LOWER(nama_mahasiswa)'), $validNames)
+        ->where('npm', 'not like', '22%')->delete();
+        
+    $c = \App\Models\ChatLog::whereNotIn(\Illuminate\Support\Facades\DB::raw('LOWER(nama_mahasiswa)'), $validNames)
+        ->where('npm', 'not like', '22%')->delete();
+        
+    $s = \App\Models\SessionReview::whereNotIn(\Illuminate\Support\Facades\DB::raw('LOWER(nama_responden)'), $validNames)
+        ->where('npm', 'not like', '22%')->delete();
+        
+    return "Pembersihan total selesai dengan Cepat! Sisa Spam yang dihapus: {$p} Peserta, {$c} Riwayat Chat, {$s} Review Sesi.";
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 });

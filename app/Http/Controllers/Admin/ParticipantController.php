@@ -23,15 +23,18 @@ class ParticipantController extends Controller
         $request->validate([
             'nama_mahasiswa' => ['required', 'string', 'max:100'],
             'npm' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
+            'email' => ['nullable', 'email', 'max:100'],
             'fakultas' => ['nullable', 'string', 'max:100'],
             'prodi' => ['nullable', 'string', 'max:100'],
         ], [
             'npm.required' => 'NPM wajib diisi.',
             'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 22100xxxxx).',
+            'email.email' => 'Format email tidak valid.',
         ]);
 
         $peserta = PesertaUjiCoba::firstOrNew(['npm' => trim($request->input('npm'))]);
         $peserta->nama_mahasiswa = trim($request->input('nama_mahasiswa'));
+        if ($request->filled('email')) $peserta->email = trim($request->input('email'));
         if ($request->filled('fakultas')) $peserta->fakultas = trim($request->input('fakultas'));
         if ($request->filled('prodi')) $peserta->prodi = trim($request->input('prodi'));
         $peserta->last_active_at = now();

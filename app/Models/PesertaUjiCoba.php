@@ -25,6 +25,7 @@ class PesertaUjiCoba extends Model
     protected $fillable = [
         'nama_mahasiswa',
         'npm',
+        'email',
         'fakultas',
         'prodi',
         'total_queries',

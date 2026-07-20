@@ -96,6 +96,7 @@ export default function ChatWindow() {
     const [showParticipantModal, setShowParticipantModal] = useState(false);
     const [participantName, setParticipantName] = useState('');
     const [participantNpm, setParticipantNpm] = useState('');
+    const [participantEmail, setParticipantEmail] = useState('');
     const [participantFaculty, setParticipantFaculty] = useState('Fakultas Teknologi Informasi');
     const [participantProdi, setParticipantProdi] = useState('');
 
@@ -117,6 +118,7 @@ export default function ChatWindow() {
                 const parsed = JSON.parse(storedInfo);
                 if (parsed.nama_mahasiswa) setParticipantName(parsed.nama_mahasiswa);
                 if (parsed.npm) setParticipantNpm(parsed.npm);
+                if (parsed.email) setParticipantEmail(parsed.email);
                 if (parsed.fakultas) setParticipantFaculty(parsed.fakultas);
                 if (parsed.prodi) setParticipantProdi(parsed.prodi);
             } catch (e) {
@@ -233,6 +235,7 @@ export default function ChatWindow() {
         const info = {
             nama_mahasiswa: participantName.trim(),
             npm: participantNpm.trim(),
+            email: participantEmail.trim(),
             fakultas: participantFaculty,
             prodi: participantProdi.trim(),
         };
@@ -681,6 +684,17 @@ export default function ChatWindow() {
                                             * Wajib 10 digit angka sesuai format KTM / SIA UNISKA MAB.
                                         </p>
                                     )}
+                                </div>
+
+                                <div>
+                                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Email (Opsional)</label>
+                                    <input
+                                        type="email"
+                                        placeholder="Contoh: budi@gmail.com"
+                                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 px-3.5 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white transition-all"
+                                        value={participantEmail}
+                                        onChange={e => setParticipantEmail(e.target.value)}
+                                    />
                                 </div>
 
                                 <div>

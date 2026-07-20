@@ -5,25 +5,6 @@ use Laravel\Fortify\Features;
 
 Route::redirect('/', '/chat')->name('home');
 
-Route::get('/optimize-db', function () {
-    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-    
-    $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
-    if ($driver === 'pgsql') {
-        \Illuminate\Support\Facades\DB::statement('VACUUM ANALYZE peserta_uji_coba');
-        \Illuminate\Support\Facades\DB::statement('VACUUM ANALYZE chat_logs');
-        \Illuminate\Support\Facades\DB::statement('VACUUM ANALYZE session_reviews');
-        $dbStatus = 'PostgreSQL Vacuum (Penghapusan Dead Tuples) Selesai.';
-    } elseif ($driver === 'mysql') {
-        \Illuminate\Support\Facades\DB::statement('OPTIMIZE TABLE peserta_uji_coba, chat_logs, session_reviews');
-        $dbStatus = 'MySQL Optimize (Defragmentasi) Selesai.';
-    } else {
-        $dbStatus = 'Driver DB: ' . $driver;
-    }
-
-    return "Optimasi Sempurna! Cache aplikasi bersih & {$dbStatus}";
-});
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 });

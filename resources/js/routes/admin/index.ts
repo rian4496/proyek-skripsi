@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import broadcast from './broadcast'
 import chatLogs from './chat-logs'
 import tickets from './tickets'
 import sessionReviews from './session-reviews'
@@ -164,6 +165,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     exportCsv.form = exportCsvForm
 const admin = {
     dashboard: Object.assign(dashboard, dashboard),
+broadcast: Object.assign(broadcast, broadcast),
 exportCsv: Object.assign(exportCsv, exportCsv),
 chatLogs: Object.assign(chatLogs, chatLogs),
 tickets: Object.assign(tickets, tickets),

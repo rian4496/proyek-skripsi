@@ -162,6 +162,7 @@ export default function Dashboard({
             setIsRefreshingNow(true);
             router.reload({
                 only: ['stats', 'csat_stats', 'daily_trend', 'top_questions', 'ai_recommendations', 'recent_logs', 'tickets', 'session_reviews', 'session_review_stats'],
+                // @ts-ignore
                 preserveScroll: true,
                 preserveState: true,
                 onFinish: () => setIsRefreshingNow(false),

@@ -2,7 +2,9 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 import { Mail, Users, AlertCircle, BarChart, FileSpreadsheet, Printer, Upload, Database, Terminal, Send } from 'lucide-react';
 
-export default function Broadcast({ eligibleCount, totalCount }: { eligibleCount: number, totalCount: number }) {
+declare const route: any;
+
+export default function Broadcast({ eligibleCount, totalCount, progress, flash }: { eligibleCount: number, totalCount: number, progress?: any, flash?: any }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         subject: '',
         message: '',

@@ -642,7 +642,7 @@ export default function Dashboard({
                 </div>
 
                 {/* ═══ Main Charts Row ═══ */}
-                <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-4">
                     {/* Visual Chart: Ratio Rule vs AI */}
                     <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <h3 className="mb-2 flex items-center gap-2 text-base font-bold">
@@ -751,6 +751,58 @@ export default function Dashboard({
                                     Belum ada rekomendasi aturan baru.
                                 </div>
                             )}
+                        </div>
+                    </div>
+
+                    {/* Visual Chart: Analisis Sentimen [W2] */}
+                    <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                        <h3 className="mb-2 flex items-center gap-2 text-base font-bold">
+                            <Sparkles className="size-4 text-amber-500" />
+                            Analisis Sentimen Keluhan
+                        </h3>
+                        <p className="mb-3 text-xs text-slate-500">
+                            Proporsi emosi teks dari total {csat_stats?.analyzedCount ?? 0} tiket yang dianalsis Gemini AI.
+                        </p>
+
+                        <div className="mt-auto">
+                            <div className="flex h-6 w-full overflow-hidden rounded-full bg-slate-100 shadow-inner dark:bg-slate-900">
+                                <div
+                                    className="flex items-center justify-center bg-emerald-500 text-xs font-bold text-white transition-all duration-1000"
+                                    style={{ width: `${csat_stats?.positivePercentage ?? 0}%` }}
+                                    title={`Positif (${csat_stats?.positive ?? 0})`}
+                                >
+                                    {(csat_stats?.positivePercentage ?? 0) > 10 ? `${csat_stats?.positivePercentage}%` : ''}
+                                </div>
+                                <div
+                                    className="flex items-center justify-center bg-slate-400 text-xs font-bold text-white transition-all duration-1000"
+                                    style={{ width: `${csat_stats?.neutralPercentage ?? 0}%` }}
+                                    title={`Netral (${csat_stats?.neutral ?? 0})`}
+                                >
+                                    {(csat_stats?.neutralPercentage ?? 0) > 10 ? `${csat_stats?.neutralPercentage}%` : ''}
+                                </div>
+                                <div
+                                    className="flex items-center justify-center bg-red-500 text-xs font-bold text-white transition-all duration-1000"
+                                    style={{ width: `${csat_stats?.negativePercentage ?? 0}%` }}
+                                    title={`Negatif (${csat_stats?.negative ?? 0})`}
+                                >
+                                    {(csat_stats?.negativePercentage ?? 0) > 10 ? `${csat_stats?.negativePercentage}%` : ''}
+                                </div>
+                            </div>
+
+                            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-1">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="size-2 rounded-full bg-emerald-500"></span>
+                                    <span className="text-[10px] font-medium">Positif ({(csat_stats?.positivePercentage ?? 0)}%)</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="size-2 rounded-full bg-slate-400"></span>
+                                    <span className="text-[10px] font-medium">Netral ({(csat_stats?.neutralPercentage ?? 0)}%)</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="size-2 rounded-full bg-red-500"></span>
+                                    <span className="text-[10px] font-medium">Negatif ({(csat_stats?.negativePercentage ?? 0)}%)</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

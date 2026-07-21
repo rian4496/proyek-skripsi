@@ -86,25 +86,35 @@ class DashboardController extends Controller
     {
         $applyFilters = fn ($query) => $this->applyFiltersQuery($query, $request);
 
-        $totalChats = $applyFilters(ChatLog::query())->count();
-
-        $ruleBasedCount = $applyFilters(ChatLog::where('source', 'rule'))->count();
-        $aiCount = $applyFilters(ChatLog::where('source', 'ai'))->count();
-
-        $rulePercentage = $totalChats > 0 ? round(($ruleBasedCount / $totalChats) * 100, 1) : 0;
-        $aiPercentage = $totalChats > 0 ? round(($aiCount / $totalChats) * 100, 1) : 0;
-
-        $avgSimilarity = $applyFilters(ChatLog::where('source', 'rule'))->avg('similarity_score');
-        $avgSimilarity = $avgSimilarity ? round($avgSimilarity, 2) : 0;
+        $stats = fn () => [
+            'total_chats' => $applyFilters(ChatLog::query())->count(),
+            'rule_count' => $applyFilters(ChatLog::where('source', 'rule'))->count(),
+            'ai_count' => $applyFilters(ChatLog::where('source', 'ai'))->count(),
+            'rule_percentage' => function () use ($applyFilters) {
+                $total = $applyFilters(ChatLog::query())->count();
+                return $total > 0 ? round(($applyFilters(ChatLog::where('source', 'rule'))->count() / $total) * 100, 1) : 0;
+            },
+            'ai_percentage' => function () use ($applyFilters) {
+                $total = $applyFilters(ChatLog::query())->count();
+                return $total > 0 ? round(($applyFilters(ChatLog::where('source', 'ai'))->count() / $total) * 100, 1) : 0;
+            },
+            'avg_similarity' => round((float) $applyFilters(ChatLog::where('source', 'rule'))->avg('similarity_score'), 2),
+        ];
 
         // CSAT / Feedback Analytics
-        $helpfulCount = $applyFilters(ChatLog::where('is_helpful', true))->count();
-        $notHelpfulCount = $applyFilters(ChatLog::where('is_helpful', false))->count();
-        $totalRated = $helpfulCount + $notHelpfulCount;
-        $csatPercentage = $totalRated > 0 ? round(($helpfulCount / $totalRated) * 100, 1) : 0;
+        $csat_stats = fn () => function () use ($applyFilters) {
+            $helpfulCount = $applyFilters(ChatLog::where('is_helpful', true))->count();
+            $notHelpfulCount = $applyFilters(ChatLog::where('is_helpful', false))->count();
+            $totalRated = $helpfulCount + $notHelpfulCount;
+            return [
+                'helpful' => $helpfulCount,
+                'not_helpful' => $notHelpfulCount,
+                'percentage' => $totalRated > 0 ? round(($helpfulCount / $totalRated) * 100, 1) : 0
+            ];
+        };
 
-        // Daily Trend Chart (30 hari terakhir atau sesuai filter)
-        $dailyTrend = $applyFilters(ChatLog::query())
+        // Daily Trend Chart
+        $dailyTrend = fn () => $applyFilters(ChatLog::query())
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('count(*) as total'),
@@ -116,14 +126,14 @@ class DashboardController extends Controller
             ->limit(30)
             ->get();
 
-        $topQuestions = $applyFilters(ChatLog::query())
+        $topQuestions = fn () => $applyFilters(ChatLog::query())
             ->select('user_message', DB::raw('count(*) as total'))
             ->groupBy('user_message')
             ->orderByRaw('count(*) desc')
             ->limit(5)
             ->get();
 
-        $aiRecommendations = $applyFilters(ChatLog::where('source', 'ai'))
+        $aiRecommendations = fn () => $applyFilters(ChatLog::where('source', 'ai'))
             ->select('user_message', DB::raw('count(*) as total'))
             ->groupBy('user_message')
             ->havingRaw('count(*) >= 2')
@@ -131,19 +141,25 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $recentLogs = $applyFilters(ChatLog::latest())->limit(100)->get();
-        $tickets = \App\Models\Feedback::where('kategori_masalah', '!=', 'Feedback Sesi')->latest()->get();
-        $sessionReviews = \App\Models\SessionReview::latest()->get();
+        $recentLogs = fn () => $applyFilters(ChatLog::latest())->limit(100)->get();
+        $tickets = fn () => \App\Models\Feedback::where('kategori_masalah', '!=', 'Feedback Sesi')->latest()->get();
+        $sessionReviews = fn () => \App\Models\SessionReview::latest()->get();
 
-        $totalReviews = $sessionReviews->count();
-        $avgSessionRating = $totalReviews > 0 ? round($sessionReviews->avg('rating'), 1) : 0;
-        $starCounts = [
-            5 => $sessionReviews->where('rating', 5)->count(),
-            4 => $sessionReviews->where('rating', 4)->count(),
-            3 => $sessionReviews->where('rating', 3)->count(),
-            2 => $sessionReviews->where('rating', 2)->count(),
-            1 => $sessionReviews->where('rating', 1)->count(),
-        ];
+        $reviewStats = fn () => function () {
+            $sessionReviews = \App\Models\SessionReview::latest()->get();
+            $totalReviews = $sessionReviews->count();
+            return [
+                'total' => $totalReviews,
+                'avg_rating' => $totalReviews > 0 ? round($sessionReviews->avg('rating'), 1) : 0,
+                'star_counts' => [
+                    5 => $sessionReviews->where('rating', 5)->count(),
+                    4 => $sessionReviews->where('rating', 4)->count(),
+                    3 => $sessionReviews->where('rating', 3)->count(),
+                    2 => $sessionReviews->where('rating', 2)->count(),
+                    1 => $sessionReviews->where('rating', 1)->count(),
+                ]
+            ];
+        };
 
         // Daftar unik Fakultas dan Prodi untuk opsi filter dropdown
         $fakultasList = ChatLog::whereNotNull('fakultas')
@@ -161,31 +177,15 @@ class DashboardController extends Controller
             ->values();
 
         return Inertia::render('admin/Dashboard', [
-            'stats' => [
-                'total_chats' => $totalChats,
-                'rule_count' => $ruleBasedCount,
-                'ai_count' => $aiCount,
-                'rule_percentage' => $rulePercentage,
-                'ai_percentage' => $aiPercentage,
-                'avg_similarity' => $avgSimilarity,
-            ],
-            'csat_stats' => [
-                'helpful' => $helpfulCount,
-                'not_helpful' => $notHelpfulCount,
-                'total_rated' => $totalRated,
-                'percentage' => $csatPercentage,
-            ],
+            'stats' => $stats,
+            'csat_stats' => $csat_stats,
             'daily_trend' => $dailyTrend,
             'top_questions' => $topQuestions,
             'ai_recommendations' => $aiRecommendations,
             'recent_logs' => $recentLogs,
             'tickets' => $tickets,
             'session_reviews' => $sessionReviews,
-            'session_review_stats' => [
-                'total_reviews' => $totalReviews,
-                'avg_rating' => $avgSessionRating,
-                'star_counts' => $starCounts,
-            ],
+            'session_review_stats' => $reviewStats,
             'filters' => [
                 'date_range' => $request->input('date_range', 'all'),
                 'fakultas' => $request->input('fakultas', 'all'),

@@ -53,6 +53,12 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/participants/export-csv', [ParticipantController::class, 'exportCsv'])->name('participants.export-csv');
     Route::get('/participants/print', [ParticipantController::class, 'printParticipants'])->name('participants.print');
     Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
+
+    // Route sementara untuk menjalankan seeder data peserta uji coba (HAPUS setelah selesai)
+    Route::get('/run-seed-participants', function () {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\TestParticipantSeeder']);
+        return redirect('/admin/participants')->with('message', '✅ 20 peserta uji coba berhasil ditambahkan!');
+    })->name('run-seed-participants');
 });
 
 require __DIR__.'/settings.php';

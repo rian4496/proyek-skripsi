@@ -70,6 +70,17 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         return redirect()->route('admin.dashboard')
             ->with('message', 'Database berhasil dimigrasi (kolom topic_category ditambahkan) dan backfill data selesai.');
     })->name('run-migrate');
+
+    // Route sementara untuk mengisi email palsu ke data uji coba agar fitur Broadcast bisa dites (HAPUS setelah selesai)
+    Route::get('/run-generate-emails', function () {
+        $peserta = \App\Models\PesertaUjiCoba::whereNull('email')->orWhere('email', '')->get();
+        foreach ($peserta as $index => $p) {
+            $p->email = 'peserta_uji_coba_' . ($index + 1) . '@uniska-mab.ac.id';
+            $p->save();
+        }
+        return redirect()->route('admin.broadcast.index')
+            ->with('message', 'Berhasil menyuntikkan alamat email simulasi ke seluruh responden untuk pengujian!');
+    })->name('run-generate-emails');
 });
 
 require __DIR__.'/settings.php';

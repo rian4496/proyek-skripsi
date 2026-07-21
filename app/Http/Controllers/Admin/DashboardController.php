@@ -89,12 +89,12 @@ class DashboardController extends Controller
         // Optimasi Performa: Gabungkan 6 query agregasi (count/avg) menjadi 1 query tunggal.
         // Ini menghindari eksekusi berulang fungsi applyFilters (yang berisi banyak kondisi LIKE berat).
         $statsData = $applyFilters(ChatLog::query())
-            ->selectRaw('count(id) as total_chats')
+            ->selectRaw('count(*) as total_chats')
             ->selectRaw("sum(case when source = 'rule' then 1 else 0 end) as rule_count")
             ->selectRaw("sum(case when source = 'ai' then 1 else 0 end) as ai_count")
             ->selectRaw("avg(case when source = 'rule' then similarity_score else null end) as avg_similarity")
-            ->selectRaw("sum(case when is_helpful = 1 then 1 else 0 end) as helpful_count")
-            ->selectRaw("sum(case when is_helpful = 0 then 1 else 0 end) as not_helpful_count")
+            ->selectRaw("sum(case when is_helpful = ? then 1 else 0 end) as helpful_count", [true])
+            ->selectRaw("sum(case when is_helpful = ? then 1 else 0 end) as not_helpful_count", [false])
             ->first();
 
         $totalChats = (int) ($statsData->total_chats ?? 0);

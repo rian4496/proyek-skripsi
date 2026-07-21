@@ -529,7 +529,7 @@ class DashboardController extends Controller
                     $latSum += $lMs;
                     $latCount++;
                 }
-                $avgSimCat = $simCount > 0 ? round($simSum / $simCount, 2) . '%' : '-';
+                $avgSimCat = $simCount > 0 ? round(($simSum / $simCount) * 100, 2) . '%' : '-';
                 $avgLatMs = $latCount > 0 ? round($latSum / $latCount) : 0;
                 $avgLatText = $avgLatMs < 1000 ? "{$avgLatMs} ms" : round($avgLatMs / 1000, 2) . " detik";
 

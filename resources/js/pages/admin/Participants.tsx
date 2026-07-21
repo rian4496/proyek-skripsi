@@ -15,7 +15,8 @@ import {
     Clock,
     School,
     Printer,
-    FileSpreadsheet
+    FileSpreadsheet,
+    Mail
 } from 'lucide-react';
 
 interface ParticipantItem {
@@ -130,6 +131,14 @@ export default function Participants({
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-3">
+                        <Link
+                            href="/admin/broadcast"
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                            title="Kirim Siaran Email Massal ke Responden"
+                        >
+                            <Mail className="size-4 text-blue-600 dark:text-blue-500" />
+                            <span>Siaran Email Massal</span>
+                        </Link>
                         <a
                             href={`/admin/participants/print?fakultas=${encodeURIComponent(selectedFakultas)}&prodi=${encodeURIComponent(selectedProdi)}`}
                             target="_blank"

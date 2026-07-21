@@ -86,20 +86,29 @@ class DashboardController extends Controller
     {
         $applyFilters = fn ($query) => $this->applyFiltersQuery($query, $request);
 
-        $totalChats = $applyFilters(ChatLog::query())->count();
+        // Optimasi Performa: Gabungkan 6 query agregasi (count/avg) menjadi 1 query tunggal.
+        // Ini menghindari eksekusi berulang fungsi applyFilters (yang berisi banyak kondisi LIKE berat).
+        $statsData = $applyFilters(ChatLog::query())
+            ->selectRaw('count(id) as total_chats')
+            ->selectRaw("sum(case when source = 'rule' then 1 else 0 end) as rule_count")
+            ->selectRaw("sum(case when source = 'ai' then 1 else 0 end) as ai_count")
+            ->selectRaw("avg(case when source = 'rule' then similarity_score else null end) as avg_similarity")
+            ->selectRaw("sum(case when is_helpful = 1 then 1 else 0 end) as helpful_count")
+            ->selectRaw("sum(case when is_helpful = 0 then 1 else 0 end) as not_helpful_count")
+            ->first();
 
-        $ruleBasedCount = $applyFilters(ChatLog::where('source', 'rule'))->count();
-        $aiCount = $applyFilters(ChatLog::where('source', 'ai'))->count();
+        $totalChats = (int) ($statsData->total_chats ?? 0);
+        $ruleBasedCount = (int) ($statsData->rule_count ?? 0);
+        $aiCount = (int) ($statsData->ai_count ?? 0);
 
         $rulePercentage = $totalChats > 0 ? round(($ruleBasedCount / $totalChats) * 100, 1) : 0;
         $aiPercentage = $totalChats > 0 ? round(($aiCount / $totalChats) * 100, 1) : 0;
 
-        $avgSimilarity = $applyFilters(ChatLog::where('source', 'rule'))->avg('similarity_score');
-        $avgSimilarity = $avgSimilarity ? round($avgSimilarity, 2) : 0;
+        $avgSimilarity = $statsData->avg_similarity ? round($statsData->avg_similarity, 2) : 0;
 
         // CSAT / Feedback Analytics
-        $helpfulCount = $applyFilters(ChatLog::where('is_helpful', true))->count();
-        $notHelpfulCount = $applyFilters(ChatLog::where('is_helpful', false))->count();
+        $helpfulCount = (int) ($statsData->helpful_count ?? 0);
+        $notHelpfulCount = (int) ($statsData->not_helpful_count ?? 0);
         $totalRated = $helpfulCount + $notHelpfulCount;
         $csatPercentage = $totalRated > 0 ? round(($helpfulCount / $totalRated) * 100, 1) : 0;
 
@@ -145,20 +154,24 @@ class DashboardController extends Controller
             1 => $sessionReviews->where('rating', 1)->count(),
         ];
 
-        // Daftar unik Fakultas dan Prodi untuk opsi filter dropdown
-        $fakultasList = ChatLog::whereNotNull('fakultas')
-            ->where('fakultas', '!=', '')
-            ->distinct()
-            ->pluck('fakultas')
-            ->filter()
-            ->values();
+        // Optimasi: Cache daftar fakultas dan prodi selama 1 jam agar tidak query DISTINCT berulang kali setiap kali filter diklik
+        $fakultasList = \Illuminate\Support\Facades\Cache::remember('dashboard_fakultas_list', 3600, function () {
+            return ChatLog::whereNotNull('fakultas')
+                ->where('fakultas', '!=', '')
+                ->distinct()
+                ->pluck('fakultas')
+                ->filter()
+                ->values();
+        });
 
-        $prodiList = ChatLog::whereNotNull('prodi')
-            ->where('prodi', '!=', '')
-            ->distinct()
-            ->pluck('prodi')
-            ->filter()
-            ->values();
+        $prodiList = \Illuminate\Support\Facades\Cache::remember('dashboard_prodi_list', 3600, function () {
+            return ChatLog::whereNotNull('prodi')
+                ->where('prodi', '!=', '')
+                ->distinct()
+                ->pluck('prodi')
+                ->filter()
+                ->values();
+        });
 
         return Inertia::render('admin/Dashboard', [
             'stats' => [

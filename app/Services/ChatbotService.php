@@ -152,7 +152,11 @@ class ChatbotService
 
         try {
             // Coba cari referensi RAG secara cloud-native dari PostgreSQL via pgvector terlebih dahulu
-            $pgvectorChunks = $this->pgvectorService->searchChunks($message, 3, 0.65);
+            $pgvectorChunks = $this->pgvectorService->searchChunks(
+                $message,
+                config('rag.top_k', 3),
+                config('rag.similarity_threshold', 0.65)
+            );
             $ragContextString = null;
             $isPgvectorFound = false;
 

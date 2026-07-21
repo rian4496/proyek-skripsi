@@ -157,17 +157,20 @@ class PGVectorService
         $chunks = [];
         $currentChunk = '';
 
-        // Gabungkan paragraf pendek sehingga setiap chunk berkisar ~600-900 karakter
+        $chunkSize = config('rag.chunk_size', 800);
+        $chunkOverlap = config('rag.chunk_overlap', 150);
+
+        // Gabungkan paragraf pendek sehingga setiap chunk
         foreach ($paragraphs as $p) {
             $pClean = trim(preg_replace('/\s+/', ' ', $p));
             if ($pClean === '') {
                 continue;
             }
 
-            if (mb_strlen($currentChunk) + mb_strlen($pClean) > 800 && $currentChunk !== '') {
+            if (mb_strlen($currentChunk) + mb_strlen($pClean) > $chunkSize && $currentChunk !== '') {
                 $chunks[] = trim($currentChunk);
-                // Overlap 150 karakter akhir
-                $currentChunk = mb_substr($currentChunk, -150) . ' ' . $pClean;
+                // Overlap akhir
+                $currentChunk = mb_substr($currentChunk, -$chunkOverlap) . ' ' . $pClean;
             } else {
                 $currentChunk .= ($currentChunk === '' ? '' : "\n\n") . $pClean;
             }

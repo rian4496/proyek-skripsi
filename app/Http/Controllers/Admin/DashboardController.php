@@ -93,8 +93,8 @@ class DashboardController extends Controller
             ->selectRaw("sum(case when source = 'rule' then 1 else 0 end) as rule_count")
             ->selectRaw("sum(case when source = 'ai' then 1 else 0 end) as ai_count")
             ->selectRaw("avg(case when source = 'rule' then similarity_score else null end) as avg_similarity")
-            ->selectRaw("sum(case when is_helpful = ? then 1 else 0 end) as helpful_count", [true])
-            ->selectRaw("sum(case when is_helpful = ? then 1 else 0 end) as not_helpful_count", [false])
+            ->selectRaw("sum(case when is_helpful IS TRUE then 1 else 0 end) as helpful_count")
+            ->selectRaw("sum(case when is_helpful IS FALSE then 1 else 0 end) as not_helpful_count")
             ->first();
 
         $totalChats = (int) ($statsData->total_chats ?? 0);

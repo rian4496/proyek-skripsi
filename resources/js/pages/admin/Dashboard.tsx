@@ -143,9 +143,6 @@ export default function Dashboard({
     const [selectedFakultas, setSelectedFakultas] = useState(filters?.fakultas || 'all');
     const [selectedProdi, setSelectedProdi] = useState(filters?.prodi || 'all');
     const [selectedTopic, setSelectedTopic] = useState(filters?.topic || 'all');
-    const [deleteTargetId, setDeleteTargetId] = useState<number | 'clear_all' | null>(null);
-    const [deleteTicketTargetId, setDeleteTicketTargetId] = useState<number | 'clear_all' | null>(null);
-    const [deleteReviewTargetId, setDeleteReviewTargetId] = useState<number | 'clear_all' | null>(null);
     const [currentTicketPage, setCurrentTicketPage] = useState(1);
     const ticketsPerPage = 10;
     const [currentReviewPage, setCurrentReviewPage] = useState(1);
@@ -191,88 +188,66 @@ export default function Dashboard({
 
     const handleDeleteLog = (id: number, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
-        setDeleteTargetId(id);
+        if (window.confirm('Hapus chat log ini secara permanen?')) {
+            router.delete(`/admin/chat-logs/${id}`, {
+                preserveScroll: true,
+                preserveState: true,
+                only: ['recent_logs', 'flash', 'success', 'message'],
+                onSuccess: () => {
+                    if (selectedLog?.id === id) setSelectedLog(null);
+                }
+            });
+        }
     };
 
     const handleClearAllLogs = () => {
-        setDeleteTargetId('clear_all');
-    };
-
-    const handleDeleteTicket = (id: number) => {
-        setDeleteTicketTargetId(id);
-    };
-
-    const handleClearAllTickets = () => {
-        setDeleteTicketTargetId('clear_all');
-    };
-
-    const handleDeleteReview = (id: number) => {
-        setDeleteReviewTargetId(id);
-    };
-
-    const handleClearAllReviews = () => {
-        setDeleteReviewTargetId('clear_all');
-    };
-
-    const executeDeleteAction = () => {
-        if (deleteTargetId === 'clear_all') {
+        if (window.confirm('PERINGATAN: Kosongkan seluruh riwayat chat log?')) {
             router.delete('/admin/chat-logs/clear', {
                 preserveScroll: true,
                 preserveState: true,
                 only: ['recent_logs', 'flash', 'success', 'message'],
-                onSuccess: () => setDeleteTargetId(null),
-            });
-        } else if (typeof deleteTargetId === 'number') {
-            router.delete(`/admin/chat-logs/${deleteTargetId}`, {
-                preserveScroll: true,
-                preserveState: true,
-                only: ['recent_logs', 'flash', 'success', 'message'],
-                onSuccess: () => {
-                    if (selectedLog?.id === deleteTargetId) setSelectedLog(null);
-                    setDeleteTargetId(null);
-                },
             });
         }
     };
 
-    const executeDeleteTicketAction = () => {
-        if (deleteTicketTargetId === 'clear_all') {
+    const handleDeleteTicket = (id: number) => {
+        if (window.confirm('Hapus tiket ini?')) {
+            router.delete(`/admin/tickets/${id}`, {
+                preserveScroll: true,
+                preserveState: true,
+                only: ['tickets', 'flash', 'success', 'message'],
+            });
+        }
+    };
+
+    const handleClearAllTickets = () => {
+        if (window.confirm('PERINGATAN: Kosongkan seluruh tiket keluhan?')) {
             router.delete('/admin/tickets/clear', {
                 preserveScroll: true,
                 preserveState: true,
                 only: ['tickets', 'flash', 'success', 'message'],
-                onSuccess: () => {
-                    setDeleteTicketTargetId(null);
-                    setCurrentTicketPage(1);
-                },
-            });
-        } else if (typeof deleteTicketTargetId === 'number') {
-            router.delete(`/admin/tickets/${deleteTicketTargetId}`, {
-                preserveScroll: true,
-                preserveState: true,
-                only: ['tickets', 'flash', 'success', 'message'],
-                onSuccess: () => setDeleteTicketTargetId(null),
+                onSuccess: () => setCurrentTicketPage(1),
             });
         }
     };
 
-    const executeDeleteReviewAction = () => {
-        if (deleteReviewTargetId === 'clear_all') {
+    const handleDeleteReview = (id: number) => {
+        if (window.confirm('Hapus review sesi ini?')) {
+            router.delete(`/admin/session-reviews/${id}`, {
+                preserveScroll: true,
+                preserveState: true,
+                only: ['session_reviews', 'flash', 'success', 'message'],
+            });
+        }
+    };
+
+    const handleClearAllReviews = () => {
+        if (window.confirm('PERINGATAN: Kosongkan seluruh review sesi?')) {
             router.delete('/admin/session-reviews/clear', {
                 preserveScroll: true,
                 preserveState: true,
                 only: ['session_reviews', 'flash', 'success', 'message'],
-                onSuccess: () => {
-                    setDeleteReviewTargetId(null);
-                    setCurrentReviewPage(1);
-                },
-            });
-        } else if (typeof deleteReviewTargetId === 'number') {
-            router.delete(`/admin/session-reviews/${deleteReviewTargetId}`, {
-                preserveScroll: true,
-                preserveState: true,
-                only: ['session_reviews', 'flash', 'success', 'message'],
-                onSuccess: () => setDeleteReviewTargetId(null),
+                onSuccess: () => setCurrentReviewPage(1),
             });
         }
     };
@@ -1473,147 +1448,6 @@ export default function Dashboard({
                                     className="rounded-xl bg-slate-900 px-5 py-2.5 text-xs font-bold text-white transition-all hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 shadow-sm"
                                 >
                                     Tutup Detail
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* ═══ Modal Validasi Hapus Percakapan/Chat ═══ */}
-                {deleteTargetId !== null && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
-                            <div className="flex items-center gap-3.5">
-                                <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
-                                    <Trash2 className="size-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                                        Konfirmasi Hapus Data
-                                    </h4>
-                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                        Validasi tindakan penghapusan riwayat percakapan.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="mt-4 rounded-xl">
-                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                                    {deleteTargetId === 'clear_all'
-                                        ? 'Apakah Anda yakin ingin menghapus seluruh log percakapan/chat ini?'
-                                        : 'Apakah Anda yakin ingin menghapus log percakapan/chat ini?'}
-                                </p>
-                            </div>
-
-                            <div className="mt-6 flex items-center justify-end gap-2.5">
-                                <button
-                                    type="button"
-                                    onClick={() => setDeleteTargetId(null)}
-                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={executeDeleteAction}
-                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
-                                >
-                                    <Trash2 className="size-3.5" />
-                                    <span>Ya, Hapus</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* ═══ Modal Validasi Hapus Tiket Keluhan Masuk ═══ */}
-                {deleteTicketTargetId !== null && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
-                            <div className="flex items-center gap-3.5">
-                                <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
-                                    <Trash2 className="size-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                                        Konfirmasi Hapus Tiket
-                                    </h4>
-                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                        Validasi tindakan penghapusan tiket keluhan masuk.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="mt-4 rounded-xl">
-                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                                    {deleteTicketTargetId === 'clear_all'
-                                        ? 'Apakah Anda yakin ingin menghapus seluruh tiket keluhan yang masuk?'
-                                        : 'Apakah Anda yakin ingin menghapus tiket keluhan ini?'}
-                                </p>
-                            </div>
-
-                            <div className="mt-6 flex items-center justify-end gap-2.5">
-                                <button
-                                    type="button"
-                                    onClick={() => setDeleteTicketTargetId(null)}
-                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={executeDeleteTicketAction}
-                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
-                                >
-                                    <Trash2 className="size-3.5" />
-                                    <span>Ya, Hapus</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* ═══ Modal Validasi Hapus Ulasan Sesi ═══ */}
-                {deleteReviewTargetId !== null && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-700 dark:bg-slate-800 animate-in zoom-in-95 duration-200">
-                            <div className="flex items-center gap-3.5">
-                                <div className="flex size-12 flex-shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
-                                    <Trash2 className="size-6" />
-                                </div>
-                                <div>
-                                    <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                                        Konfirmasi Hapus Ulasan Sesi
-                                    </h4>
-                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                        Validasi tindakan penghapusan ulasan/kepuasan sesi pengujian.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="mt-4 rounded-xl">
-                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                                    {deleteReviewTargetId === 'clear_all'
-                                        ? 'Apakah Anda yakin ingin menghapus seluruh rekam jejak evaluasi kepuasan sesi dari responden?'
-                                        : 'Apakah Anda yakin ingin menghapus ulasan sesi responden ini?'}
-                                </p>
-                            </div>
-
-                            <div className="mt-6 flex items-center justify-end gap-2.5">
-                                <button
-                                    type="button"
-                                    onClick={() => setDeleteReviewTargetId(null)}
-                                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 active:scale-95 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={executeDeleteReviewAction}
-                                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
-                                >
-                                    <Trash2 className="size-3.5" />
-                                    <span>Ya, Hapus</span>
                                 </button>
                             </div>
                         </div>

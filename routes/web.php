@@ -60,9 +60,16 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             '--class' => 'Database\\Seeders\\TestParticipantSeeder',
             '--force' => true
         ]);
-        return redirect('/admin/participants')->with('message', '✅ 20 peserta uji coba berhasil ditambahkan!');
+        return redirect()->route('admin.participants.index')
+            ->with('message', '20 Peserta uji coba (tanpa Rafly) + simulasi riwayat chat berhasil ditambahkan!');
     })->name('run-seed-participants');
+
+    // Route sementara untuk migrasi kolom topic_category (HAPUS setelah selesai)
+    Route::get('/run-migrate', function () {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return redirect()->route('admin.dashboard')
+            ->with('message', 'Database berhasil dimigrasi (kolom topic_category ditambahkan) dan backfill data selesai.');
+    })->name('run-migrate');
 });
 
 require __DIR__.'/settings.php';
-

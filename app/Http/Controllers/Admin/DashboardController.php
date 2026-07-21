@@ -40,44 +40,7 @@ class DashboardController extends Controller
             $query->where('prodi', $request->input('prodi'));
         }
         if ($request->filled('topic') && $request->input('topic') !== 'all') {
-            $topic = $request->input('topic');
-            if ($topic === 'Yudisium, Skripsi & Wisuda') {
-                $query->where(function ($q) {
-                    foreach (['yudisium', 'skripsi', 'wisuda', 'proposal', 'seminar', 'pembimbing', 'sidang', 'berkas', 'jurnal', 'publikasi', 'bebas tanggungan', 'toga', 'ijazah', 'transkrip'] as $kw) {
-                        $q->orWhere('user_message', 'like', "%{$kw}%");
-                    }
-                });
-            } elseif ($topic === 'Kalender Akademik & Jadwal') {
-                $query->where(function ($q) {
-                    foreach (['kalender', 'jadwal', 'kuliah', 'uas', 'uts', 'semester', 'libur', 'masuk', 'jam kerja', 'baak', 'kapan', 'tanggal', 'pelayanan', 'buka', 'tutup'] as $kw) {
-                        $q->orWhere('user_message', 'like', "%{$kw}%");
-                    }
-                });
-            } elseif ($topic === 'KRS, UKT & Administrasi') {
-                $query->where(function ($q) {
-                    foreach (['krs', 'krsan', 'sks', 'ukt', 'pembayaran', 'spp', 'cuti', 'aktif kembali', 'dosen wali', 'siakad', 'registrasi', 'daftar ulang', 'denda', 'tagihan', 'khs', 'nilai', 'ipk'] as $kw) {
-                        $q->orWhere('user_message', 'like', "%{$kw}%");
-                    }
-                });
-            } elseif ($topic === 'Beasiswa & Layanan Kampus') {
-                $query->where(function ($q) {
-                    foreach (['beasiswa', 'kip', 'baznas', 'perpustakaan', 'lokasi', 'gedung', 'fasilitas', 'laboratorium', 'lab', 'wifi', 'masjid', 'ukm'] as $kw) {
-                        $q->orWhere('user_message', 'like', "%{$kw}%");
-                    }
-                });
-            } elseif ($topic === 'Umum & Lain-lain') {
-                $allKw = array_merge(
-                    ['yudisium', 'skripsi', 'wisuda', 'proposal', 'seminar', 'pembimbing', 'sidang', 'berkas', 'jurnal', 'publikasi', 'bebas tanggungan', 'toga', 'ijazah', 'transkrip'],
-                    ['kalender', 'jadwal', 'kuliah', 'uas', 'uts', 'semester', 'libur', 'masuk', 'jam kerja', 'baak', 'kapan', 'tanggal', 'pelayanan', 'buka', 'tutup'],
-                    ['krs', 'krsan', 'sks', 'ukt', 'pembayaran', 'spp', 'cuti', 'aktif kembali', 'dosen wali', 'siakad', 'registrasi', 'daftar ulang', 'denda', 'tagihan', 'khs', 'nilai', 'ipk'],
-                    ['beasiswa', 'kip', 'baznas', 'perpustakaan', 'lokasi', 'gedung', 'fasilitas', 'laboratorium', 'lab', 'wifi', 'masjid', 'ukm']
-                );
-                $query->where(function ($q) use ($allKw) {
-                    foreach ($allKw as $kw) {
-                        $q->where('user_message', 'not like', "%{$kw}%");
-                    }
-                });
-            }
+            $query->where('topic_category', $request->input('topic'));
         }
         return $query;
     }

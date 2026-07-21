@@ -49,7 +49,9 @@ class ChatLog extends Model
         'similarity_score',
         'latency_ms',
         'is_helpful',
+        'topic_category',
     ];
+    
     /**
      * @return array<string, string>
      */
@@ -62,6 +64,13 @@ class ChatLog extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function ($chatLog) {
+            $chatLog->topic_category = self::classifyTopic($chatLog->user_message);
+        });
+    }
+
     /**
      * Relasi ke User yang mengirim pesan.
      *
@@ -71,11 +80,6 @@ class ChatLog extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    /**
-     * @var list<string>
-     */
-    protected $appends = ['topic_category'];
 
     /**
      * Scope: filter log yang dijawab oleh rule-based.
@@ -97,14 +101,6 @@ class ChatLog extends Model
     public function scopeFromAi(Builder $query): Builder
     {
         return $query->where('source', 'ai');
-    }
-
-    /**
-     * Accessor: mengembalikan kategori topik akademis dari pesan user.
-     */
-    public function getTopicCategoryAttribute(): string
-    {
-        return self::classifyTopic($this->user_message);
     }
 
     /**

@@ -218,11 +218,15 @@ export default function Dashboard({
         if (deleteTargetId === 'clear_all') {
             router.delete('/admin/chat-logs/clear', {
                 preserveScroll: true,
+                preserveState: true,
+                only: ['recent_logs', 'flash', 'success', 'message'],
                 onSuccess: () => setDeleteTargetId(null),
             });
         } else if (typeof deleteTargetId === 'number') {
             router.delete(`/admin/chat-logs/${deleteTargetId}`, {
                 preserveScroll: true,
+                preserveState: true,
+                only: ['recent_logs', 'flash', 'success', 'message'],
                 onSuccess: () => {
                     if (selectedLog?.id === deleteTargetId) setSelectedLog(null);
                     setDeleteTargetId(null);
@@ -235,6 +239,8 @@ export default function Dashboard({
         if (deleteTicketTargetId === 'clear_all') {
             router.delete('/admin/tickets/clear', {
                 preserveScroll: true,
+                preserveState: true,
+                only: ['tickets', 'flash', 'success', 'message'],
                 onSuccess: () => {
                     setDeleteTicketTargetId(null);
                     setCurrentTicketPage(1);
@@ -243,6 +249,8 @@ export default function Dashboard({
         } else if (typeof deleteTicketTargetId === 'number') {
             router.delete(`/admin/tickets/${deleteTicketTargetId}`, {
                 preserveScroll: true,
+                preserveState: true,
+                only: ['tickets', 'flash', 'success', 'message'],
                 onSuccess: () => setDeleteTicketTargetId(null),
             });
         }
@@ -252,6 +260,8 @@ export default function Dashboard({
         if (deleteReviewTargetId === 'clear_all') {
             router.delete('/admin/session-reviews/clear', {
                 preserveScroll: true,
+                preserveState: true,
+                only: ['session_reviews', 'flash', 'success', 'message'],
                 onSuccess: () => {
                     setDeleteReviewTargetId(null);
                     setCurrentReviewPage(1);
@@ -260,6 +270,8 @@ export default function Dashboard({
         } else if (typeof deleteReviewTargetId === 'number') {
             router.delete(`/admin/session-reviews/${deleteReviewTargetId}`, {
                 preserveScroll: true,
+                preserveState: true,
+                only: ['session_reviews', 'flash', 'success', 'message'],
                 onSuccess: () => setDeleteReviewTargetId(null),
             });
         }

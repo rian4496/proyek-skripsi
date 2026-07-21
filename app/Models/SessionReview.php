@@ -13,6 +13,7 @@ class SessionReview extends Model
 
     protected $fillable = [
         'nama_responden',
+        'npm',
         'fakultas',
         'prodi',
         'rating',

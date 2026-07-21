@@ -56,7 +56,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     // Route sementara untuk menjalankan seeder data peserta uji coba (HAPUS setelah selesai)
     Route::get('/run-seed-participants', function () {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\TestParticipantSeeder']);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', [
+            '--class' => 'Database\\Seeders\\TestParticipantSeeder',
+            '--force' => true
+        ]);
         return redirect('/admin/participants')->with('message', '✅ 20 peserta uji coba berhasil ditambahkan!');
     })->name('run-seed-participants');
 });

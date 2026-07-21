@@ -145,24 +145,20 @@ class DashboardController extends Controller
             1 => $sessionReviews->where('rating', 1)->count(),
         ];
 
-        // Optimasi: Cache daftar fakultas dan prodi selama 1 jam agar tidak query DISTINCT berulang kali setiap kali filter diklik
-        $fakultasList = \Illuminate\Support\Facades\Cache::remember('dashboard_fakultas_list', 3600, function () {
-            return ChatLog::whereNotNull('fakultas')
-                ->where('fakultas', '!=', '')
-                ->distinct()
-                ->pluck('fakultas')
-                ->filter()
-                ->values();
-        });
+        // Daftar unik Fakultas dan Prodi untuk opsi filter dropdown
+        $fakultasList = ChatLog::whereNotNull('fakultas')
+            ->where('fakultas', '!=', '')
+            ->distinct()
+            ->pluck('fakultas')
+            ->filter()
+            ->values();
 
-        $prodiList = \Illuminate\Support\Facades\Cache::remember('dashboard_prodi_list', 3600, function () {
-            return ChatLog::whereNotNull('prodi')
-                ->where('prodi', '!=', '')
-                ->distinct()
-                ->pluck('prodi')
-                ->filter()
-                ->values();
-        });
+        $prodiList = ChatLog::whereNotNull('prodi')
+            ->where('prodi', '!=', '')
+            ->distinct()
+            ->pluck('prodi')
+            ->filter()
+            ->values();
 
         return Inertia::render('admin/Dashboard', [
             'stats' => [

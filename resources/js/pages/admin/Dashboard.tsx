@@ -787,15 +787,15 @@ export default function Dashboard({
                             <div className="mt-2.5 flex flex-wrap items-center justify-between gap-1">
                                 <div className="flex items-center gap-1.5">
                                     <span className="size-2 rounded-full bg-emerald-500"></span>
-                                    <span className="text-[10px] font-medium">Positif ({sentimentStats.positivePercentage}%)</span>
+                                    <span className="text-[10px] font-medium">Positif: {sentimentStats.positive} ({sentimentStats.positivePercentage}%)</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <span className="size-2 rounded-full bg-slate-400"></span>
-                                    <span className="text-[10px] font-medium">Netral ({sentimentStats.neutralPercentage}%)</span>
+                                    <span className="text-[10px] font-medium">Netral: {sentimentStats.neutral} ({sentimentStats.neutralPercentage}%)</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <span className="size-2 rounded-full bg-red-500"></span>
-                                    <span className="text-[10px] font-medium">Negatif ({sentimentStats.negativePercentage}%)</span>
+                                    <span className="text-[10px] font-medium">Negatif: {sentimentStats.negative} ({sentimentStats.negativePercentage}%)</span>
                                 </div>
                             </div>
                         </div>
@@ -1041,69 +1041,17 @@ export default function Dashboard({
                     )}
                 </div>
 
-                {/* ═══ Sentiment Analysis Section [W2] ═══ */}
-                <div className="grid grid-cols-1 gap-2.5 md:grid-cols-3">
-                    <div className="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800 flex flex-col justify-between">
-                        <div>
-                            <h3 className="mb-1 text-base font-bold text-slate-800 dark:text-slate-200">Total Tiket Keluhan</h3>
-                            <p className="text-xl font-black text-blue-600 dark:text-blue-400">{tickets?.length || 0} Tiket</p>
-                            <p className="mt-1 text-[11px] leading-tight text-slate-500">Jumlah laporan keluhan & pertanyaan via form Hubungi Admin.</p>
-                        </div>
-                    </div>
 
-                    <div className="md:col-span-2 rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                        <h3 className="mb-1 flex items-center gap-2 text-base font-bold text-slate-800 dark:text-slate-200">
-                            <Bot className="size-4 text-blue-500" />
-                            Klasifikasi Sentimen AI (Gemini 2.0 Flash)
-                        </h3>
-                        <p className="mb-2.5 text-[11px] leading-tight text-slate-500">
-                            Mendeteksi tingkat urgensi dan kepuasan mahasiswa secara real-time berdasarkan isi laporan untuk mempermudah pengerjaan skripsi Anda.
-                        </p>
-
-                        {sentimentStats.analyzedCount > 0 ? (
-                            <div className="space-y-2">
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold mb-0.5">
-                                        <span className="text-red-600 dark:text-red-400">😡 Negatif (Keluhan & Kendala)</span>
-                                        <span className="text-slate-600 dark:text-slate-400">{sentimentStats.negative} tiket ({sentimentStats.negativePercentage}%)</span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                                        <div className="bg-red-500 h-full rounded-full transition-all duration-500" style={{ width: `${sentimentStats.negativePercentage}%` }} />
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold mb-0.5">
-                                        <span className="text-slate-600 dark:text-slate-400">😐 Netral (Pertanyaan/Fakta)</span>
-                                        <span className="text-slate-600 dark:text-slate-400">{sentimentStats.neutral} tiket ({sentimentStats.neutralPercentage}%)</span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                                        <div className="bg-slate-400 h-full rounded-full transition-all duration-500" style={{ width: `${sentimentStats.neutralPercentage}%` }} />
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold mb-0.5">
-                                        <span className="text-emerald-600 dark:text-emerald-400">😊 Positif (Apresiasi & Kepuasan)</span>
-                                        <span className="text-slate-600 dark:text-slate-400">{sentimentStats.positive} tiket ({sentimentStats.positivePercentage}%)</span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                                        <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${sentimentStats.positivePercentage}%` }} />
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="py-3 text-center text-slate-400 text-xs">
-                                Belum ada data tiket dengan analisis sentimen.
-                            </div>
-                        )}
-                    </div>
-                </div>
 
                 {/* ═══ Help Tickets Table ═══ */}
                 <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 p-3.5 dark:border-slate-700">
                         <h3 className="flex items-center gap-2 text-base font-bold">
                             <MessageSquare className="size-4 text-blue-500" />
-                            Tiket Keluhan Masuk
+                            <span>Tiket Keluhan Masuk</span>
+                            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                                {tickets?.length || 0} Tiket
+                            </span>
                         </h3>
                         <div className="flex items-center gap-2">
                             <a

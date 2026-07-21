@@ -12,7 +12,7 @@ export default function Broadcast({ eligibleCount, totalCount, progress, flash }
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('admin.broadcast.store'), {
+        post('/admin/broadcast', {
             onSuccess: () => {
                 reset('subject', 'message');
             },
@@ -127,7 +127,7 @@ export default function Broadcast({ eligibleCount, totalCount, progress, flash }
                                         className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-all hover:bg-blue-700 disabled:opacity-50"
                                     >
                                         <Send className="size-4" />
-                                        {processing ? 'Memproses...' : 'Kirim Massal'}
+                                        {processing ? 'Memproses...' : 'Kirim'}
                                     </button>
                                 </div>
                             </div>

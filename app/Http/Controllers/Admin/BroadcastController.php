@@ -22,6 +22,7 @@ class BroadcastController extends Controller
         return Inertia::render('admin/Broadcast', [
             'eligibleCount' => $eligibleCount,
             'totalCount' => $totalCount,
+            'mailDefault' => config('mail.default', 'log'),
         ]);
     }
 

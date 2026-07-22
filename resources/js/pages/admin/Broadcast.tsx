@@ -4,7 +4,7 @@ import { Mail, Users, AlertCircle, CheckCircle, BarChart, FileSpreadsheet, Print
 
 declare const route: any;
 
-export default function Broadcast({ eligibleCount, totalCount, progress, flash }: { eligibleCount: number, totalCount: number, progress?: any, flash?: any }) {
+export default function Broadcast({ eligibleCount, totalCount, mailDefault, progress, flash }: { eligibleCount: number, totalCount: number, mailDefault?: string, progress?: any, flash?: any }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         subject: '',
         message: '',
@@ -79,15 +79,27 @@ export default function Broadcast({ eligibleCount, totalCount, progress, flash }
                             </div>
                         </div>
 
-                        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900/50 dark:bg-blue-900/20">
-                            <h3 className="flex items-center gap-2 font-semibold text-blue-800 dark:text-blue-300">
-                                <AlertCircle className="size-5" />
-                                Mode Simulasi (Log)
-                            </h3>
-                            <p className="mt-2 text-xs text-blue-700 dark:text-blue-400">
-                                Saat ini sistem berada dalam mode pengujian lokal. Pesan tidak akan terkirim ke kotak masuk, melainkan disimulasikan di berkas log server (<code className="rounded bg-blue-100 px-1 py-0.5 font-mono dark:bg-blue-900/50">storage/logs/laravel.log</code>).
-                            </p>
-                        </div>
+                        {mailDefault === 'log' ? (
+                            <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900/50 dark:bg-blue-900/20 animate-in fade-in duration-300">
+                                <h3 className="flex items-center gap-2 font-semibold text-blue-800 dark:text-blue-300">
+                                    <AlertCircle className="size-5" />
+                                    Mode Simulasi (Log)
+                                </h3>
+                                <p className="mt-2 text-xs text-blue-700 dark:text-blue-400">
+                                    Saat ini sistem berada dalam mode pengujian lokal. Pesan tidak akan terkirim ke kotak masuk, melainkan disimulasikan di berkas log server (<code className="rounded bg-blue-100 px-1 py-0.5 font-mono dark:bg-blue-900/50">storage/logs/laravel.log</code>).
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-900/50 dark:bg-emerald-900/20 animate-in fade-in duration-300">
+                                <h3 className="flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300">
+                                    <CheckCircle className="size-5" />
+                                    Mode Aktif (Email Sungguhan)
+                                </h3>
+                                <p className="mt-2 text-xs text-emerald-700 dark:text-emerald-400">
+                                    Sistem akan mengirimkan email secara fisik ke alamat email setiap responden. Harap pastikan isi pesan Anda sudah sempurna sebelum menekan tombol Kirim.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="col-span-1 md:col-span-2">

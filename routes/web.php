@@ -82,6 +82,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
             ->with('message', 'Berhasil menyuntikkan alamat email simulasi ke seluruh responden untuk pengujian!');
     })->name('run-generate-emails');
 
+    // Route untuk menghapus seluruh email (mengosongkannya) agar aman dari SPAM saat menggunakan SMTP asli
+    Route::get('/clear-fake-emails', function () {
+        \App\Models\PesertaUjiCoba::query()->update(['email' => null]);
+        return redirect()->route('admin.broadcast.index')
+            ->with('success', 'Berhasil menghapus seluruh email palsu dari database! Sekarang aman dari resiko SPAM.');
+    });
+
     // Route diagnostik untuk memaksa server menulis log dan email langsung (tanpa antrean)
     Route::get('/test-log', function () {
         \Illuminate\Support\Facades\Log::info('--- DIAGNOSTIK LOG BERHASIL: Server Railway mengizinkan penulisan file laravel.log ---');

@@ -81,6 +81,21 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
         return redirect()->route('admin.broadcast.index')
             ->with('message', 'Berhasil menyuntikkan alamat email simulasi ke seluruh responden untuk pengujian!');
     })->name('run-generate-emails');
+
+    // Route diagnostik untuk memaksa server menulis log dan email langsung (tanpa antrean)
+    Route::get('/test-log', function () {
+        \Illuminate\Support\Facades\Log::info('--- DIAGNOSTIK LOG BERHASIL: Server Railway mengizinkan penulisan file laravel.log ---');
+        try {
+            \Illuminate\Support\Facades\Mail::raw('Ini adalah isi email tes yang dikirim secara langsung (sinkron).', function ($message) {
+                $message->to('dosen_penguji@uniska-mab.ac.id')->subject('Tes Diagnostik Email');
+            });
+            \Illuminate\Support\Facades\Log::info('--- DIAGNOSTIK EMAIL BERHASIL: Email berhasil masuk ke log ---');
+            return 'Diagnostik selesai! Pak/Bu, silakan kembali ke Dasbor Admin dan buka menu System Logs (ikon Terminal). Jika log muncul, berarti masalah sebelumnya ada di sistem Antrean (Queue) Railway.';
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('--- DIAGNOSTIK EMAIL GAGAL: ' . $e->getMessage() . ' ---');
+            return 'Terjadi error saat mengirim email: ' . $e->getMessage();
+        }
+    });
 });
 
 require __DIR__.'/settings.php';

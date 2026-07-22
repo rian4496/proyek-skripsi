@@ -25,7 +25,8 @@ class ParticipantController extends Controller
                 'required', 
                 'string', 
                 'max:100',
-                'regex:/^(?!.*(.)\1{2,}).*$/'
+                'regex:/^[a-zA-Z\s\.\']+$/', // Hanya boleh huruf, spasi, titik, dan petik
+                'regex:/^(?!.*(.)\1{2,}).*$/' // Tidak boleh 3 huruf berulang
             ],
             'npm' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
             'email' => ['nullable', 'email', 'max:100'],
@@ -35,7 +36,7 @@ class ParticipantController extends Controller
             'npm.required' => 'NPM wajib diisi.',
             'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 22100xxxxx).',
             'email.email' => 'Format email tidak valid.',
-            'nama_mahasiswa.regex' => 'Mohon gunakan nama asli Anda. Huruf yang diulang-ulang (seperti "aaa" atau "bbb") tidak diperbolehkan.',
+            'nama_mahasiswa.regex' => 'Mohon gunakan nama asli Anda. Angka, simbol aneh, atau huruf yang berulang-ulang (seperti "aaa") tidak diperbolehkan.',
         ]);
 
         $peserta = PesertaUjiCoba::firstOrNew(['npm' => trim($request->input('npm'))]);

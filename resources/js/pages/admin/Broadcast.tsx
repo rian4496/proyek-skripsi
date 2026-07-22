@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
-import { Mail, Users, AlertCircle, BarChart, FileSpreadsheet, Printer, Upload, Database, Terminal, Send } from 'lucide-react';
+import { Mail, Users, AlertCircle, CheckCircle, BarChart, FileSpreadsheet, Printer, Upload, Database, Terminal, Send } from 'lucide-react';
 
 declare const route: any;
 
@@ -50,6 +50,14 @@ export default function Broadcast({ eligibleCount, totalCount, progress, flash }
                         </Link>
                     </div>
                 </div>
+
+                {/* ═══ Flash Messages ═══ */}
+                {flash?.success && (
+                    <div className="mt-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 shadow-sm dark:border-emerald-800/30 dark:bg-emerald-950/20 dark:text-emerald-400 animate-in fade-in zoom-in-95 duration-300">
+                        <CheckCircle className="size-5 shrink-0" />
+                        <p className="text-sm font-semibold">{flash.success}</p>
+                    </div>
+                )}
 
                 {/* ═══ Konten Utama ═══ */}
                 <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">

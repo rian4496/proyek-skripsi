@@ -67,7 +67,13 @@ UNIVERSITAS ISLAM KALIMANTAN MUHAMMAD ARSYAD AL BANJARI (UNISKA MAB)
 2. Prosedur Administrasi Cetak Nama Ujian: Pihak Program Studi mencetak dokumen DPNA (Daftar Peserta dan Nilai Akhir) untuk keperluan UTS dan UAS. Mahasiswa wajib memastikan namanya terdaftar/tercantum di dalam DPNA. Jika terjadi kesalahan administrasi nama tidak keluar, mahasiswa wajib berkonsultasi langsung ke Prodi masing-masing untuk perbaikan data.
 
 [KATEGORI: LAYANAN ADMINISTRASI & KONSULTASI AKADEMIK]
-1. Jam Operasional Biro Administrasi Akademik (BAK): Layanan tatap muka di loket gedung BAK UNISKA MAB dibuka setiap hari Senin sampai dengan Sabtu, pukul 09:00 - 14:00 WITA. Peringatan dini batas studi akademik akan dikirimkan secara berkala oleh BAK via pesan broadcast resmi.
+1. Jam Operasional Biro Administrasi Akademik (BAK) & Pengambilan Ijazah: Layanan tatap muka di loket gedung BAK UNISKA MAB dibuka dengan jadwal berikut:
+   - Senin - Kamis : 09.00 - 14.00 WITA
+   - Jum'at        : 09.00 - 11.30 WITA
+   - Sabtu         : 09.00 - 13.00 WITA
+   - Jam Istirahat : 12.00 - 13.00 WITA
+   - Tanggal merah dan hari besar libur.
+   Peringatan dini batas studi akademik akan dikirimkan secara berkala oleh BAK via pesan broadcast resmi.
 2. Alur Penyelesaian Kendala KRS & Jadwal Kuliah Bentrok:
    a. Jika jadwal kuliah bentrok setelah 2 minggu perkuliahan berjalan, mahasiswa harus melapor dan berkonsultasi langsung ke pihak Program Studi (Prodi) masing-masing, bukan ke BAK. Pihak Prodi akan menyelesaikan kendala jadwal bentrok tersebut sesuai aturan prodi.
    b. Jika KRS sudah terlanjur divalidasi dan dikunci oleh Dosen PA namun ternyata ada pilihan mata kuliah yang keliru, prosedur membukanya (unlock KRS) adalah pihak Prodi harus membuat surat pengantar resmi yang ditujukan ke BAK (bisa berupa fisik ke loket atau upload berkas digital via sistem SIA oleh admin prodi) agar kunci dibuka oleh BAK.

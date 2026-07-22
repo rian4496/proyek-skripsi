@@ -43,6 +43,13 @@ class SendBroadcastEmailJob implements ShouldQueue
         \Illuminate\Support\Facades\Log::info("Pesan  : \n{$this->messageBody}");
         \Illuminate\Support\Facades\Log::info("==================================================");
 
+        // Jika sistem sedang dalam mode simulasi (log), kita blokir pengiriman email bawaan Laravel
+        // agar layar System Logs tidak dibanjiri kode HTML kotor. Teks bersih di atas sudah cukup!
+        if (config('mail.default') === 'log') {
+            return;
+        }
+
+        // Jika menggunakan SMTP (email asli di masa depan), barulah email sungguhan dikirim
         Mail::to($this->email)->send(
             new BroadcastNotificationMail($this->subjectLine, $this->messageBody, $this->studentName)
         );

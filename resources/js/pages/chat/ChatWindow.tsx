@@ -127,29 +127,40 @@ export default function ChatWindow() {
         }
     }, []);
 
+    // Ref untuk menyimpan referensi state terbaru agar popstate listener tidak perlu re-mount
+    const stateRefs = useRef({
+        showParticipantModal,
+        showFeedbackModal,
+        showThankYouModal,
+        showExitConfirmModal
+    });
+
+    useEffect(() => {
+        stateRefs.current = { showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal };
+    }, [showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal]);
+
     // Intersep Tombol Back Bawaan HP & Browser (PopState & Hash Priming)
     useEffect(() => {
-        // Priming history state berlapis dengan hash '#active' khusus untuk mobile/HP (Android & iPhone)
-        // agar tombol back fisik/swipe selalu memicu event popstate tanpa gagal
-        if (!showParticipantModal) {
-            if (window.location.hash !== '#active') {
-                window.history.pushState({ chatSessionActive: true }, '', window.location.pathname + window.location.search + '#active');
-            }
-        }
+        if (typeof window === 'undefined') return;
+
+        // Trik SPA: Push state awal agar ada riwayat untuk di-pop saat pengguna swipe back
+        window.history.pushState({ chatSessionActive: true }, '', window.location.href);
 
         const handlePopState = (e: PopStateEvent) => {
-            // Cegah browser HP atau Inertia memproses tombol back terlebih dahulu
+            // Hentikan propagasi agar InertiaJS tidak ikut campur menangani navigasi ini
             e.preventDefault();
             e.stopPropagation();
-            e.stopImmediatePropagation();
+            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 
-            // Push kembali state/hash '#active' agar posisi history di HP tidak mundur keluar dari halaman
-            window.history.pushState({ chatSessionActive: true }, '', window.location.pathname + window.location.search + '#active');
+            // Siasat utama: Segera dorong (push) kembali state yang sama agar pengguna terperangkap
+            window.history.pushState({ chatSessionActive: true }, '', window.location.href);
+
+            const states = stateRefs.current;
 
             // Logika respons responsif terhadap tombol back bawaan HP:
-            if (!showParticipantModal && !showFeedbackModal && !showThankYouModal) {
-                if (showExitConfirmModal) {
-                    // Jika popup konfirmasi sudah terbuka dan user tekan back di HP, tutup popup (sama seperti pilih 'Tidak')
+            if (!states.showParticipantModal && !states.showFeedbackModal && !states.showThankYouModal) {
+                if (states.showExitConfirmModal) {
+                    // Jika popup konfirmasi sudah terbuka dan user tekan back di HP, tutup popup (sama seperti pilih 'Batal')
                     setShowExitConfirmModal(false);
                 } else {
                     // Jika sedang asyik chat lalu tekan tombol back HP, langsung munculkan popup Akhiri Sesi!
@@ -158,12 +169,13 @@ export default function ChatWindow() {
             }
         };
 
+        // Pasang listener secara agresif pada fase capture (true)
         window.addEventListener('popstate', handlePopState, true);
 
         return () => {
             window.removeEventListener('popstate', handlePopState, true);
         };
-    }, [showParticipantModal, showFeedbackModal, showThankYouModal, showExitConfirmModal, messages.length]);
+    }, []); // Array dependency kosong = dijamin hanya dirender 1 kali seumur hidup komponen
 
     const handleConfirmExit = () => {
         setShowExitConfirmModal(false);

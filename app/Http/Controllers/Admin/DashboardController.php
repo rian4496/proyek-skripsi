@@ -436,12 +436,21 @@ class DashboardController extends Controller
                 ->chunk(200, function ($reviews) use ($handle, &$no) {
                     foreach ($reviews as $review) {
                         $no++;
+                        $labelRating = match((int) $review->rating) {
+                            5 => 'Sangat Bagus',
+                            4 => 'Bagus',
+                            3 => 'Cukup',
+                            2 => 'Buruk',
+                            1 => 'Sangat Buruk',
+                            default => 'Tidak Diketahui'
+                        };
+
                         fputcsv($handle, [
                             $no,
                             '#' . $review->id,
                             $review->nama_responden ?? 'Responden Anonim',
                             ($review->fakultas ?? '-') . ' / ' . ($review->prodi ?? '-'),
-                            $review->rating . ' Bintang',
+                            $review->rating . ' Bintang (' . $labelRating . ')',
                             $review->komentar ?? 'Tidak ada komentar',
                             $review->created_at->format('d/m/Y H:i:s')
                         ]);
@@ -712,12 +721,20 @@ class DashboardController extends Controller
             $no = 1;
             foreach ($reviews as $r) {
                 $bintang = str_repeat('★', $r->rating) . str_repeat('☆', 5 - $r->rating);
+                $labelRating = match((int) $r->rating) {
+                    5 => 'Sangat Bagus',
+                    4 => 'Bagus',
+                    3 => 'Cukup',
+                    2 => 'Buruk',
+                    1 => 'Sangat Buruk',
+                    default => ''
+                };
                 $rowsHtml .= '<tr>
                     <td class="text-center">' . $no++ . '</td>
                     <td class="text-center">' . $r->created_at->format('d/m/Y H:i') . ' WIB</td>
                     <td><strong>' . htmlspecialchars($r->nama_responden ?? 'Responden Anonim') . '</strong></td>
                     <td class="text-center">' . htmlspecialchars(($r->fakultas ?? '-') . ' / ' . ($r->prodi ?? '-')) . '</td>
-                    <td class="text-center" style="color: #d97706; font-weight: bold;">' . $r->rating . ' / 5.0 (' . $bintang . ')</td>
+                    <td class="text-center" style="color: #d97706; font-weight: bold;">' . $r->rating . ' / 5.0<br><span style="font-size: 8.5pt;">' . $bintang . '</span><br><span style="font-size: 8.5pt; color: #333;">(' . $labelRating . ')</span></td>
                     <td>' . nl2br(htmlspecialchars($r->komentar ?? 'Tidak ada komentar')) . '</td>
                 </tr>';
             }

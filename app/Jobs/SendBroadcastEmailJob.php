@@ -49,9 +49,34 @@ class SendBroadcastEmailJob implements ShouldQueue
             return;
         }
 
-        // Jika menggunakan SMTP (email asli di masa depan), barulah email sungguhan dikirim
-        Mail::to($this->email)->send(
-            new BroadcastNotificationMail($this->subjectLine, $this->messageBody, $this->studentName)
-        );
+        $mailable = new BroadcastNotificationMail($this->subjectLine, $this->messageBody, $this->studentName);
+
+        // [BYPASS HACK] Jika variabel GOOGLE_SCRIPT_WEBHOOK_URL tersedia, kirim via HTTP (Port 443)
+        // Ini menghindari blokir Port SMTP 587/465 dari layanan cloud seperti Railway
+        $webhookUrl = env('GOOGLE_SCRIPT_WEBHOOK_URL');
+        
+        if (!empty($webhookUrl)) {
+            \Illuminate\Support\Facades\Log::info("🚀 Mengirim via Google Apps Script Webhook...");
+            
+            $html = $mailable->render();
+            
+            $response = \Illuminate\Support\Facades\Http::post($webhookUrl, [
+                'to' => $this->email,
+                'subject' => $this->subjectLine,
+                'body' => $html
+            ]);
+
+            if ($response->successful()) {
+                \Illuminate\Support\Facades\Log::info("✅ Webhook Berhasil: " . $response->body());
+            } else {
+                \Illuminate\Support\Facades\Log::error("❌ Webhook Gagal: " . $response->body());
+                throw new \Exception("Google Apps Script Webhook gagal: " . $response->body());
+            }
+            
+            return;
+        }
+
+        // Jika tidak ada webhook, gunakan jalur SMTP standar
+        Mail::to($this->email)->send($mailable);
     }
 }

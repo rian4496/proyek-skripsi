@@ -262,20 +262,16 @@ class ParticipantController extends Controller
 
         $rowsHtml = '';
         if ($participants->isEmpty()) {
-            $rowsHtml = '<tr><td colspan="7" class="text-center" style="padding: 20px; font-style: italic;">Belum ada data peserta uji coba yang tercatat sesuai filter.</td></tr>';
+            $rowsHtml = '<tr><td colspan="6" class="text-center" style="padding: 20px; font-style: italic;">Belum ada data peserta uji coba yang tercatat sesuai filter.</td></tr>';
         } else {
             $no = 1;
             foreach ($participants as $p) {
-                $rev = $reviewsMap[$p->npm] ?? null;
-                $ratingHtml = $rev ? ('<strong style="color: #d97706;">' . $rev['rating'] . ' / 5.0 (★)</strong><br><span style="font-size: 10px; font-style: italic;">"' . htmlspecialchars($rev['komentar'] ?? '-') . '"</span>') : '<span style="color: #94a3b8; font-style: italic;">Belum mengisi</span>';
-                
                 $rowsHtml .= '<tr>
                     <td class="text-center">' . $no++ . '</td>
                     <td class="text-center font-mono font-bold">' . htmlspecialchars($p->npm ?? '-') . '</td>
                     <td><strong>' . htmlspecialchars($p->nama_mahasiswa ?? 'Anonim') . '</strong></td>
                     <td>' . htmlspecialchars(($p->fakultas ?? '-') . ' / ' . ($p->prodi ?? '-')) . '</td>
                     <td class="text-center"><strong>' . number_format($p->total_queries ?? 0) . ' Kueri</strong></td>
-                    <td class="text-center">' . $ratingHtml . '</td>
                     <td class="text-center" style="font-size: 11px;">' . ($p->created_at ? $p->created_at->format('d/m/Y H:i') : '-') . ' WIB<br><span style="color:#64748b;">Aktif: ' . ($p->last_active_at ? $p->last_active_at->format('d/m/Y H:i') : '-') . '</span></td>
                 </tr>';
             }
@@ -420,13 +416,12 @@ class ParticipantController extends Controller
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 4%;">No</th>
-                <th style="width: 11%;">NPM</th>
-                <th style="width: 20%;">Nama Lengkap Mahasiswa</th>
-                <th style="width: 23%;">Fakultas / Program Studi</th>
-                <th style="width: 10%;">Total Interaksi</th>
-                <th style="width: 18%;">Rating CSAT &amp; Komentar</th>
-                <th style="width: 14%;">Registrasi &amp; Aktif</th>
+                <th style="width: 5%;">No</th>
+                <th style="width: 14%;">NPM</th>
+                <th style="width: 26%;">Nama Lengkap Mahasiswa</th>
+                <th style="width: 28%;">Fakultas / Program Studi</th>
+                <th style="width: 12%;">Total Interaksi</th>
+                <th style="width: 15%;">Registrasi &amp; Aktif</th>
             </tr>
         </thead>
         <tbody>' . $rowsHtml . '</tbody>

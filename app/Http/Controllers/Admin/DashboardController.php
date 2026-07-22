@@ -61,7 +61,16 @@ class DashboardController extends Controller
                 $total = $applyFilters(ChatLog::query())->count();
                 return $total > 0 ? round(($applyFilters(ChatLog::where('source', 'ai'))->count() / $total) * 100, 1) : 0;
             },
-            'avg_similarity' => round((float) $applyFilters(ChatLog::where('source', 'rule'))->avg('similarity_score'), 2),
+            'avg_similarity' => function () use ($applyFilters) {
+                $logs = $applyFilters(ChatLog::where('source', 'rule')->whereNotNull('similarity_score'))->get(['similarity_score']);
+                if ($logs->isEmpty()) return 0;
+                $sum = 0;
+                foreach ($logs as $l) {
+                    $score = (float) $l->similarity_score;
+                    $sum += $score <= 1.0 ? $score * 100 : $score;
+                }
+                return round($sum / $logs->count(), 2);
+            },
         ];
 
         // CSAT / Feedback Analytics
@@ -235,7 +244,7 @@ class DashboardController extends Controller
                         $cleanText((string) ($log->bot_response ?? ''), 300),
                         $sumber,
                         $log->ai_engine ?? '-',
-                        $log->similarity_score ? round($log->similarity_score, 2) : '-',
+                        $log->similarity_score !== null ? round(((float) $log->similarity_score <= 1.0 ? (float) $log->similarity_score * 100 : (float) $log->similarity_score), 2) : '-',
                         $latMs,
                         $latSec,
                         $feedback,
@@ -522,14 +531,15 @@ class DashboardController extends Controller
                 $latCount = 0;
                 foreach ($catLogs as $cl) {
                     if ($cl->source === 'rule' && $cl->similarity_score !== null && $cl->similarity_score !== '') {
-                        $simSum += (float) $cl->similarity_score;
+                        $scoreVal = (float) $cl->similarity_score;
+                        $simSum += $scoreVal <= 1.0 ? $scoreVal * 100 : $scoreVal;
                         $simCount++;
                     }
                     $lMs = ($cl->latency_ms !== null && $cl->latency_ms !== '') ? (int) $cl->latency_ms : ($cl->source === 'rule' ? 12 : 2140);
                     $latSum += $lMs;
                     $latCount++;
                 }
-                $avgSimCat = $simCount > 0 ? round(($simSum / $simCount) * 100, 2) . '%' : '-';
+                $avgSimCat = $simCount > 0 ? round($simSum / $simCount, 2) . '%' : '-';
                 $avgLatMs = $latCount > 0 ? round($latSum / $latCount) : 0;
                 $avgLatText = $avgLatMs < 1000 ? "{$avgLatMs} ms" : round($avgLatMs / 1000, 2) . " detik";
 
@@ -585,7 +595,11 @@ class DashboardController extends Controller
                         ? '<span style="color: #15803d; font-weight: bold;">[DB] Levenshtein</span>' 
                         : '<span style="color: #6b21a8; font-weight: bold;">[AI] ' . htmlspecialchars(ucfirst((string) ($l->ai_engine ?? 'Ollama'))) . '</span>';
                     
-                    $skorText = ($l->similarity_score !== null && $l->similarity_score !== '') ? round((float) $l->similarity_score, 1) . '%' : '-';
+                    $skorText = '-';
+                    if ($l->similarity_score !== null && $l->similarity_score !== '') {
+                        $sVal = (float) $l->similarity_score;
+                        $skorText = round($sVal <= 1.0 ? $sVal * 100 : $sVal, 1) . '%';
+                    }
                     
                     $lMs = ($l->latency_ms !== null && $l->latency_ms !== '') ? (int) $l->latency_ms : ($l->source === 'rule' ? 12 : 2140);
                     $latText = $lMs < 1000 ? "{$lMs} ms" : round($lMs / 1000, 2) . " s ({$lMs} ms)";

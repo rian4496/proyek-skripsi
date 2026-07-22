@@ -47,8 +47,8 @@ class BroadcastController extends Controller
 
         foreach ($pesertas as $peserta) {
             if (filter_var($peserta->email, FILTER_VALIDATE_EMAIL)) {
-                // Masukkan tugas pengiriman email ke background queue
-                SendBroadcastEmailJob::dispatch(
+                // Paksa eksekusi tugas pengiriman email secara sinkron (langsung saat itu juga tanpa antrean)
+                SendBroadcastEmailJob::dispatchSync(
                     $peserta->email,
                     $peserta->nama_mahasiswa,
                     $subject,

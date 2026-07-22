@@ -23,6 +23,7 @@ interface ParticipantItem {
     id: number;
     nama_mahasiswa: string;
     npm: string;
+    email: string | null;
     fakultas: string | null;
     prodi: string | null;
     total_queries: number;
@@ -94,6 +95,13 @@ export default function Participants({
     const handleProdiChange = (prodi: string) => {
         setSelectedProdi(prodi);
         applyFilters(searchQuery, selectedFakultas, prodi);
+    };
+
+    const handleEditEmail = (id: number, nama: string, currentEmail: string | null) => {
+        const newEmail = window.prompt(`Masukkan alamat email yang valid untuk responden "${nama}":\n(Kosongkan jika Anda ingin menghapusnya)`, currentEmail || '');
+        if (newEmail !== null) {
+            router.put(`/admin/participants/${id}`, { email: newEmail }, { preserveScroll: true });
+        }
     };
 
     const handleDeleteParticipant = (id: number, nama: string) => {
@@ -323,6 +331,14 @@ export default function Participants({
                                                 <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
                                                     {participant.nama_mahasiswa}
                                                 </div>
+                                                {participant.email ? (
+                                                    <div className="mt-1 inline-flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                                        <Mail className="size-2.5" />
+                                                        {participant.email}
+                                                    </div>
+                                                ) : (
+                                                    <div className="mt-1 text-[9px] text-slate-400 italic">Belum ada email</div>
+                                                )}
                                                 {participant.last_active_at && (
                                                     <div className="mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">
                                                         Aktif: {new Date(participant.last_active_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
@@ -371,13 +387,22 @@ export default function Participants({
                                             </td>
 
                                             <td className="whitespace-nowrap px-4 py-3 text-center">
-                                                <button
-                                                    onClick={() => handleDeleteParticipant(participant.id, participant.nama_mahasiswa)}
-                                                    className="inline-flex items-center justify-center rounded-lg bg-red-600 p-1.5 text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
-                                                    title="Hapus Data Responden Ini"
-                                                >
-                                                    <Trash2 className="size-3.5" />
-                                                </button>
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <button
+                                                        onClick={() => handleEditEmail(participant.id, participant.nama_mahasiswa, participant.email)}
+                                                        className="inline-flex items-center justify-center rounded-lg bg-emerald-100 p-1.5 text-emerald-700 shadow-sm transition-all hover:bg-emerald-200 active:scale-95 dark:bg-emerald-900/50 dark:text-emerald-400 dark:hover:bg-emerald-800/60"
+                                                        title="Ubah / Tambahkan Email"
+                                                    >
+                                                        <Mail className="size-3.5" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteParticipant(participant.id, participant.nama_mahasiswa)}
+                                                        className="inline-flex items-center justify-center rounded-lg bg-red-600 p-1.5 text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 dark:bg-red-600 dark:hover:bg-red-500"
+                                                        title="Hapus Data Responden Ini"
+                                                    >
+                                                        <Trash2 className="size-3.5" />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     );

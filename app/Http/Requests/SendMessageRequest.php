@@ -36,6 +36,7 @@ class SendMessageRequest extends FormRequest
                 'string', 
                 'min:3',
                 'max:100',
+                'regex:/^(?!.*(.)\1{2,}).*$/',
                 function ($attribute, $value, $fail) {
                     $lowerName = strtolower($value);
                     $forbidden = ['test', 'tester', 'testing', 'user', 'bot', 'anonim', 'anonymous', 'coba', 'admin', 'dummy', 'hacker'];
@@ -66,6 +67,7 @@ class SendMessageRequest extends FormRequest
             'message.max' => 'Pesan terlalu panjang (maksimal 1000 karakter).',
             'nama_mahasiswa.required' => 'Identitas nama mahasiswa wajib diisi untuk penelitian.',
             'nama_mahasiswa.min' => 'Nama mahasiswa minimal 3 karakter.',
+            'nama_mahasiswa.regex' => 'Mohon gunakan nama asli Anda. Huruf yang diulang-ulang (seperti "aaa" atau "bbb") tidak diperbolehkan.',
             'npm.required' => 'Identitas NPM wajib diisi untuk penelitian.',
             'npm.regex' => 'NPM harus berawalan angka "2" dan terdiri dari TEPAT 10 digit (contoh: 2210010497).',
             'fakultas.required' => 'Fakultas wajib dipilih.',

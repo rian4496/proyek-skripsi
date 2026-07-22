@@ -21,7 +21,12 @@ class ParticipantController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'nama_mahasiswa' => ['required', 'string', 'max:100'],
+            'nama_mahasiswa' => [
+                'required', 
+                'string', 
+                'max:100',
+                'regex:/^(?!.*(.)\1{2,}).*$/'
+            ],
             'npm' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
             'email' => ['nullable', 'email', 'max:100'],
             'fakultas' => ['nullable', 'string', 'max:100'],
@@ -30,6 +35,7 @@ class ParticipantController extends Controller
             'npm.required' => 'NPM wajib diisi.',
             'npm.regex' => 'Pengisian NPM harus sesuai 10 digit angka (contoh yang benar: 22100xxxxx).',
             'email.email' => 'Format email tidak valid.',
+            'nama_mahasiswa.regex' => 'Mohon gunakan nama asli Anda. Huruf yang diulang-ulang (seperti "aaa" atau "bbb") tidak diperbolehkan.',
         ]);
 
         $peserta = PesertaUjiCoba::firstOrNew(['npm' => trim($request->input('npm'))]);
@@ -129,6 +135,23 @@ class ParticipantController extends Controller
         $participant->delete();
 
         return redirect()->back(303)->with('message', 'Data peserta berhasil dihapus.');
+    }
+
+    /**
+     * Memperbarui email peserta uji coba dari tabel Master Data (PUT /admin/participants/{participant}).
+     */
+    public function updateEmail(Request $request, PesertaUjiCoba $participant)
+    {
+        $request->validate([
+            'email' => ['nullable', 'email', 'max:100'],
+        ], [
+            'email.email' => 'Format email tidak valid.',
+        ]);
+
+        $participant->email = $request->input('email');
+        $participant->save();
+
+        return redirect()->back(303)->with('success', 'Email responden ' . $participant->nama_mahasiswa . ' berhasil diperbarui.');
     }
 
     /**

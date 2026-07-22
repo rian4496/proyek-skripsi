@@ -49,10 +49,14 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/upload-document/{filename}', [App\Http\Controllers\Admin\DocumentController::class, 'destroy'])->name('upload-document.destroy');
     Route::get('/system-logs', [App\Http\Controllers\Admin\SystemLogController::class, 'index'])->name('system-logs.index');
     Route::delete('/system-logs/clear', [App\Http\Controllers\Admin\SystemLogController::class, 'clear'])->name('system-logs.clear');
-    Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
-    Route::get('/participants/export-csv', [ParticipantController::class, 'exportCsv'])->name('participants.export-csv');
-    Route::get('/participants/print', [ParticipantController::class, 'printParticipants'])->name('participants.print');
-    Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
+    
+    Route::prefix('participants')->name('participants.')->group(function () {
+        Route::get('/', [ParticipantController::class, 'index'])->name('index');
+        Route::get('/export-csv', [ParticipantController::class, 'exportCsv'])->name('export-csv');
+        Route::get('/print', [ParticipantController::class, 'printParticipants'])->name('print');
+        Route::delete('/{participant}', [ParticipantController::class, 'destroy'])->name('destroy');
+        Route::put('/{participant}', [ParticipantController::class, 'updateEmail'])->name('updateEmail');
+    });
 
     // Route sementara untuk menjalankan seeder data peserta uji coba (HAPUS setelah selesai)
     Route::get('/run-seed-participants', function () {

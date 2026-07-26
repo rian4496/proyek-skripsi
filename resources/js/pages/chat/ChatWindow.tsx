@@ -177,6 +177,39 @@ export default function ChatWindow() {
         };
     }, []); // Array dependency kosong = dijamin hanya dirender 1 kali seumur hidup komponen
 
+    // Fitur Auto-Reset Kiosk: Hapus sesi jika tidak ada aktivitas selama 5 Menit
+    useEffect(() => {
+        // Jangan jalankan timer jika pengguna sedang mengisi form awal atau sedang proses keluar
+        if (showParticipantModal || showFeedbackModal || showThankYouModal) return;
+
+        let idleTimer: NodeJS.Timeout;
+
+        const resetIdleTimer = () => {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                // 5 menit berlalu tanpa aktivitas -> Hapus memori dan reset
+                sessionStorage.removeItem('participant_info');
+                localStorage.removeItem('chat_messages_storage');
+                window.location.reload();
+            }, 5 * 60 * 1000); // 300.000 milidetik = 5 Menit
+        };
+
+        // Daftar aktivitas yang dianggap sebagai "pengguna sedang aktif"
+        const activeEvents = ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+        
+        // Pasang sensor aktivitas
+        activeEvents.forEach(event => window.addEventListener(event, resetIdleTimer));
+
+        // Mulai hitung mundur pertama
+        resetIdleTimer();
+
+        // Bersihkan sensor saat komponen dilepas atau ada perubahan state modal
+        return () => {
+            clearTimeout(idleTimer);
+            activeEvents.forEach(event => window.removeEventListener(event, resetIdleTimer));
+        };
+    }, [showParticipantModal, showFeedbackModal, showThankYouModal]);
+
     const handleConfirmExit = () => {
         setShowExitConfirmModal(false);
         setShowFeedbackModal(true);

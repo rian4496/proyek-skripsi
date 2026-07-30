@@ -326,16 +326,24 @@ class DashboardController extends Controller
             $no = 1;
             foreach ($tickets as $t) {
                 $sentimenStyle = 'color: #333;';
-                if (stripos($t->sentiment_label ?? '', 'Negatif') !== false) $sentimenStyle = 'color: #b91c1c; font-weight: bold;';
-                elseif (stripos($t->sentiment_label ?? '', 'Positif') !== false) $sentimenStyle = 'color: #15803d; font-weight: bold;';
+                $sentimentLabel = 'Netral';
+                if (stripos($t->sentiment ?? '', 'negative') !== false) {
+                    $sentimenStyle = 'color: #b91c1c; font-weight: bold;';
+                    $sentimentLabel = 'Negatif';
+                } elseif (stripos($t->sentiment ?? '', 'positive') !== false) {
+                    $sentimenStyle = 'color: #15803d; font-weight: bold;';
+                    $sentimentLabel = 'Positif';
+                }
+
+                $scorePercent = $t->sentiment_score ? round($t->sentiment_score * 100) . '%' : '';
 
                 $rowsHtml .= '<tr>
                     <td class="text-center">' . $no++ . '</td>
                     <td class="text-center">' . $t->created_at->format('d/m/Y H:i') . ' WIB</td>
                     <td><strong>' . htmlspecialchars($t->nama_pelapor ?? 'Anonim') . '</strong></td>
                     <td class="text-center">' . htmlspecialchars($t->kategori_masalah ?? 'Umum') . '</td>
-                    <td>' . nl2br(htmlspecialchars($t->isi_laporan ?? '-')) . '</td>
-                    <td class="text-center" style="' . $sentimenStyle . '">' . htmlspecialchars(($t->sentiment_label ?? 'Netral') . ($t->sentiment_score ? " ({$t->sentiment_score}%)" : '')) . '</td>
+                    <td style="text-align: left; padding: 10px;">' . nl2br(htmlspecialchars($t->laporan ?? '-')) . '</td>
+                    <td class="text-center" style="' . $sentimenStyle . '">' . htmlspecialchars($sentimentLabel . ($scorePercent ? " ({$scorePercent})" : '')) . '</td>
                 </tr>';
             }
         }

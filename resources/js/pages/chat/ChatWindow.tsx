@@ -143,22 +143,33 @@ export default function ChatWindow() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        // Trik SPA: Push state awal agar ada riwayat untuk di-pop saat pengguna swipe back
-        window.history.pushState({ chatSessionActive: true }, '', window.location.href);
+        // Trik SPA: Push state awal HANYA JIKA user sudah melewati form pendaftaran (sudah login)
+        if (!showParticipantModal) {
+            window.history.pushState({ chatSessionActive: true }, '', window.location.href);
+        }
+    }, [showParticipantModal]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
 
         const handlePopState = (e: PopStateEvent) => {
+            const states = stateRefs.current;
+
+            // Jika user berada di Form Pendaftaran Awal, biarkan tombol back berfungsi normal (kembali ke web sebelumnya)
+            if (states.showParticipantModal) {
+                return; 
+            }
+
             // Hentikan propagasi agar InertiaJS tidak ikut campur menangani navigasi ini
             e.preventDefault();
             e.stopPropagation();
             if (e.stopImmediatePropagation) e.stopImmediatePropagation();
 
-            // Siasat utama: Segera dorong (push) kembali state yang sama agar pengguna terperangkap
+            // Siasat utama: Segera dorong (push) kembali state yang sama agar pengguna tetap di halaman chat
             window.history.pushState({ chatSessionActive: true }, '', window.location.href);
 
-            const states = stateRefs.current;
-
             // Logika respons responsif terhadap tombol back bawaan HP:
-            if (!states.showParticipantModal && !states.showFeedbackModal && !states.showThankYouModal) {
+            if (!states.showFeedbackModal && !states.showThankYouModal) {
                 if (states.showExitConfirmModal) {
                     // Jika popup konfirmasi sudah terbuka dan user tekan back di HP, tutup popup (sama seperti pilih 'Batal')
                     setShowExitConfirmModal(false);

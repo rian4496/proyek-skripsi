@@ -93,7 +93,7 @@ export default function Broadcast({ eligibleCount, totalCount, mailDefault, prog
                             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-900/50 dark:bg-emerald-900/20 animate-in fade-in duration-300">
                                 <h3 className="flex items-center gap-2 font-semibold text-emerald-800 dark:text-emerald-300">
                                     <CheckCircle className="size-5" />
-                                    Mode Aktif (Email Sungguhan)
+                                    Mode Aktif (Email)
                                 </h3>
                                 <p className="mt-2 text-xs text-emerald-700 dark:text-emerald-400">
                                     Sistem akan mengirimkan email secara fisik ke alamat email setiap responden. Harap pastikan isi pesan Anda sudah sempurna sebelum menekan tombol Kirim.

@@ -383,7 +383,7 @@ class ParticipantController extends Controller
         }
         @media print {
             body { padding: 0; }
-            button.no-print { display: none !important; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>

@@ -26,25 +26,25 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 10,
             ],
             [
-                'keywords' => ['cara isi krs', 'link sia uniska', 'alamat web sia', 'website sia', 'pengisian krs online', 'alur pengisian krs', 'bagaimana alur pengisian krs', 'tahapan pengisian krs', 'prosedur pengisian krs', 'alur krs', 'jadwal pengisian krs', 'pengisian krs', 'jadwal krs'],
+                'keywords' => ['cara isi krs', 'link sia uniska', 'alamat web sia', 'website sia', 'pengisian krs online', 'alur pengisian krs', 'bagaimana alur pengisian krs', 'tahapan pengisian krs', 'prosedur pengisian krs', 'alur krs', 'jadwal pengisian krs', 'pengisian krs', 'jadwal krs', 'kartu rencana studi', 'krs'],
                 'response' => "Pengisian Kartu Rencana Studi (KRS) dilakukan secara online melalui portal SIA UNISKA di https://sia.uniska-bjm.ac.id.\n\n**Alur & Langkah Pengisian KRS:**\n1. Login menggunakan NPM dan Password SIA.\n2. Pilih menu \"Akademik\" > \"Pengisian KRS\".\n3. Pilih mata kuliah sesuai penawaran semester atau konsultasikan terlebih dahulu dengan Dosen Penasihat Akademik (PA).\n4. Simpan KRS dan tunggu verifikasi/persetujuan Dosen PA.\n\n![Panduan Alur Pengisian KRS Online](/assets/img/sia/urutan-4.jpeg)\n\n*Catatan: Pastikan kewajiban pembayaran SPP/UKT variabel semester aktif telah diselesaikan agar menu pengisian KRS dapat diakses.*",
                 'category' => 'akademik',
                 'priority' => 10,
             ],
             [
-                'keywords' => ['info beasiswa', 'beasiswa uniska', 'daftar beasiswa', 'beasiswa kip'],
+                'keywords' => ['info beasiswa', 'beasiswa uniska', 'daftar beasiswa', 'beasiswa kip', 'beasiswa'],
                 'response' => 'UNISKA MAB menyediakan berbagai program beasiswa bagi mahasiswa, seperti Beasiswa KIP-Kuliah, Beasiswa PPA, Beasiswa Baznas, dan Beasiswa Yayasan. Untuk informasi persyaratan dan jadwal pendaftaran terbaru, silakan cek portal resmi atau hubungi Bagian Kemahasiswaan & Alumni (BAK).',
                 'category' => 'akademik',
                 'priority' => 10,
             ],
             [
-                'keywords' => ['biaya ukt', 'nomor rekening spp', 'cara bayar ukt lewat bank', 'pembayaran ukt bank apa', 'info ukt'],
+                'keywords' => ['biaya ukt', 'nomor rekening spp', 'cara bayar ukt lewat bank', 'pembayaran ukt bank apa', 'info ukt', 'biaya kuliah', 'ukt', 'biaya perkuliahan'],
                 'response' => 'Informasi rincian nominal Biaya Uang Kuliah Tunggal (UKT) / SPP variabel dapat dilihat secara transparan melalui akun SIA masing-masing mahasiswa pada menu "Tagihan & Pembayaran". Pembayaran dilakukan melalui bank mitra resmi UNISKA (BSI, Bank Kalsel, Mandiri, BRI). Jika ada kendala, silakan hubungi bagian keuangan kampus.',
                 'category' => 'administrasi',
                 'priority' => 9,
             ],
             [
-                'keywords' => ['info skripsi', 'persyaratan skripsi', 'syarat daftar skripsi', 'pendaftaran skripsi'],
+                'keywords' => ['info skripsi', 'persyaratan skripsi', 'syarat daftar skripsi', 'pendaftaran skripsi', 'skripsi'],
                 'response' => "Persyaratan umum pendaftaran Skripsi di lingkungan UNISKA MAB:\n\n1. Telah menempuh minimal 138 SKS dengan IPK minimal 2.75.\n2. Lulus mata kuliah Metodologi Penelitian dan Seminar Proposal.\n3. Bebas nilai D dan E pada mata kuliah pokok prodi.\n4. Mendaftar secara online melalui portal fakultas masing-masing dengan mengunggah persetujuan Dosen Pembimbing.",
                 'category' => 'akademik',
                 'priority' => 10,
@@ -87,7 +87,7 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 15,
             ],
             [
-                'keywords' => ['syarat yudisium', 'daftar yudisium', 'alur yudisium', 'info yudisium', 'persyaratan yudisium', 'kapan yudisium', 'sop yudisium'],
+                'keywords' => ['syarat yudisium', 'daftar yudisium', 'alur yudisium', 'info yudisium', 'persyaratan yudisium', 'kapan yudisium', 'sop yudisium', 'wisuda', 'pendaftaran wisuda', 'daftar wisuda'],
                 'response' => "Pendaftaran dan pelaksanaan Yudisium UNISKA MAB dilakukan sesuai dengan Standar Operasional Prosedur (SOP) fakultas masing-masing.\n\n**Syarat & Alur Umum Yudisium:**\n1. Telah dinyatakan lulus ujian skripsi (sidang komprehensif).\n2. Mengumpulkan lembar pengesahan skripsi yang sudah ditandatangani lengkap (Pembimbing, Penguji, dan Dekan).\n3. Mengupload naskah skripsi final dan jurnal ke repository perpustakaan.\n4. Melakukan pendaftaran online melalui portal SIA dan verifikasi berkas di loket BAK / Fakultas.\n\n![Diagram Alur SOP Pendaftaran Yudisium Online](/assets/img/yudisium/sop-a.jpeg)\n\n![Diagram Alur SOP Verifikasi Pengajuan Yudisium Tatap Muka](/assets/img/yudisium/sop-b.jpeg)",
                 'category' => 'akademik',
                 'priority' => 10,
@@ -99,7 +99,7 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 8,
             ],
             [
-                'keywords' => ['link kalender akademik', 'tautan kalender akademik', 'url kalender akademik', 'kalender akademik', 'jadwal kalender akademik', 'kalender 2026', 'kalender 2025', 'kalender', 'jadwal kalender', 'kalender perkuliahan', 'kalender libur', 'kalender uniska', 'kapan kuliah mulai', 'kapan libur semester'],
+                'keywords' => ['link kalender akademik', 'tautan kalender akademik', 'url kalender akademik', 'kalender akademik', 'jadwal kalender akademik', 'kalender 2026', 'kalender 2025', 'kalender', 'jadwal kalender', 'kalender perkuliahan', 'kalender libur', 'kalender uniska', 'kapan kuliah mulai', 'kapan kuliah dimulai', 'kapan libur semester'],
                 'response' => "Kalender Akademik UNISKA MAB Tahun Ajaran 2025/2026 mencakup jadwal perkuliahan, pembayaran UKT, pengisian KRS, ujian (UTS/UAS), dan yudisium/wisuda. Informasi lengkap dapat dilihat pada tautan resmi: https://uniska-bjm.ac.id/?p=8599\n\n![Kalender Akademik UNISKA MAB 2025/2026](/assets/img/kalender/kalender_akademik_2025_2026.jpeg)",
                 'category' => 'akademik',
                 'priority' => 10,

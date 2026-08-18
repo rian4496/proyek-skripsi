@@ -48,10 +48,6 @@ return [
             'provider' => 'admin',
         ],
 
-        'mahasiswa' => [
-            'driver' => 'session',
-            'provider' => 'mahasiswa',
-        ],
     ],
 
     /*
@@ -82,10 +78,6 @@ return [
             'model' => App\Models\Admin::class,
         ],
 
-        'mahasiswa' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Mahasiswa::class,
-        ],
     ],
 
     /*

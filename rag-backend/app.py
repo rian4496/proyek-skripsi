@@ -247,7 +247,7 @@ def attach_visual_sop(query: str, answer: str) -> str:
     answer_lower = clean_answer.lower()
     
     # Cek jika pertanyaan atau jawaban adalah penolakan/di luar konteks/coding
-    out_of_domain_words = ["javascript", "python", "coding", "buatkan kode", "source code", "c++", "html", "css", "sql", "random password", "script", "resep", "masakan", "lirik lagu"]
+    out_of_domain_words = ["javascript", "python", "coding", "source code", "buatkan kode", "c++", "html", "css", "sql", "random password", "script", "resep", "masakan", "lirik lagu", "berita bola", "prediksi bola", "tutorial pemrograman", "program java", "code javascript"]
     refusal_words = ["mohon maaf", "tidak tersedia", "di luar topik", "tidak dapat menjawab", "di luar konteks", "silakan hubungi bagian akademik"]
     if any(w in query_lower for w in out_of_domain_words) or any(w in answer_lower for w in refusal_words) or "kkn" in query_lower or "kuliah kerja nyata" in query_lower:
         return clean_answer
@@ -269,7 +269,7 @@ async def chat(request: ChatRequest):
         raise HTTPException(422, "chatInput tidak boleh kosong")
 
     query_lower = request.chatInput.lower()
-    out_of_domain_words = ["javascript", "python", "coding", "buatkan kode", "source code", "c++", "html", "css", "sql", "random password", "script", "resep", "masakan", "lirik lagu", "berita bola", "tutorial pemrograman"]
+    out_of_domain_words = ["javascript", "python", "coding", "source code", "buatkan kode", "c++", "html", "css", "sql", "random password", "script", "resep", "masakan", "lirik lagu", "berita bola", "prediksi bola", "tutorial pemrograman", "program java", "code javascript"]
     if any(w in query_lower for w in out_of_domain_words):
         return ChatResponse(
             output="Mohon maaf, saya adalah Asisten Pelayanan Akademik UNISKA MAB. 🎓 Saya khusus membantu memberikan informasi seputar pelayanan akademik, KRS, jadwal perkuliahan, UKT, dan layanan portal SIA kampus. Saya tidak dapat menjawab atau membantu pertanyaan di luar topik akademik tersebut. 😊",

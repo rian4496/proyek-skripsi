@@ -87,7 +87,7 @@ class ChatRuleSeeder extends Seeder
                 'priority' => 15,
             ],
             [
-                'keywords' => ['syarat yudisium', 'daftar yudisium', 'alur yudisium', 'info yudisium', 'persyaratan yudisium', 'kapan yudisium', 'sop yudisium', 'wisuda', 'pendaftaran wisuda', 'daftar wisuda'],
+                'keywords' => ['syarat yudisium', 'daftar yudisium', 'alur yudisium', 'info yudisium', 'persyaratan yudisium', 'kapan yudisium', 'sop yudisium'],
                 'response' => "Pendaftaran dan pelaksanaan Yudisium UNISKA MAB dilakukan sesuai dengan Standar Operasional Prosedur (SOP) fakultas masing-masing.\n\n**Syarat & Alur Umum Yudisium:**\n1. Telah dinyatakan lulus ujian skripsi (sidang komprehensif).\n2. Mengumpulkan lembar pengesahan skripsi yang sudah ditandatangani lengkap (Pembimbing, Penguji, dan Dekan).\n3. Mengupload naskah skripsi final dan jurnal ke repository perpustakaan.\n4. Melakukan pendaftaran online melalui portal SIA dan verifikasi berkas di loket BAK / Fakultas.\n\n![Diagram Alur SOP Pendaftaran Yudisium Online](/assets/img/yudisium/sop-a.jpeg)\n\n![Diagram Alur SOP Verifikasi Pengajuan Yudisium Tatap Muka](/assets/img/yudisium/sop-b.jpeg)",
                 'category' => 'akademik',
                 'priority' => 10,

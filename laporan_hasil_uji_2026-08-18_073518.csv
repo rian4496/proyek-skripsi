@@ -1,0 +1,27 @@
+﻿No,Pertanyaan,Kategori,Skor_DL,Skor_RO,Skor_Hybrid,Keyword_Cocok,Routing,Waktu_ms
+1,"jadwal kuliah","Exact Match",100,100,100,"jadwal kuliah",rule,17.14
+2,"cara isi krs","Exact Match",100,100,100,"cara isi krs",rule,13.83
+3,"biaya kuliah","Exact Match",100,100,100,"biaya kuliah",rule,14.46
+4,"informasi beasiswa","Exact Match",100,100,100,beasiswa,rule,18.73
+5,"pendaftaran wisuda","Exact Match",63.16,75.68,75.68,"pendaftaran skripsi",ai,18.5
+6,perpustakaan,"Exact Match",100,100,100,perpustakaan,rule,13.16
+7,"surat keterangan aktif","Exact Match",29.17,52.17,52.17,"istirahat jam berapa bak",ai,25.35
+8,"info skripsi","Exact Match",100,100,100,"info skripsi",rule,12.45
+9,"jadwl kuliah",Typo,92.31,96,96,"jadwal kuliah",rule,13.34
+10,"biay kuliah",Typo,91.67,95.65,95.65,"biaya kuliah",rule,12.74
+11,beasiwa,Typo,87.5,93.33,93.33,beasiswa,rule,8.47
+12,perpustakaaan,Typo,92.31,96,96,perpustakaan,rule,13.99
+13,wisudah,Typo,18.18,44.44,44.44,"website sia",ai,8.63
+14,skripsii,Typo,87.5,93.33,93.33,skripsi,rule,10.1
+15,"jadwla kuliah",Transposisi,92.31,92.31,92.31,"jadwal kuliah",rule,15.15
+16,"katru rencana studi",Transposisi,94.74,94.74,94.74,"kartu rencana studi",rule,26.38
+17,beaswia,Transposisi,62.5,80,80,beasiswa,ai,9.48
+18,wisuad,Transposisi,27.27,47.06,47.06,"website sia",ai,7.43
+19,skripis,Transposisi,85.71,85.71,85.71,skripsi,rule,9.26
+20,perpustakaan,Transposisi,100,100,100,perpustakaan,rule,12.9
+21,"adakah informasi kontak kaprodi teknik informatika?","AI Fallback",42.86,61.54,61.54,makasih,ai,95.84
+22,"bagaimana cara mengurus cuti kuliah?","AI Fallback",58.33,69.57,69.57,"biaya kuliah",ai,55.52
+23,"apa syarat pindah jurusan?","AI Fallback",47.62,57.14,57.14,"syarat daftar skripsi",ai,34.36
+24,"informasi biaya kuliah",Multi-word,100,100,100,"biaya kuliah",rule,30.83
+25,"kapan kuliah dimulai",Multi-word,100,100,100,"kapan kuliah dimulai",rule,24.72
+26,"mau tanya soal ukt",Multi-word,100,100,100,ukt,rule,34.3

@@ -277,7 +277,7 @@ class DashboardController extends Controller
                 'Nama Pelapor',
                 'Kategori Masalah',
                 'Isi Laporan / Keluhan',
-                'Sentimen AI (Gemini 2.0 Flash)',
+                'Sentimen AI (Gemini 2.5 Flash)',
                 'Skor Keyakinan (%)',
                 'Status'
             ]);

@@ -5,9 +5,7 @@ use Laravel\Fortify\Features;
 
 Route::redirect('/', '/chat')->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
-});
+
 
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Admin\ChatRuleController;

@@ -56,7 +56,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::index
- * @see app/Http/Controllers/Admin/ParticipantController.php:52
+ * @see app/Http/Controllers/Admin/ParticipantController.php:59
  * @route '/admin/participants'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -71,7 +71,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::index
- * @see app/Http/Controllers/Admin/ParticipantController.php:52
+ * @see app/Http/Controllers/Admin/ParticipantController.php:59
  * @route '/admin/participants'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -80,7 +80,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::index
- * @see app/Http/Controllers/Admin/ParticipantController.php:52
+ * @see app/Http/Controllers/Admin/ParticipantController.php:59
  * @route '/admin/participants'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -89,7 +89,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::index
- * @see app/Http/Controllers/Admin/ParticipantController.php:52
+ * @see app/Http/Controllers/Admin/ParticipantController.php:59
  * @route '/admin/participants'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -99,7 +99,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\ParticipantController::index
- * @see app/Http/Controllers/Admin/ParticipantController.php:52
+ * @see app/Http/Controllers/Admin/ParticipantController.php:59
  * @route '/admin/participants'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -109,7 +109,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\ParticipantController::index
- * @see app/Http/Controllers/Admin/ParticipantController.php:52
+ * @see app/Http/Controllers/Admin/ParticipantController.php:59
  * @route '/admin/participants'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -118,7 +118,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\ParticipantController::index
- * @see app/Http/Controllers/Admin/ParticipantController.php:52
+ * @see app/Http/Controllers/Admin/ParticipantController.php:59
  * @route '/admin/participants'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -134,7 +134,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::exportCsv
- * @see app/Http/Controllers/Admin/ParticipantController.php:137
+ * @see app/Http/Controllers/Admin/ParticipantController.php:161
  * @route '/admin/participants/export-csv'
  */
 export const exportCsv = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -149,7 +149,7 @@ exportCsv.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::exportCsv
- * @see app/Http/Controllers/Admin/ParticipantController.php:137
+ * @see app/Http/Controllers/Admin/ParticipantController.php:161
  * @route '/admin/participants/export-csv'
  */
 exportCsv.url = (options?: RouteQueryOptions) => {
@@ -158,7 +158,7 @@ exportCsv.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::exportCsv
- * @see app/Http/Controllers/Admin/ParticipantController.php:137
+ * @see app/Http/Controllers/Admin/ParticipantController.php:161
  * @route '/admin/participants/export-csv'
  */
 exportCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -167,7 +167,7 @@ exportCsv.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::exportCsv
- * @see app/Http/Controllers/Admin/ParticipantController.php:137
+ * @see app/Http/Controllers/Admin/ParticipantController.php:161
  * @route '/admin/participants/export-csv'
  */
 exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -177,7 +177,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Admin\ParticipantController::exportCsv
- * @see app/Http/Controllers/Admin/ParticipantController.php:137
+ * @see app/Http/Controllers/Admin/ParticipantController.php:161
  * @route '/admin/participants/export-csv'
  */
     const exportCsvForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -187,7 +187,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Admin\ParticipantController::exportCsv
- * @see app/Http/Controllers/Admin/ParticipantController.php:137
+ * @see app/Http/Controllers/Admin/ParticipantController.php:161
  * @route '/admin/participants/export-csv'
  */
         exportCsvForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -196,7 +196,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Admin\ParticipantController::exportCsv
- * @see app/Http/Controllers/Admin/ParticipantController.php:137
+ * @see app/Http/Controllers/Admin/ParticipantController.php:161
  * @route '/admin/participants/export-csv'
  */
         exportCsvForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -212,7 +212,7 @@ exportCsv.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     exportCsv.form = exportCsvForm
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::printParticipants
- * @see app/Http/Controllers/Admin/ParticipantController.php:202
+ * @see app/Http/Controllers/Admin/ParticipantController.php:226
  * @route '/admin/participants/print'
  */
 export const printParticipants = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ printParticipants.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::printParticipants
- * @see app/Http/Controllers/Admin/ParticipantController.php:202
+ * @see app/Http/Controllers/Admin/ParticipantController.php:226
  * @route '/admin/participants/print'
  */
 printParticipants.url = (options?: RouteQueryOptions) => {
@@ -236,7 +236,7 @@ printParticipants.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::printParticipants
- * @see app/Http/Controllers/Admin/ParticipantController.php:202
+ * @see app/Http/Controllers/Admin/ParticipantController.php:226
  * @route '/admin/participants/print'
  */
 printParticipants.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -245,7 +245,7 @@ printParticipants.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =>
 })
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::printParticipants
- * @see app/Http/Controllers/Admin/ParticipantController.php:202
+ * @see app/Http/Controllers/Admin/ParticipantController.php:226
  * @route '/admin/participants/print'
  */
 printParticipants.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -255,7 +255,7 @@ printParticipants.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
     /**
 * @see \App\Http\Controllers\Admin\ParticipantController::printParticipants
- * @see app/Http/Controllers/Admin/ParticipantController.php:202
+ * @see app/Http/Controllers/Admin/ParticipantController.php:226
  * @route '/admin/participants/print'
  */
     const printParticipantsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -265,7 +265,7 @@ printParticipants.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
             /**
 * @see \App\Http\Controllers\Admin\ParticipantController::printParticipants
- * @see app/Http/Controllers/Admin/ParticipantController.php:202
+ * @see app/Http/Controllers/Admin/ParticipantController.php:226
  * @route '/admin/participants/print'
  */
         printParticipantsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -274,7 +274,7 @@ printParticipants.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
         })
             /**
 * @see \App\Http\Controllers\Admin\ParticipantController::printParticipants
- * @see app/Http/Controllers/Admin/ParticipantController.php:202
+ * @see app/Http/Controllers/Admin/ParticipantController.php:226
  * @route '/admin/participants/print'
  */
         printParticipantsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -290,7 +290,7 @@ printParticipants.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
     printParticipants.form = printParticipantsForm
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::destroy
- * @see app/Http/Controllers/Admin/ParticipantController.php:127
+ * @see app/Http/Controllers/Admin/ParticipantController.php:134
  * @route '/admin/participants/{participant}'
  */
 export const destroy = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -305,7 +305,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::destroy
- * @see app/Http/Controllers/Admin/ParticipantController.php:127
+ * @see app/Http/Controllers/Admin/ParticipantController.php:134
  * @route '/admin/participants/{participant}'
  */
 destroy.url = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -338,7 +338,7 @@ destroy.url = (args: { participant: number | { id: number } } | [participant: nu
 
 /**
 * @see \App\Http\Controllers\Admin\ParticipantController::destroy
- * @see app/Http/Controllers/Admin/ParticipantController.php:127
+ * @see app/Http/Controllers/Admin/ParticipantController.php:134
  * @route '/admin/participants/{participant}'
  */
 destroy.delete = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -348,7 +348,7 @@ destroy.delete = (args: { participant: number | { id: number } } | [participant:
 
     /**
 * @see \App\Http\Controllers\Admin\ParticipantController::destroy
- * @see app/Http/Controllers/Admin/ParticipantController.php:127
+ * @see app/Http/Controllers/Admin/ParticipantController.php:134
  * @route '/admin/participants/{participant}'
  */
     const destroyForm = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -363,7 +363,7 @@ destroy.delete = (args: { participant: number | { id: number } } | [participant:
 
             /**
 * @see \App\Http\Controllers\Admin\ParticipantController::destroy
- * @see app/Http/Controllers/Admin/ParticipantController.php:127
+ * @see app/Http/Controllers/Admin/ParticipantController.php:134
  * @route '/admin/participants/{participant}'
  */
         destroyForm.delete = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -377,6 +377,95 @@ destroy.delete = (args: { participant: number | { id: number } } | [participant:
         })
     
     destroy.form = destroyForm
-const ParticipantController = { store, index, exportCsv, printParticipants, destroy }
+/**
+* @see \App\Http\Controllers\Admin\ParticipantController::updateEmail
+ * @see app/Http/Controllers/Admin/ParticipantController.php:144
+ * @route '/admin/participants/{participant}'
+ */
+export const updateEmail = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: updateEmail.url(args, options),
+    method: 'put',
+})
+
+updateEmail.definition = {
+    methods: ["put"],
+    url: '/admin/participants/{participant}',
+} satisfies RouteDefinition<["put"]>
+
+/**
+* @see \App\Http\Controllers\Admin\ParticipantController::updateEmail
+ * @see app/Http/Controllers/Admin/ParticipantController.php:144
+ * @route '/admin/participants/{participant}'
+ */
+updateEmail.url = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { participant: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+            args = { participant: args.id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    participant: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        participant: typeof args.participant === 'object'
+                ? args.participant.id
+                : args.participant,
+                }
+
+    return updateEmail.definition.url
+            .replace('{participant}', parsedArgs.participant.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Admin\ParticipantController::updateEmail
+ * @see app/Http/Controllers/Admin/ParticipantController.php:144
+ * @route '/admin/participants/{participant}'
+ */
+updateEmail.put = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: updateEmail.url(args, options),
+    method: 'put',
+})
+
+    /**
+* @see \App\Http\Controllers\Admin\ParticipantController::updateEmail
+ * @see app/Http/Controllers/Admin/ParticipantController.php:144
+ * @route '/admin/participants/{participant}'
+ */
+    const updateEmailForm = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: updateEmail.url(args, {
+                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                        _method: 'PUT',
+                        ...(options?.query ?? options?.mergeQuery ?? {}),
+                    }
+                }),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Admin\ParticipantController::updateEmail
+ * @see app/Http/Controllers/Admin/ParticipantController.php:144
+ * @route '/admin/participants/{participant}'
+ */
+        updateEmailForm.put = (args: { participant: number | { id: number } } | [participant: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: updateEmail.url(args, {
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'PUT',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+    
+    updateEmail.form = updateEmailForm
+const ParticipantController = { store, index, exportCsv, printParticipants, destroy, updateEmail }
 
 export default ParticipantController

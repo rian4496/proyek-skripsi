@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"/c/Users/ACER/Herd/proyek-skripsi\" show --stat 5304c15)",
+      "PowerShell(npm run build 2>&1)"
+    ]
+  }
+}

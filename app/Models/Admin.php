@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Database\Factories\AdminFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * Model Admin — aktor admin kampus dalam sistem autentikasi multi-guard.
@@ -22,6 +25,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 #[Hidden(['password', 'remember_token'])]
 class Admin extends Authenticatable
 {
+    /** @use HasFactory<AdminFactory> */
+    use HasFactory, Notifiable;
+
     /**
      * Nama tabel eksplisit (singular, sesuai konvensi Bahasa Indonesia).
      */

@@ -24,11 +24,8 @@ class ChatController extends Controller
      */
     public function store(SendMessageRequest $request, ChatbotService $chatbotService): \Inertia\Response
     {
-        $userId = $request->user()?->id;
-
         $result = $chatbotService->findResponse(
             $request->validated('message'),
-            $userId,
             [
                 'nama_mahasiswa' => $request->input('nama_mahasiswa'),
                 'npm' => $request->input('npm'),

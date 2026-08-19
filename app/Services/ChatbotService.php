@@ -98,10 +98,9 @@ class ChatbotService
      * 7. Log percakapan ke tabel `chat_logs`
      *
      * @param  string  $message  Pesan input dari pengguna
-     * @param  int|null  $userId  ID user yang mengirim (null jika anonim)
      * @return array{response: string, source: string, matched_rule_id: int|null, similarity_score: float|null, matched_keywords: array<int, string>, ai_engine: string|null, is_rag_found: bool|null}
      */
-    public function findResponse(string $message, ?int $userId = null, array $participantData = []): array
+    public function findResponse(string $message, array $participantData = []): array
     {
         $startTime = microtime(true);
         $normalizedMessage = $this->normalizeText($message);
@@ -122,7 +121,7 @@ class ChatbotService
             $latencyMs = (int) round((microtime(true) - $startTime) * 1000);
             $response = 'Mohon maaf, saya adalah Asisten Pelayanan Akademik UNISKA MAB. 🎓 Saya khusus membantu memberikan informasi seputar pelayanan akademik, KRS, jadwal perkuliahan, UKT, dan layanan portal SIA kampus. Saya tidak dapat menjawab atau membantu pertanyaan di luar topik akademik tersebut. 😊';
             $result = $this->buildResult($response, 'rule', latencyMs: $latencyMs);
-            $chatLogId = $this->logConversation($userId, $message, $result, $participantData);
+            $chatLogId = $this->logConversation($message, $result, $participantData);
             $result['chat_log_id'] = $chatLogId;
             return $result;
         }
@@ -141,7 +140,7 @@ class ChatbotService
                 latencyMs: $latencyMs,
             );
 
-            $chatLogId = $this->logConversation($userId, $message, $result, $participantData);
+            $chatLogId = $this->logConversation($message, $result, $participantData);
             $result['chat_log_id'] = $chatLogId;
 
             return $result;
@@ -235,7 +234,7 @@ class ChatbotService
             );
         }
 
-        $chatLogId = $this->logConversation($userId, $message, $result, $participantData);
+        $chatLogId = $this->logConversation($message, $result, $participantData);
         $result['chat_log_id'] = $chatLogId;
 
         return $result;
@@ -320,13 +319,6 @@ class ChatbotService
      */
     private function calculateSimilarity(string $message, string $keyword): float
     {
-        // Exact substring match (Whole Word Only) → 100%
-        // Menggunakan regex \b untuk memastikan keyword utuh, bukan bagian dari kata lain
-        // (Contoh: mencegah "machine" match dengan keyword "hi")
-        if (preg_match('/\b' . preg_quote($keyword, '/') . '\b/i', $message)) {
-            return 100.0;
-        }
-
         $messageWords = preg_split('/\s+/', $message, -1, PREG_SPLIT_NO_EMPTY);
         $keywordWords = preg_split('/\s+/', $keyword, -1, PREG_SPLIT_NO_EMPTY);
 
@@ -334,14 +326,17 @@ class ChatbotService
             return 0.0;
         }
 
+        $maxScore = 0.0;
+
+        // Exact substring match (Whole Word Only) → 100%
+        // Menggunakan regex \b untuk memastikan keyword utuh, bukan bagian dari kata lain
+        if (preg_match('/\b' . preg_quote($keyword, '/') . '\b/i', $message)) {
+            $maxScore = 100.0;
+        } 
         // Single-word keyword: bandingkan dengan setiap kata di pesan
-        if (count($keywordWords) === 1) {
-            $maxScore = 0.0;
+        elseif (count($keywordWords) === 1) {
             foreach ($messageWords as $word) {
                 // Guard: skip kata terlalu pendek (< 6 karakter) pada per-word comparison.
-                // Kata pendek seperti "masih"↔"makasih" menghasilkan false positive tinggi
-                // karena Ratcliff/Obershelp mengukur kesamaan substring, bukan konteks semantik.
-                // Catatan: exact substring match (100%) di atas TIDAK terpengaruh oleh guard ini.
                 if (mb_strlen($word) < 6 || mb_strlen($keyword) < 6) {
                     continue;
                 }
@@ -352,28 +347,38 @@ class ChatbotService
                 $combinedScore = max($dlScore, $roScore);
                 $maxScore = max($maxScore, $combinedScore);
             }
-
-            return $maxScore;
-        }
-
+        } 
         // Multi-word keyword: sliding window comparison
-        $keywordPhrase = implode(' ', $keywordWords);
-        $windowSize = count($keywordWords);
+        else {
+            $keywordPhrase = implode(' ', $keywordWords);
+            $windowSize = count($keywordWords);
 
-        if (count($messageWords) < $windowSize) {
-            $dlScore = $this->damerauLevenshteinPercentage($message, $keywordPhrase);
-            $roScore = $this->ratcliffObershelpPercentage($message, $keywordPhrase);
-            return max($dlScore, $roScore);
+            if (count($messageWords) < $windowSize) {
+                $dlScore = $this->damerauLevenshteinPercentage($message, $keywordPhrase);
+                $roScore = $this->ratcliffObershelpPercentage($message, $keywordPhrase);
+                $maxScore = max($dlScore, $roScore);
+            } else {
+                for ($i = 0; $i <= count($messageWords) - $windowSize; $i++) {
+                    $window = implode(' ', array_slice($messageWords, $i, $windowSize));
+                    // Hybrid: ambil skor tertinggi dari kedua algoritma
+                    $dlScore = $this->damerauLevenshteinPercentage($window, $keywordPhrase);
+                    $roScore = $this->ratcliffObershelpPercentage($window, $keywordPhrase);
+                    $combinedScore = max($dlScore, $roScore);
+                    $maxScore = max($maxScore, $combinedScore);
+                }
+            }
         }
 
-        $maxScore = 0.0;
-        for ($i = 0; $i <= count($messageWords) - $windowSize; $i++) {
-            $window = implode(' ', array_slice($messageWords, $i, $windowSize));
-            // Hybrid: ambil skor tertinggi dari kedua algoritma
-            $dlScore = $this->damerauLevenshteinPercentage($window, $keywordPhrase);
-            $roScore = $this->ratcliffObershelpPercentage($window, $keywordPhrase);
-            $combinedScore = max($dlScore, $roScore);
-            $maxScore = max($maxScore, $combinedScore);
+        // Terapkan Penalti Konteks (Context Penalty)
+        $messageWordCount = count($messageWords);
+        $keywordWordCount = count($keywordWords);
+        
+        if ($messageWordCount > $keywordWordCount) {
+            $extraWords = $messageWordCount - $keywordWordCount;
+            $penaltyFactor = 3.0; // Ditingkatkan ke 3% agar kalimat yang jauh lebih panjang pasti terlempar ke RAG
+            $totalPenalty = $extraWords * $penaltyFactor;
+            
+            $maxScore = max(0.0, $maxScore - $totalPenalty);
         }
 
         return $maxScore;
@@ -556,18 +561,12 @@ class ChatbotService
      * Kolom `ai_engine` menyimpan nama engine spesifik ('gemini' / 'ollama')
      * agar Dashboard Admin dapat membedakan sumber AI fallback secara akurat.
      *
-     * @param  int|null  $userId  ID user (null jika anonim)
      * @param  string  $originalMessage  Pesan asli (belum dinormalisasi)
      * @param  array  $result  Hasil respons chatbot
      */
-    private function logConversation(?int $userId, string $originalMessage, array $result, array $participantData = []): ?int
+    private function logConversation(string $originalMessage, array $result, array $participantData = []): ?int
     {
         try {
-            // Validasi FK user_id agar tidak melanggar constraint jika ID dari cookie lama tidak ada di tabel users
-            if ($userId !== null && !\App\Models\User::where('id', $userId)->exists()) {
-                $userId = null;
-            }
-
             $columns = \Illuminate\Support\Facades\Schema::getColumnListing('chat_logs');
             $data = [
                 'user_message' => substr($originalMessage, 0, 1000),
@@ -575,7 +574,6 @@ class ChatbotService
                 'source' => in_array(($result['source'] ?? 'rule'), ['rule', 'ai']) ? ($result['source'] ?? 'rule') : 'rule',
             ];
 
-            if (in_array('user_id', $columns)) $data['user_id'] = $userId;
             if (in_array('nama_mahasiswa', $columns) && !empty($participantData['nama_mahasiswa'])) $data['nama_mahasiswa'] = substr(trim($participantData['nama_mahasiswa']), 0, 100);
             if (in_array('npm', $columns) && !empty($participantData['npm'])) $data['npm'] = substr(trim($participantData['npm']), 0, 50);
             if (in_array('fakultas', $columns) && !empty($participantData['fakultas'])) $data['fakultas'] = substr(trim($participantData['fakultas']), 0, 100);
@@ -612,7 +610,6 @@ class ChatbotService
                 \Illuminate\Support\Facades\DB::reconnect();
 
                 $logCore = ChatLog::create([
-                    'user_id' => null,
                     'user_message' => substr($originalMessage, 0, 1000),
                     'bot_response' => substr($result['response'] ?? '', 0, 5000),
                     'source' => in_array(($result['source'] ?? 'rule'), ['rule', 'ai']) ? ($result['source'] ?? 'rule') : 'rule',

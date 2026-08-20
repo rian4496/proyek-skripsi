@@ -369,16 +369,18 @@ class ChatbotService
             }
         }
 
-        // Terapkan Penalti Konteks (Context Penalty)
-        $messageWordCount = count($messageWords);
-        $keywordWordCount = count($keywordWords);
-        
-        if ($messageWordCount > $keywordWordCount) {
-            $extraWords = $messageWordCount - $keywordWordCount;
-            $penaltyFactor = 3.0; // Ditingkatkan ke 3% agar kalimat yang jauh lebih panjang pasti terlempar ke RAG
-            $totalPenalty = $extraWords * $penaltyFactor;
+        // Terapkan Penalti Konteks (Context Penalty) HANYA jika bukan Exact Match
+        if ($maxScore < 100.0) {
+            $messageWordCount = count($messageWords);
+            $keywordWordCount = count($keywordWords);
             
-            $maxScore = max(0.0, $maxScore - $totalPenalty);
+            if ($messageWordCount > $keywordWordCount) {
+                $extraWords = $messageWordCount - $keywordWordCount;
+                $penaltyFactor = 3.0; // Ditingkatkan ke 3% agar kalimat yang jauh lebih panjang pasti terlempar ke RAG
+                $totalPenalty = $extraWords * $penaltyFactor;
+                
+                $maxScore = max(0.0, $maxScore - $totalPenalty);
+            }
         }
 
         return $maxScore;

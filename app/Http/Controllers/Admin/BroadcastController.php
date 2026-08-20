@@ -27,7 +27,7 @@ class BroadcastController extends Controller
     }
 
     /**
-     * Memproses pengiriman pesan massal ke dalam Queue.
+     * Memproses pengiriman pesan massal secara sinkron (langsung).
      */
     public function store(Request $request)
     {
@@ -59,6 +59,6 @@ class BroadcastController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', "Berhasil memasukkan {$dispatchedCount} pesan ke antrean pengiriman email massal.");
+        return redirect()->back()->with('success', "Berhasil mengirim {$dispatchedCount} email secara sinkron (langsung, tanpa antrean).");
     }
 }
